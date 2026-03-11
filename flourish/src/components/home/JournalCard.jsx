@@ -9,8 +9,8 @@ const navigate = useNavigate();
 return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-4">
-    <BookOpen className="w-5 h-5 text-[#8B7A9F]" />
-    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+    <BookOpen className="w-5 h-5 text-[#5A4B70]" />
+    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         Journal
     </p>
     </div>

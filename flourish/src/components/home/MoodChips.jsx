@@ -69,7 +69,7 @@ return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-3">
     <Heart className="w-5 h-5 text-[#EDD9E8]" />
-    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         How are you feeling?
     </p>
     </div>
@@ -97,7 +97,7 @@ return (
     <Button
         onClick={handleSave}
         disabled={logMoodsMutation.isPending}
-        className="w-full bg-[#8B7A9F] hover:bg-[#7A6A8E] text-white rounded-xl"
+        className="w-full bg-[#5A4B70] hover:bg-[#7A6A8E] text-white rounded-xl"
     >
         {saved ? '✓ Saved' : logMoodsMutation.isPending ? 'Saving...' : `Save ${selectedMoods.length} mood${selectedMoods.length > 1 ? 's' : ''}`}
     </Button>

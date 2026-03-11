@@ -25,8 +25,8 @@ return (
 <>
     <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-[#8B7A9F]" />
-        <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+        <Sparkles className="w-5 h-5 text-[#5A4B70]" />
+        <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         Mindfulness
         </p>
     </div>
@@ -36,7 +36,7 @@ return (
         onClick={() => setShowMeditationModal(true)}
         className="flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-[#D9EEF2] to-[#E8E4F3] rounded-2xl hover:shadow-md transition-all"
         >
-        <Sparkles className="w-6 h-6 text-[#8B7A9F]" />
+        <Sparkles className="w-6 h-6 text-[#5A4B70]" />
         <span className="text-xs font-medium text-[#4A4458]">Meditation</span>
         </button>
 
@@ -44,7 +44,7 @@ return (
         onClick={onBreathingStart}
         className="flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-[#E8E4F3] to-[#EDD9E8] rounded-2xl hover:shadow-md transition-all"
         >
-        <Wind className="w-6 h-6 text-[#8B7A9F]" />
+        <Wind className="w-6 h-6 text-[#5A4B70]" />
         <span className="text-xs font-medium text-[#4A4458]">Breathing</span>
         </button>
 
@@ -52,7 +52,7 @@ return (
         onClick={() => navigate(createPageUrl('Journal'))}
         className="flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-[#EDD9E8] to-[#F5E6EA] rounded-2xl hover:shadow-md transition-all"
         >
-        <BookOpen className="w-6 h-6 text-[#8B7A9F]" />
+        <BookOpen className="w-6 h-6 text-[#5A4B70]" />
         <span className="text-xs font-medium text-[#4A4458]">Journaling</span>
         </button>
     </div>
@@ -74,7 +74,7 @@ return (
                 onClick={() => setMeditationType(type)}
                 className={`py-3 rounded-xl font-medium capitalize transition-all ${
                     meditationType === type
-                    ? 'bg-[#8B7A9F] text-white'
+                    ? 'bg-[#5A4B70] text-white'
                     : 'bg-[#E8E4F3] text-[#7D7589] hover:bg-[#DDD8EB]'
                 }`}
                 >
@@ -93,7 +93,7 @@ return (
                 onClick={() => setMeditationLength(length)}
                 className={`py-3 rounded-xl font-medium transition-all ${
                     meditationLength === length
-                    ? 'bg-[#8B7A9F] text-white'
+                    ? 'bg-[#5A4B70] text-white'
                     : 'bg-[#E8E4F3] text-[#7D7589] hover:bg-[#DDD8EB]'
                 }`}
                 >
@@ -106,7 +106,7 @@ return (
         <Button
             onClick={handleStartMeditation}
             disabled={!meditationType || !meditationLength}
-            className="w-full bg-[#8B7A9F] hover:bg-[#7A6A8E] text-white rounded-xl py-3 mt-4"
+            className="w-full bg-[#5A4B70] hover:bg-[#7A6A8E] text-white rounded-xl py-3 mt-4"
         >
             Start Meditation
         </Button>

@@ -5,8 +5,8 @@ export default function BreathingCard({ onStart }) {
 return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-4">
-    <Wind className="w-5 h-5 text-[#8B7A9F]" />
-    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+    <Wind className="w-5 h-5 text-[#5A4B70]" />
+    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         Guided Breathing
     </p>
     </div>

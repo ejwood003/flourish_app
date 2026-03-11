@@ -133,7 +133,7 @@
         <div className="bg-white rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
             <Baby className="w-5 h-5 text-[#EDD9E8]" />
-            <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+            <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
             Quick Actions
             </p>
         </div>
@@ -224,7 +224,7 @@
                 <Button onClick={discardFeeding} variant="outline" className="flex-1">
                 Discard
                 </Button>
-                <Button onClick={saveFeeding} className="flex-1 bg-[#8B7A9F] hover:bg-[#7A6A8E]">
+                <Button onClick={saveFeeding} className="flex-1 bg-[#5A4B70] hover:bg-[#7A6A8E]">
                 Save
                 </Button>
             </div>
@@ -247,7 +247,7 @@
                 <Button onClick={discardNap} variant="outline" className="flex-1">
                 Discard
                 </Button>
-                <Button onClick={saveNap} className="flex-1 bg-[#8B7A9F] hover:bg-[#7A6A8E]">
+                <Button onClick={saveNap} className="flex-1 bg-[#5A4B70] hover:bg-[#7A6A8E]">
                 Save
                 </Button>
             </div>
@@ -280,7 +280,7 @@
                     onClick={() => toggleMoodTag(chip)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         moodData.tags.includes(chip)
-                        ? 'bg-[#8B7A9F] text-white'
+                        ? 'bg-[#5A4B70] text-white'
                         : 'bg-white text-[#7D7589] hover:bg-[#E8E4F3]'
                     }`}
                     >
@@ -294,7 +294,7 @@
                 <Button onClick={() => setShowMoodEntry(false)} variant="outline" className="flex-1">
                 Cancel
                 </Button>
-                <Button onClick={saveMood} className="flex-1 bg-[#8B7A9F] hover:bg-[#7A6A8E]">
+                <Button onClick={saveMood} className="flex-1 bg-[#5A4B70] hover:bg-[#7A6A8E]">
                 Save
                 </Button>
             </div>

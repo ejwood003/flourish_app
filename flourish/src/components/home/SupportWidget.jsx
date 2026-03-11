@@ -144,7 +144,7 @@ return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-2">
     <Heart className="w-5 h-5 text-[#EDD9E8]" />
-    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         Support
     </p>
     </div>
@@ -180,7 +180,7 @@ return (
         <Button
         onClick={handleAddCustom}
         disabled={!customRequest.trim()}
-        className="bg-[#8B7A9F] hover:bg-[#7A6A8E] text-white"
+        className="bg-[#5A4B70] hover:bg-[#7A6A8E] text-white"
         >
         Add
         </Button>
@@ -191,7 +191,7 @@ return (
     <Button
         onClick={() => setShowCustomInput(true)}
         variant="outline"
-        className="border-[#E8E4F3] text-[#8B7A9F]"
+        className="border-[#E8E4F3] text-[#5A4B70]"
     >
         <Plus className="w-4 h-4 mr-2" />
         Custom
@@ -199,7 +199,7 @@ return (
     <Button
         onClick={() => setShowSuggestions(true)}
         variant="outline"
-        className="border-[#E8E4F3] text-[#8B7A9F]"
+        className="border-[#E8E4F3] text-[#5A4B70]"
     >
         <Sparkles className="w-4 h-4 mr-2" />
         Suggestions
@@ -243,7 +243,7 @@ return (
         <Button
             onClick={handleAddSelectedSuggestions}
             disabled={selectedSuggestions.length === 0}
-            className="w-full bg-[#8B7A9F] hover:bg-[#7A6A8E] text-white"
+            className="w-full bg-[#5A4B70] hover:bg-[#7A6A8E] text-white"
         >
             Add Selected ({selectedSuggestions.length})
         </Button>

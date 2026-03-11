@@ -9,8 +9,8 @@ const navigate = useNavigate();
 return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-4">
-    <FileText className="w-5 h-5 text-[#8B7A9F]" />
-    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+    <FileText className="w-5 h-5 text-[#5A4B70]" />
+    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         Recommended Reading
     </p>
     </div>
@@ -24,7 +24,7 @@ return (
 
     <button
     onClick={() => navigate(createPageUrl('ArticleView') + '?id=tip2&from=home')}
-    className="inline-flex items-center gap-2 text-[#8B7A9F] font-medium hover:text-[#7A6A8E] transition-colors"
+    className="inline-flex items-center gap-2 text-[#5A4B70] font-medium hover:text-[#7A6A8E] transition-colors"
     >
     Read More
     <ExternalLink className="w-4 h-4" />

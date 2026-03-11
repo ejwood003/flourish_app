@@ -58,11 +58,11 @@ return (
             onClick={() => setIsOpen(false)}
             className="absolute top-4 right-4 p-2 rounded-full bg-white/50 hover:bg-white/80 transition-colors"
             >
-            <X className="w-5 h-5 text-[#8B7A9F]" />
+            <X className="w-5 h-5 text-[#5A4B70]" />
             </button>
 
             <div className="text-center">
-            <p className="text-sm font-medium text-[#8B7A9F] mb-6 uppercase tracking-wide">
+            <p className="text-sm font-medium text-[#5A4B70] mb-6 uppercase tracking-wide">
                 Breathe with me
             </p>
 
@@ -95,8 +95,8 @@ return (
                 onClick={handleNotifyPartner}
                 className={`w-full py-4 rounded-2xl font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
                 notified
-                    ? 'bg-[#D9EEF2] text-[#8B7A9F]'
-                    : 'bg-white text-[#8B7A9F] hover:bg-white/80'
+                    ? 'bg-[#D9EEF2] text-[#5A4B70]'
+                    : 'bg-white text-[#5A4B70] hover:bg-white/80'
                 }`}
             >
                 <MessageCircle className="w-5 h-5" />

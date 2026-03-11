@@ -29,7 +29,7 @@ const canStart = selectedType && selectedDuration;
 
 return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
-    <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+    <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
     Daily Meditation
     </p>
 
@@ -47,7 +47,7 @@ return (
             onClick={() => setSelectedType(type.id)}
             className={`flex-1 py-3 px-2 rounded-2xl flex flex-col items-center gap-2 transition-all duration-200 ${
                 isSelected
-                ? 'bg-[#8B7A9F] text-white shadow-md'
+                ? 'bg-[#5A4B70] text-white shadow-md'
                 : 'bg-[#E8E4F3] text-[#7D7589] hover:bg-[#DDD8EB]'
             }`}
             >
@@ -79,7 +79,7 @@ return (
                 onClick={() => setSelectedDuration(duration.id)}
                 className={`flex-1 py-3 rounded-full font-medium transition-all duration-200 ${
                     isSelected
-                    ? 'bg-[#EDD9E8] text-[#8B7A9F] shadow-sm'
+                    ? 'bg-[#EDD9E8] text-[#5A4B70] shadow-sm'
                     : 'bg-[#FEF9F5] text-[#7D7589] hover:bg-[#E8E4F3]'
                 }`}
                 >
@@ -101,7 +101,7 @@ return (
         exit={{ opacity: 0, y: 10 }}
         whileTap={{ scale: 0.98 }}
         onClick={handleStart}
-        className="w-full py-4 rounded-2xl font-medium flex items-center justify-center gap-2 transition-all duration-300 bg-gradient-to-r from-[#8B7A9F] to-[#A895B8] text-white shadow-lg hover:shadow-xl"
+        className="w-full py-4 rounded-2xl font-medium flex items-center justify-center gap-2 transition-all duration-300 bg-gradient-to-r from-[#5A4B70] to-[#A895B8] text-white shadow-lg hover:shadow-xl"
         >
         <Play className="w-5 h-5" fill="currentColor" />
         Start Meditation

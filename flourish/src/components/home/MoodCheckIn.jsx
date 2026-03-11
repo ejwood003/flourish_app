@@ -32,7 +32,7 @@ const emojiIndex = Math.min(Math.floor(moodValue / 25), 4);
 
 return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
-    <p className="text-xs font-medium text-[#8B7A9F] mb-2 uppercase tracking-wide">
+    <p className="text-xs font-medium text-[#5A4B70] mb-2 uppercase tracking-wide">
     Mood Check-In
     </p>
     <p className="text-[#4A4458] font-medium mb-6">How are you feeling today?</p>
@@ -54,7 +54,7 @@ return (
         className="absolute inset-0 w-full h-8 opacity-0 cursor-pointer"
     />
     <motion.div
-        className="absolute top-0 w-12 h-12 -mt-2 bg-white rounded-full shadow-lg border-2 border-[#8B7A9F] pointer-events-none flex items-center justify-center text-xl z-10"
+        className="absolute top-0 w-12 h-12 -mt-2 bg-white rounded-full shadow-lg border-2 border-[#5A4B70] pointer-events-none flex items-center justify-center text-xl z-10"
         style={{ left: `calc(${moodValue}% - 24px)` }}
         animate={{ scale: isDragging ? 1.15 : 1 }}
         transition={{ duration: 0.2 }}
@@ -74,8 +74,8 @@ return (
     onClick={handleSave}
     className={`w-full py-3 rounded-2xl font-medium transition-all duration-300 ${
         saved
-        ? 'bg-[#D9EEF2] text-[#8B7A9F]'
-        : 'bg-[#E8E4F3] text-[#8B7A9F] hover:bg-[#DDD8EB]'
+        ? 'bg-[#D9EEF2] text-[#5A4B70]'
+        : 'bg-[#E8E4F3] text-[#5A4B70] hover:bg-[#DDD8EB]'
     }`}
     >
     {saved ? '✓ Saved' : 'Save Mood'}
