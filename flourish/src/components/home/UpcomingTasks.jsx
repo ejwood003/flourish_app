@@ -22,8 +22,8 @@ const tasks = [
 return (
 <div className="bg-white rounded-3xl p-6 shadow-sm">
     <div className="flex items-center gap-2 mb-4">
-    <Clock className="w-5 h-5 text-[#8B7A9F]" />
-    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+    <Clock className="w-5 h-5 text-[#C9B6CC]" />
+    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
         Upcoming Tasks
     </p>
     </div>
@@ -38,7 +38,7 @@ return (
         >
             <div className="flex items-center gap-2 mb-2">
             <div className="p-2 bg-white/60 rounded-lg">
-                <Icon className="w-4 h-4 text-[#8B7A9F]" />
+                <Icon className="w-4 h-4 text-[#5A4B70]" />
             </div>
             <p className="font-medium text-[#4A4458] capitalize">{task.type}</p>
             </div>

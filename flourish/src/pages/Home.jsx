@@ -1,28 +1,30 @@
-    import React, { useState } from 'react';
-    import { useQuery } from '@tanstack/react-query';
-    import { base44 } from '@/api/base44Client';
-    import { AnimatePresence } from 'framer-motion';
-    import { useNavigate } from 'react-router-dom';
-    import { createPageUrl } from '@/utils';
-    import { Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Eye } from 'lucide-react';
 
-    import AffirmationCarousel from '@/components/home/AffirmationCarousel';
-    import MoodCheckIn from '@/components/home/MoodCheckIn';
-    import MoodChips from '@/components/home/MoodChips';
-    import MeditationSelector from '@/components/home/MeditationSelector';
-    import GuidedBreathing from '@/components/home/GuidedBreathing';
-    import BreathingCard from '@/components/home/BreathingCard';
-    import JournalCard from '@/components/home/JournalCard';
-    import SupportWidget from '@/components/home/SupportWidget';
-    import UpcomingTasks from '@/components/home/UpcomingTasks';
-    import RecommendedArticle from '@/components/home/RecommendedArticle';
-    import MindfulnessHub from '@/components/home/MindfulnessHub';
-    import BabyQuickActions from '@/components/home/BabyQuickActions';
+// Import all "cards" from the home section
+import AffirmationCarousel from '@/components/home/AffirmationCarousel';
+import MoodCheckIn from '@/components/home/MoodCheckIn';
+import MoodChips from '@/components/home/MoodChips';
+import MeditationSelector from '@/components/home/MeditationSelector';
+import GuidedBreathing from '@/components/home/GuidedBreathing';
+import BreathingCard from '@/components/home/BreathingCard';
+import JournalCard from '@/components/home/JournalCard';
+import SupportWidget from '@/components/home/SupportWidget';
+import UpcomingTasks from '@/components/home/UpcomingTasks';
+import RecommendedArticle from '@/components/home/RecommendedArticle';
+import MindfulnessHub from '@/components/home/MindfulnessHub';
+import BabyQuickActions from '@/components/home/BabyQuickActions';
 
-    export default function Home() {
+export default function Home() {
     const navigate = useNavigate();
-    const [showBreathing, setShowBreathing] = useState(false);
+    const [showBreathing, setShowBreathing] = useState(false); // set breathing to false to hide the breathing card
 
+    // Get the user's profiles
     const { data: profiles = [], refetch } = useQuery({
         queryKey: ['userProfiles'],
         queryFn: () => base44.entities.UserProfile.list(),
@@ -33,10 +35,12 @@
         refetch();
     }, [refetch]);
 
+    // Set the profile and default features
     const profile = profiles[0];
-    const defaultFeatures = ['affirmation', 'mood', 'mood_chips', 'baby', 'mindfulness', 'support', 'tasks', 'breathing', 'journal', 'meditations', 'articles'];
+    const defaultFeatures = ['affirmation', 'mood', 'mood_chips', 'mindfulness', 'tasks', 'baby', 'support', 'breathing', 'journal', 'meditations', 'articles'];
     const enabledFeatures = profile?.home_features || defaultFeatures;
 
+    // Render the features based on the enabled features/order
     const renderFeature = (featureId) => {
         switch (featureId) {
         case 'affirmation':
@@ -68,28 +72,26 @@
 
     return (
         <>
-        <div className="space-y-6 pb-8">
-            {/* Dynamic Features */}
-            {enabledFeatures.map((featureId) => {
-            const feature = renderFeature(featureId);
-            return feature;
-            })}
+            <div className="space-y-6 pb-8">
+                {/* Dynamic Features ("Cards") */}
+                {enabledFeatures.map((featureId) => {
+                const feature = renderFeature(featureId);
+                return feature;
+                })}
 
-            {/* View Partner Screen Button */}
-            <button
-            onClick={() => navigate(createPageUrl('PartnerHome'))}
-            className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-[#8B7A9F]/60 hover:text-[#8B7A9F] bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2"
-            >
-            <Eye className="w-4 h-4" />
-            View Partner Screen
-            </button>
-        </div>
+                {/* View Partner Screen Button */}
+                <button onClick={() => navigate(createPageUrl('PartnerHome'))} className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2">
+                    <Eye className="w-4 h-4" />
+                    View Partner Screen
+                </button>
+            </div>
 
-        <AnimatePresence>
-            {showBreathing && (
-            <GuidedBreathing onClose={() => setShowBreathing(false)} />
-            )}
-        </AnimatePresence>
+            {/* Guided Breathing Modal */}
+            <AnimatePresence>
+                {showBreathing && (
+                <GuidedBreathing onClose={() => setShowBreathing(false)} />
+                )}
+            </AnimatePresence>
         </>
     );
-    }
+}
