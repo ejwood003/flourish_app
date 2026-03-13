@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using flourishbackend.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<FlourishDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("FlourishConnection"));
+});
+
+builder.Services.AddCors();
 
 var app = builder.Build();
 
