@@ -189,7 +189,10 @@ export default function BabyQuickActions() {
                         </Select>
                     )}
                     {/* Notes  */}
+                    <label htmlFor="feeding-notes" className="sr-only">Feeding notes</label>
                     <Textarea
+                        id="feeding-notes"
+                        name="feeding-notes"
                         placeholder="Add notes (optional)"
                         value={feedingData.notes}
                         onChange={(e) => setFeedingData({ ...feedingData, notes: e.target.value })}
@@ -212,7 +215,10 @@ export default function BabyQuickActions() {
                 <div className="mt-4 p-4 bg-[#F6F4FB] rounded-2xl space-y-3">
                     <p className="text-sm font-medium text-[#4A4458]">Log Nap</p>
                     
+                    <label htmlFor="nap-notes" className="sr-only">Nap notes</label>
                     <Textarea
+                        id="nap-notes"
+                        name="nap-notes"
                         placeholder="Add notes (optional)"
                         value={napData.notes}
                         onChange={(e) => setNapData({ ...napData, notes: e.target.value })}

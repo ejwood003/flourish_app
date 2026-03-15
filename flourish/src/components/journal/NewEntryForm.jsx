@@ -112,11 +112,14 @@ return (
     </div>
 
     {/* Text Area */}
+    <label htmlFor="journal-entry" className="sr-only">Journal entry</label>
     <Textarea
-    placeholder={selectedPrompt || "What's on your heart today?"}
-    value={content}
-    onChange={(e) => setContent(e.target.value)}
-    className="rounded-2xl border-[#E8DFF5] focus:border-[#9D8AA5] focus:ring-[#9D8AA5] resize-none min-h-[120px] mb-4"
+        id="journal-entry"
+        name="journal-entry"
+        placeholder={selectedPrompt || "What's on your heart today?"}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="rounded-2xl border-[#E8DFF5] focus:border-[#9D8AA5] focus:ring-[#9D8AA5] resize-none min-h-[120px] mb-4"
     />
 
     {/* Share Toggle */}
