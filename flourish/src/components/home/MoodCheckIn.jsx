@@ -45,7 +45,10 @@ export default function MoodCheckIn() {
 
         <div className="relative mb-6">
         <div className="h-8 rounded-full bg-gradient-to-r from-[#D9EEF2] via-[#E8E4F3] to-[#EDD9E8] overflow-hidden" />
+        <label htmlFor="mood-checkin-slider" className="sr-only">Mood value</label>
         <input
+            id="mood-checkin-slider"
+            name="mood-checkin-slider"
             type="range"
             min="0"
             max="100"

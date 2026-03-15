@@ -39,8 +39,10 @@
 
             <div className="space-y-4 mt-4">
             <div>
-                <Label className="text-[#4A4458] mb-2">Mood Value</Label>
-                <input
+            <Label htmlFor="mood-value" className="text-[#4A4458] mb-2">Mood Value</Label>
+            <input
+                id="mood-value"
+                name="mood-value"
                 type="range"
                 min="0"
                 max="100"
