@@ -15,5 +15,8 @@ base44({
     visualEditAgent: true
 }),
 react(),
-]
+],
+  server: {
+    port: 3000,
+  },
 });
