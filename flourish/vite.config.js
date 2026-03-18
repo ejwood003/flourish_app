@@ -1,7 +1,3 @@
-import base44 from "@base44/vite-plugin"
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-
 // https://vite.dev/config/
 export default defineConfig({
 logLevel: 'error', // Suppress warnings, only show errors
@@ -15,5 +11,16 @@ base44({
     visualEditAgent: true
 }),
 react(),
-]
+],
+  server: {
+    port: 3000,
+    proxy: {
+      // Forward API calls to the ASP.NET backend
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });

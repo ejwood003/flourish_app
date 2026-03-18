@@ -47,11 +47,14 @@ return (
         <div className="space-y-2 pl-3">
             {(profile?.notifications_mood_times || ['09:00']).map((time, index) => (
             <div key={index} className="flex items-center gap-2">
+                <label htmlFor={`mood-time-${index}`} className="sr-only">Mood reminder time {index + 1}</label>
                 <Input
-                type="time"
-                value={time}
-                onChange={(e) => updateTime('notifications_mood_times', index, e.target.value)}
-                className="flex-1 border-[#E8E4F3]"
+                    id={`mood-time-${index}`}
+                    name={`mood-time-${index}`}
+                    type="time"
+                    value={time}
+                    onChange={(e) => updateTime('notifications_mood_times', index, e.target.value)}
+                    className="flex-1 border-[#E8E4F3]"
                 />
                 <Button
                 variant="ghost"

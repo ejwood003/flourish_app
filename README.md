@@ -9,8 +9,8 @@ Flourish is a wellness and parenting app that helps users track their mood, keep
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | React 18, Vite 6, React Router, Tailwind CSS, TanStack React Query, Framer Motion, Base44 SDK (API client) |
-| **Backend** | Node.js (ES modules), Express 4, CORS, dotenv |
-| **Database** | PostgreSQL (with `pg` driver) |
+| **Backend** | ASP.NET Core Web API (.NET), CORS |
+| **Database** | SQLite (via Entity Framework Core) |
 | **Authentication** | None by default (`requires_auth: false`); API supports optional token via `Authorization` header |
 | **External services** | None required; optional Base44 cloud if not using the local backend |
 
@@ -36,8 +36,8 @@ flowchart LR
 
 - **User** opens the app in the browser.
 - **Browser** loads the React app from the **Vite** dev server and sends API requests to the same origin (`/api/...`).
-- **Vite** proxies `/api` to the **Express API** (target URL from `VITE_BASE44_APP_BASE_URL`).
-- **Express API** handles base44-compatible routes and reads/writes **PostgreSQL**.
+- **Vite** proxies `/api` to the **ASP.NET API** (see `flourish/vite.config.js`).
+- **ASP.NET API** handles base44-compatible routes and reads/writes **SQLite**.
 - Responses flow back to the browser so the UI updates; data persists in the database.
 
 ## Prerequisites
@@ -59,35 +59,15 @@ Ensure `psql` is on your system PATH so you can run `createdb` and `psql $DATABA
    cd Flourish-main
    ```
 
-2. **Backend: install dependencies**
-   ```bash
-   cd backend
-   npm install
-   ```
+2. **Backend: restore/build**
+  ```bash
+  cd backend/flourishbackend/flourishbackend
+  dotnet restore
+  dotnet build
+  ```
 
-3. **Create the database**
-   ```bash
-   createdb flourish
-   ```
-   (Use a different name if you prefer; set it in `DATABASE_URL` in the next step.)
-
-4. **Backend: environment**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `backend/.env` and set:
-   ```env
-   DATABASE_URL=postgresql://localhost:5432/flourish
-   PORT=3000
-   ```
-   Adjust `DATABASE_URL` if your user, host, or database name differ.
-
-5. **Backend: schema and seed**
-   ```bash
-   npm run db:init
-   npm run db:seed
-   ```
-   This runs `schema.sql` (tables) and `seed.sql` (sample data). Alternatively, from the project root: `psql $DATABASE_URL -f backend/schema.sql` and `psql $DATABASE_URL -f backend/seed.sql`.
+3. **Database**
+  The ASP.NET backend uses SQLite and will auto-create the DB/tables on startup (see `Program.cs`).
 
 6. **Frontend: install dependencies**
    ```bash
@@ -98,19 +78,20 @@ Ensure `psql` is on your system PATH so you can run `createdb` and `psql $DATABA
 7. **Frontend: environment**
    Create or edit `flourish/.env` (or `flourish/.env.local`) with:
    ```env
-   VITE_BASE44_APP_BASE_URL=http://localhost:3000
+  # Used by some Base44 SDK flows; API requests are proxied by Vite.
+  VITE_BASE44_APP_BASE_URL=http://localhost:4000
    VITE_BASE44_APP_ID=your_app_id
    ```
-   This points the app at your local backend.
+  This aligns the frontend with your local ASP.NET backend (default `http://localhost:4000`).
 
 ## Running the Application
 
 1. **Start the backend** (Terminal 1):
    ```bash
-   cd backend
-   npm run dev
+   cd backend/flourishbackend/flourishbackend
+   dotnet run
    ```
-   Leave it running. The API will be at `http://localhost:3000`.
+   Leave it running. The API will be at `http://localhost:4000`.
 
 2. **Start the frontend** (Terminal 2):
    ```bash
@@ -139,4 +120,4 @@ Confirm that a full flow works: UI → API → database → persistence after re
 3. **Verify persistence**  
    Refresh the browser (F5 or Cmd+R). The mood entry should still appear (e.g. on Home or Calendar). The new row remains in the database and is loaded again by the API.
 
-This end-to-end path (UI → Vite proxy → Express → Postgres → response → UI and refresh) confirms the vertical slice is working.
+This end-to-end path (UI → Vite proxy → ASP.NET → SQLite → response → UI and refresh) confirms the vertical slice is working.

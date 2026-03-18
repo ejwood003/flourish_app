@@ -153,13 +153,28 @@ export default function QuickAddSection({ onActivityAdded, editingActivity, onCa
         if (editingActivity) {
             await base44.entities.BabyActivity.update(editingActivity.id, data);
         } else {
-            await base44.entities.BabyActivity.create(data);
+          data.food_type = formData.food_type;
+          data.food_amount = formData.food_amount;
         }
+      } else if (selectedMain === 'nap') {
+        const start = new Date(formData.nap_start);
+        const end = formData.nap_end ? new Date(formData.nap_end) : null;
+        const duration = end ? Math.round((end - start) / 60000) : undefined;
+        
+        data = {
+          type: 'nap',
+          timestamp: start.toISOString(),
+          duration_minutes: duration,
+          notes: formData.notes || undefined,
+        };
+      } else if (selectedMain === 'mood') {
+        await base44.entities.BabyMood.create({
+          mood_value: formData.baby_mood_value,
+          timestamp: new Date(formData.timestamp).toISOString(),
+          tags: formData.baby_mood_tags,
+        });
         onActivityAdded?.();
         resetForm();
-        } catch (e) {
-        console.error(e);
-        } finally {
         setSaving(false);
         }
     };

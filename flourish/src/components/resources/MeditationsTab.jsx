@@ -71,7 +71,10 @@ return (
     <div className="flex gap-3">
         <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B7A9F]" />
+        <label htmlFor="meditation-search" className="sr-only">Search meditations</label>
         <Input
+            id="meditation-search"
+            name="meditation-search"
             placeholder="Search meditations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

@@ -1,0 +1,6 @@
+@flourishbackend_HostAddress = http://localhost:5016
+
+GET {{flourishbackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

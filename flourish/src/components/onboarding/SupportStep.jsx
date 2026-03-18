@@ -1,33 +1,32 @@
-    import React, { useState } from 'react';
-    import { Button } from '@/components/ui/button';
-    import { Input } from '@/components/ui/input';
-    import { Label } from '@/components/ui/label';
-    import { Switch } from '@/components/ui/switch';
-    import { Users, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Users, ArrowLeft } from 'lucide-react';
 
-    export default function SupportStep({ data, onNext, onSkip, onBack }) {
-    const [showForm, setShowForm] = useState(false);
-    const [formData, setFormData] = useState({
-        support_type: data.support_type || '',
-        support_name: data.support_name || '',
-        support_email: data.support_email || '',
-        support_phone: data.support_phone || '',
-        share_journals: data.share_journals || false,
-        share_mood: data.share_mood || false,
-        share_baby_tracking: data.share_baby_tracking || false,
-    });
+export default function SupportStep({ data, onNext, onSkip, onBack }) {
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    support_type: data.support_type || '',
+    support_name: data.support_name || '',
+    support_email: data.support_email || '',
+    support_phone: data.support_phone || '',
+    share_journals: data.share_journals || false,
+    share_mood: data.share_mood || false,
+    share_baby_tracking: data.share_baby_tracking || false,
+  });
 
-    const supportTypes = [
-        { value: 'partner', label: 'Partner' },
-        { value: 'nanny', label: 'Nanny' },
-        { value: 'friend', label: 'Friend' },
-        { value: 'mother', label: 'Mother' },
-        { value: 'other', label: 'Other' },
-    ];
+  const supportTypes = [
+    { value: 'partner', label: 'Partner' },
+    { value: 'nanny', label: 'Nanny' },
+    { value: 'friend', label: 'Friend' },
+    { value: 'mother', label: 'Mother' },
+    { value: 'other', label: 'Other' },
+  ];
 
-    const handleContinue = () => {
-        onNext(formData);
-    };
+  const handleContinue = () => {
+    onNext(formData);
+  };
 
     return (
         <div className="space-y-6">
@@ -50,6 +49,11 @@
             </h2>
             <p className="text-[#5A4B70]">You can share updates and get help</p>
         </div>
+        <h2 className="text-2xl font-semibold text-[#4A4458]">
+          Would you like to add someone to support you?
+        </h2>
+        <p className="text-[#7D7589]">You can share updates and get help</p>
+      </div>
 
         {!showForm ? (
             <div className="space-y-3">
@@ -89,29 +93,32 @@
                 ))}
                 </div>
             </div>
+          </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="support_name" className="text-[#4A4458]">Full Name</Label>
-                <Input
-                id="support_name"
-                value={formData.support_name}
-                onChange={(e) => setFormData({ ...formData, support_name: e.target.value })}
-                placeholder="Their name"
-                className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
-                />
-            </div>
+          <div className="space-y-2">
+            <label htmlFor="support_name" className="text-sm font-medium text-[#4A4458]">Full Name</label>
+            <Input
+              id="support_name"
+              name="support_name"
+              value={formData.support_name}
+              onChange={(e) => setFormData({ ...formData, support_name: e.target.value })}
+              placeholder="Their name"
+              className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
+            />
+          </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="support_email" className="text-[#4A4458]">Email</Label>
-                <Input
-                id="support_email"
-                type="email"
-                value={formData.support_email}
-                onChange={(e) => setFormData({ ...formData, support_email: e.target.value })}
-                placeholder="their@email.com"
-                className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
-                />
-            </div>
+          <div className="space-y-2">
+            <label htmlFor="support_email" className="text-sm font-medium text-[#4A4458]">Email</label>
+            <Input
+              id="support_email"
+              name="support_email"
+              type="email"
+              value={formData.support_email}
+              onChange={(e) => setFormData({ ...formData, support_email: e.target.value })}
+              placeholder="their@email.com"
+              className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
+            />
+          </div>
 
             <div className="space-y-2">
                 <Label htmlFor="support_phone" className="text-[#5A4B70]">
@@ -162,6 +169,7 @@
                 </div>
                 </div>
             </div>
+          </div>
 
             <Button
                 onClick={handleContinue}
@@ -172,5 +180,7 @@
             </div>
         )}
         </div>
-    );
-    }
+      )}
+    </div>
+  );
+}

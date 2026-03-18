@@ -11,17 +11,17 @@ export default function BabyInfoStep({ data, onNext, onSkip, onBack }) {
         baby_gender: data.baby_gender || '',
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onNext(formData);
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onNext(formData);
+  };
 
-    const genderOptions = [
-        { value: 'boy', label: 'Boy' },
-        { value: 'girl', label: 'Girl' },
-        { value: 'other', label: 'Other' },
-        { value: 'prefer_not_to_say', label: 'Prefer not to say' },
-    ];
+  const genderOptions = [
+    { value: 'boy', label: 'Boy' },
+    { value: 'girl', label: 'Girl' },
+    { value: 'other', label: 'Other' },
+    { value: 'prefer_not_to_say', label: 'Prefer not to say' },
+  ];
 
     return (
         <div className="space-y-6">
@@ -42,29 +42,22 @@ export default function BabyInfoStep({ data, onNext, onSkip, onBack }) {
             <h2 className="text-2xl font-semibold text-[#4A4458]">Tell us about your baby</h2>
             <p className="text-[#5A4B70]">This helps us personalize your experience</p>
         </div>
+        <h2 className="text-2xl font-semibold text-[#4A4458]">Tell us about your baby</h2>
+        <p className="text-[#7D7589]">This helps us personalize your experience</p>
+      </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
-            <div className="space-y-2">
-            <Label htmlFor="baby_full_name" className="text-[#4A4458]">Baby's Full Name</Label>
-            <Input
-                id="baby_full_name"
-                value={formData.baby_full_name}
-                onChange={(e) => setFormData({ ...formData, baby_full_name: e.target.value })}
-                placeholder="Baby's name"
-                className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
-            />
-            </div>
-
-            <div className="space-y-2">
-            <Label htmlFor="baby_date_of_birth" className="text-[#4A4458]">Date of Birth</Label>
-            <Input
-                id="baby_date_of_birth"
-                type="date"
-                value={formData.baby_date_of_birth}
-                onChange={(e) => setFormData({ ...formData, baby_date_of_birth: e.target.value })}
-                className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
-            />
-            </div>
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
+        <div className="space-y-2">
+          <label htmlFor="baby_full_name" className="text-sm font-medium text-[#4A4458]">Baby's Full Name</label>
+          <Input
+            id="baby_full_name"
+            name="baby_full_name"
+            value={formData.baby_full_name}
+            onChange={(e) => setFormData({ ...formData, baby_full_name: e.target.value })}
+            placeholder="Baby's name"
+            className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
+          />
+        </div>
 
             <div className="space-y-2">
             <Label className="text-[#4A4458]">Gender</Label>
@@ -105,5 +98,7 @@ export default function BabyInfoStep({ data, onNext, onSkip, onBack }) {
             </div>
         </form>
         </div>
-    );
-    }
+      </form>
+    </div>
+  );
+}
