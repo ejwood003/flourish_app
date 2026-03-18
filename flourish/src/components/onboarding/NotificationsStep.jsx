@@ -41,8 +41,8 @@
         <div className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
             <div>
-                <Label className="text-[#4A4458]">Daily mood check-ins</Label>
-                <p className="text-xs text-[#7D7589] mt-1">Morning reminder at 9:00 AM</p>
+            <label className="text-sm font-medium text-[#4A4458]">Daily mood check-ins</label>
+            <p className="text-xs text-[#7D7589] mt-1">Morning reminder at 9:00 AM</p>
             </div>
             <Switch
                 checked={formData.notifications_mood_enabled}
@@ -55,8 +55,8 @@
 
             <div className="flex items-center justify-between">
             <div>
-                <Label className="text-[#4A4458]">Feeding reminders</Label>
-                <p className="text-xs text-[#7D7589] mt-1">Custom feeding schedule</p>
+            <label className="text-sm font-medium text-[#4A4458]">Feeding reminders</label>
+            <p className="text-xs text-[#7D7589] mt-1">Custom feeding schedule</p>
             </div>
             <Switch
                 checked={formData.notifications_feeding_enabled}
@@ -69,8 +69,8 @@
 
             <div className="flex items-center justify-between">
             <div>
-                <Label className="text-[#4A4458]">Nap reminders</Label>
-                <p className="text-xs text-[#7D7589] mt-1">Custom nap schedule</p>
+            <label className="text-sm font-medium text-[#4A4458]">Nap reminders</label>
+            <p className="text-xs text-[#7D7589] mt-1">Custom nap schedule</p>
             </div>
             <Switch
                 checked={formData.notifications_nap_enabled}

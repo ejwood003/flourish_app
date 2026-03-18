@@ -171,12 +171,15 @@ return (
 
     {showCustomInput ? (
     <div className="flex gap-2 mb-3">
+        <label htmlFor="custom-request" className="sr-only">Custom support request</label>
         <Input
-        placeholder="Type your request..."
-        value={customRequest}
-        onChange={(e) => setCustomRequest(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
-        className="border-[#D9DDEA] text-[#4A4458] placeholder:text-[#8A8396]"
+            id="custom-request"
+            name="custom-request"
+            placeholder="Type your request..."
+            value={customRequest}
+            onChange={(e) => setCustomRequest(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
+            className="border-[#D9DDEA] text-[#4A4458] placeholder:text-[#8A8396]"
         />
         <Button
         onClick={handleAddCustom}

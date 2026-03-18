@@ -260,7 +260,10 @@
                 <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
                 Send a Message
                 </p>
+                <label htmlFor="partner-message" className="sr-only">Write a supportive message</label>
                 <Textarea
+                id="partner-message"
+                name="partner-message"
                 placeholder="Write a supportive message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}

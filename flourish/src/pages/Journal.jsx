@@ -42,11 +42,14 @@
         {/* Search */}
         <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9D8AA5]" />
+            <label htmlFor="entry-search" className="sr-only">Search entries</label>
             <Input
-            placeholder="Search entries..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 rounded-xl border-[#E8DFF5] focus:border-[#9D8AA5] focus:ring-[#9D8AA5]"
+                id="entry-search"
+                name="entry-search"
+                placeholder="Search entries..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 rounded-xl border-[#E8DFF5] focus:border-[#9D8AA5] focus:ring-[#9D8AA5]"
             />
         </div>
 

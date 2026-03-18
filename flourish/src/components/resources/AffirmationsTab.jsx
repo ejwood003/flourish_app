@@ -103,11 +103,14 @@ return (
     <div className="flex gap-3">
     <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B7A9F]" />
+        <label htmlFor="affirmation-search" className="sr-only">Search affirmations</label>
         <Input
-        placeholder="Search affirmations..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-10 rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F] focus:ring-[#8B7A9F]"
+            id="affirmation-search"
+            name="affirmation-search"
+            placeholder="Search affirmations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F] focus:ring-[#8B7A9F]"
         />
     </div>
     <Button
@@ -138,7 +141,10 @@ return (
         exit={{ opacity: 0, height: 0 }}
         className="bg-white rounded-2xl p-4 shadow-sm overflow-hidden"
         >
+        <label htmlFor="new-affirmation" className="sr-only">Write your own affirmation</label>
         <Textarea
+            id="new-affirmation"
+            name="new-affirmation"
             placeholder="Write your own affirmation..."
             value={newAffirmation}
             onChange={(e) => setNewAffirmation(e.target.value)}
@@ -178,11 +184,14 @@ return (
         >
             {isEditing ? (
             <div className="space-y-3">
+               <label htmlFor="edit-affirmation" className="sr-only">Edit affirmation</label>
                 <Textarea
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className="rounded-xl border-[#E8E4F3]"
-                rows={2}
+                    id="edit-affirmation"
+                    name="edit-affirmation"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    className="rounded-xl border-[#E8E4F3]"
+                    rows={2}
                 />
                 <div className="flex gap-2">
                 <Button
