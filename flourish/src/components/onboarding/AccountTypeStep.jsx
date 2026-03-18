@@ -1,8 +1,7 @@
-    import React from 'react';
-    import { Button } from '@/components/ui/button';
-    import { Heart, Users, ArrowLeft } from 'lucide-react';
 
-    export default function AccountTypeStep({ onNext, onBack }) {
+import { Heart, Users, ArrowLeft } from 'lucide-react';
+
+export default function AccountTypeStep({ onNext, onBack }) {
     return (
         <div className="space-y-8 py-12">
         <button

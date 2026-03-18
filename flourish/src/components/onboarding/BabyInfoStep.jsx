@@ -1,10 +1,10 @@
-    import React, { useState } from 'react';
-    import { Button } from '@/components/ui/button';
-    import { Input } from '@/components/ui/input';
-    import { Label } from '@/components/ui/label';
-    import { Baby, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Baby, ArrowLeft } from 'lucide-react';
 
-    export default function BabyInfoStep({ data, onNext, onSkip, onBack }) {
+export default function BabyInfoStep({ data, onNext, onSkip, onBack }) {
     const [formData, setFormData] = useState({
         baby_full_name: data.baby_full_name || '',
         baby_date_of_birth: data.baby_date_of_birth || '',
