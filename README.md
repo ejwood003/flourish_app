@@ -4,6 +4,29 @@
 
 Flourish is a wellness and parenting app that helps users track their mood, keep a journal, log baby activities (feeding, naps, mood), and coordinate support with a partner. The primary user is a parent (often a new parent) who wants one place to check in emotionally, record moments, manage baby routines, and request or offer support. The product combines mood check-ins, journal prompts, affirmations, baby tracking (feeding, sleep, mood), a support widget for partner requests, and optional meditations and articles. The frontend was generated from Base44 and can run against a local Postgres-backed API so you own the data and backend.
 
+## EARS Requirements
+
+### Completed Requirements
+1. The system shall accept inputs in English.  
+2. The system shall be accessible on mobile devices (iOS and Android).  
+3. The system shall be usable at no cost for core features.  
+4. The system shall provide access to resources for users.  
+5. When a user selects a meditation guide, the system shall play a guided postpartum meditation session.  
+6. When a user enters a journal entry, the system shall save the entry and associate it with the current date.  
+7. When a user logs their mood, the system shall record the mood entry and update the user’s mood history.  
+8. When a user selects a daily affirmation, the system shall display an affirmation relevant to postpartum emotional well-being.  
+9. While a meditation session is in progress, the system shall display playback controls and session progress.  
+10. While the user is journaling, the system shall display guided prompts to support reflection.  
+11. While mood data is being processed, the system shall display a loading or progress indicator.  
+
+### Not Completed Requirements
+1. The system shall give users access to the meditation catalog.  
+2. When a user opens the app for the first time, the system shall prompt the user to set up a postpartum profile (e.g., delivery date, support preferences).  
+3. When a user completes a meditation session, the system shall prompt the user to reflect or journal about their experience.  
+4. When a user chooses to share progress with a partner, the system shall grant the partner access to selected mood and journal summaries.  
+5. While the system is offline, the system shall prevent new content streaming and notify the user of limited functionality.  
+6. The system shall provide an onboarding process for new users.  
+
 ## Tech Stack
 
 | Layer | Technology |
