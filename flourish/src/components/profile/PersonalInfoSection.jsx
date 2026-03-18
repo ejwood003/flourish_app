@@ -32,33 +32,27 @@ return (
       
       <div className="space-y-4">
         <div>
-          <Label htmlFor="full-name" className="text-sm text-[#7D7589] mb-1.5">Full Name</Label>
-          <Input
-            id="full-name"
-            name="full-name"
-            value={user?.full_name || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Full Name</Label>
+        <Input 
+            value={user?.full_name || ''} 
             disabled
             className="bg-[#F5EEF8]/50 border-[#E8E4F3]"
           />
         </div>
         
         <div>
-          <Label htmlFor="email" className="text-sm text-[#7D7589] mb-1.5">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            value={user?.email || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Email</Label>
+        <Input 
+            value={user?.email || ''} 
             disabled
             className="bg-[#F5EEF8]/50 border-[#E8E4F3]"
           />
         </div>
         
         <div>
-          <Label htmlFor="username" className="text-sm text-[#7D7589] mb-1.5">Username</Label>
-          <Input
-            id="username"
-            name="username"
-            value={profile?.username || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Username</Label>
+        <Input 
+            value={profile?.username || ''} 
             onChange={(e) => onUpdate({ username: e.target.value })}
             placeholder="Enter username"
             className="border-[#E8E4F3] focus:border-[#8B7A9F]"
@@ -66,10 +60,8 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="date-of-birth" className="text-sm text-[#7D7589] mb-1.5">Date of Birth</Label>
-          <Input
-            id="date-of-birth"
-            name="date-of-birth"
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Date of Birth</Label>
+        <Input 
             type="date"
             value={profile?.date_of_birth || ''}
             onChange={(e) => onUpdate({ date_of_birth: e.target.value })}
@@ -78,10 +70,8 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="phone-number" className="text-sm text-[#7D7589] mb-1.5">Phone Number</Label>
-          <Input
-            id="phone-number"
-            name="phone-number"
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Phone Number</Label>
+        <Input 
             type="tel"
             value={profile?.phone_number || ''}
             onChange={(e) => onUpdate({ phone_number: e.target.value })}
@@ -101,11 +91,9 @@ return (
       
       <div className="space-y-4">
         <div>
-          <Label htmlFor="baby-name" className="text-sm text-[#7D7589] mb-1.5">Baby Full Name</Label>
-          <Input
-            id="baby-name"
-            name="baby-name"
-            value={profile?.baby_full_name || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Baby Full Name</Label>
+        <Input 
+            value={profile?.baby_full_name || ''} 
             onChange={(e) => onUpdate({ baby_full_name: e.target.value })}
             placeholder="Enter baby's name"
             className="border-[#E8E4F3] focus:border-[#8B7A9F]"
@@ -113,10 +101,8 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="baby-dob" className="text-sm text-[#7D7589] mb-1.5">Baby Date of Birth</Label>
-          <Input
-            id="baby-dob"
-            name="baby-dob"
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Baby Date of Birth</Label>
+        <Input 
             type="date"
             value={profile?.baby_date_of_birth || ''}
             onChange={(e) => onUpdate({ baby_date_of_birth: e.target.value })}
@@ -125,9 +111,9 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="baby-gender" className="text-sm text-[#7D7589] mb-1.5">Baby Gender</Label>
-          <Select
-            value={profile?.baby_gender || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Baby Gender</Label>
+        <Select 
+            value={profile?.baby_gender || ''} 
             onValueChange={(value) => onUpdate({ baby_gender: value })}
           >
             <SelectTrigger id="baby-gender" className="border-[#E8E4F3] focus:border-[#8B7A9F]">
@@ -153,9 +139,9 @@ return (
       
       <div className="space-y-4">
         <div>
-          <Label htmlFor="support-type" className="text-sm text-[#7D7589] mb-1.5">Type</Label>
-          <Select
-            value={profile?.support_type || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Type</Label>
+        <Select 
+            value={profile?.support_type || ''} 
             onValueChange={(value) => onUpdate({ support_type: value })}
           >
             <SelectTrigger id="support-type" className="border-[#E8E4F3] focus:border-[#8B7A9F]">
@@ -172,11 +158,9 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="support-name" className="text-sm text-[#7D7589] mb-1.5">Name</Label>
-          <Input
-            id="support-name"
-            name="support-name"
-            value={profile?.support_name || ''}
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Name</Label>
+        <Input 
+            value={profile?.support_name || ''} 
             onChange={(e) => onUpdate({ support_name: e.target.value })}
             placeholder="Enter name"
             className="border-[#E8E4F3] focus:border-[#8B7A9F]"
@@ -184,10 +168,8 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="support-email" className="text-sm text-[#7D7589] mb-1.5">Email</Label>
-          <Input
-            id="support-email"
-            name="support-email"
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Email</Label>
+        <Input 
             type="email"
             value={profile?.support_email || ''}
             onChange={(e) => onUpdate({ support_email: e.target.value })}
@@ -197,10 +179,8 @@ return (
         </div>
         
         <div>
-          <Label htmlFor="support-phone" className="text-sm text-[#7D7589] mb-1.5">Phone Number</Label>
-          <Input
-            id="support-phone"
-            name="support-phone"
+        <Label className="text-sm text-[#5A4B70] mb-1.5">Phone Number</Label>
+        <Input 
             type="tel"
             value={profile?.support_phone || ''}
             onChange={(e) => onUpdate({ support_phone: e.target.value })}

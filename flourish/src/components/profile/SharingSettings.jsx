@@ -21,7 +21,7 @@ return (
     <h3 className="text-lg font-semibold text-[#4A4458]">Support System Sharing</h3>
     </div>
     
-    <p className="text-sm text-[#7D7589] mb-4">
+    <p className="text-sm text-[#5A4B70] mb-4">
     Control what is shared with your support partner
     </p>
 
@@ -39,7 +39,7 @@ return (
         {option.note && profile?.[option.key] && (
             <div className="flex items-start gap-2 pl-3 pr-3">
             <Info className="w-4 h-4 text-[#8B7A9F] mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-[#7D7589]">{option.note}</p>
+            <p className="text-xs text-[#5A4B70]">{option.note}</p>
             </div>
         )}
         </div>

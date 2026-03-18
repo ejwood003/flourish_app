@@ -22,7 +22,7 @@
         <div className="space-y-6">
         <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[#7D7589] hover:text-[#8B7A9F] transition-colors"
+            className="flex items-center gap-2 text-[#5A4B70] hover:text-[#8B7A9F] transition-colors"
         >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
@@ -35,14 +35,14 @@
             </div>
             </div>
             <h2 className="text-2xl font-semibold text-[#4A4458]">Notification Preferences</h2>
-            <p className="text-[#7D7589]">Stay on track with gentle reminders</p>
+            <p className="text-[#5A4B70]">Stay on track with gentle reminders</p>
         </div>
 
         <div className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
             <div>
-            <label className="text-sm font-medium text-[#4A4458]">Daily mood check-ins</label>
-            <p className="text-xs text-[#7D7589] mt-1">Morning reminder at 9:00 AM</p>
+                <Label className="text-[#4A4458]">Daily mood check-ins</Label>
+                <p className="text-xs text-[#5A4B70] mt-1">Morning reminder at 9:00 AM</p>
             </div>
             <Switch
                 checked={formData.notifications_mood_enabled}
@@ -55,8 +55,8 @@
 
             <div className="flex items-center justify-between">
             <div>
-            <label className="text-sm font-medium text-[#4A4458]">Feeding reminders</label>
-            <p className="text-xs text-[#7D7589] mt-1">Custom feeding schedule</p>
+                <Label className="text-[#4A4458]">Feeding reminders</Label>
+                <p className="text-xs text-[#5A4B70] mt-1">Custom feeding schedule</p>
             </div>
             <Switch
                 checked={formData.notifications_feeding_enabled}
@@ -69,8 +69,8 @@
 
             <div className="flex items-center justify-between">
             <div>
-            <label className="text-sm font-medium text-[#4A4458]">Nap reminders</label>
-            <p className="text-xs text-[#7D7589] mt-1">Custom nap schedule</p>
+                <Label className="text-[#4A4458]">Nap reminders</Label>
+                <p className="text-xs text-[#5A4B70] mt-1">Custom nap schedule</p>
             </div>
             <Switch
                 checked={formData.notifications_nap_enabled}
@@ -81,14 +81,14 @@
             />
             </div>
 
-            <p className="text-xs text-[#7D7589] pt-2">
+            <p className="text-xs text-[#5A4B70] pt-2">
             You can customize specific times in Settings later
             </p>
 
             <div className="space-y-2 pt-2">
             <Button
                 onClick={handleContinue}
-                className="w-full h-12 bg-[#8B7A9F] hover:bg-[#7A6A8F] text-white rounded-2xl text-base"
+                className="w-full h-12 bg-[#7D6F99] hover:bg-[#7A6A8F] text-white rounded-2xl text-base"
             >
                 Continue
             </Button>
@@ -96,7 +96,7 @@
             <Button
                 onClick={() => onSkip()}
                 variant="ghost"
-                className="w-full text-[#7D7589] hover:text-[#8B7A9F] hover:bg-transparent"
+                className="w-full text-[#5A4B70] hover:text-[#8B7A9F] hover:bg-transparent"
             >
                 Skip for now
             </Button>

@@ -143,7 +143,7 @@
         <div className="max-w-lg mx-auto px-4 pt-6">
             <button
             onClick={() => window.history.back()}
-            className="mb-4 text-[#8B7A9F] hover:text-[#7A6A8E] transition-colors flex items-center gap-2"
+            className="mb-4 text-[#5A4B70] hover:text-[#7A6A8E] transition-colors flex items-center gap-2"
             >
             <ArrowLeft className="w-5 h-5" />
             Back
@@ -151,7 +151,7 @@
 
             <div className="mb-6">
             <h1 className="text-2xl font-semibold text-[#4A4458]">Partner View</h1>
-            <p className="text-[#7D7589] mt-1">Preview of partner home screen</p>
+            <p className="text-[#5A4B70] mt-1">Preview of partner home screen</p>
             </div>
 
             <div className="space-y-6">
@@ -162,8 +162,8 @@
             {latestMood && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
-                    <Heart className="w-5 h-5 text-[#8B7A9F]" />
-                    <p className="text-xs font-medium text-[#8B7A9F] uppercase tracking-wide">
+                    <Heart className="w-5 h-5 text-[#5A4B70]" />
+                    <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
                     Her Mood Today
                     </p>
                 </div>
@@ -175,11 +175,11 @@
                     </div>
                     <div className="flex-1">
                     <p className="text-xl font-semibold text-[#4A4458] mb-1">{getMoodLabel(latestMood.mood_value)}</p>
-                    <p className="text-sm text-[#7D7589]">
+                    <p className="text-sm text-[#5A4B70]">
                         {latestMood.time ? `Logged at ${latestMood.time}` : `Logged ${format(new Date(latestMood.created_date), 'h:mm a')}`}
                     </p>
                     {todayMoods.length > 1 && (
-                        <p className="text-xs text-[#8B7A9F] mt-1">Logged {todayMoods.length} moods today</p>
+                        <p className="text-xs text-[#5A4B70] mt-1">Logged {todayMoods.length} moods today</p>
                     )}
                     </div>
                 </div>
@@ -187,13 +187,13 @@
                 {/* Mood Chips */}
                 {todayMoods.some(m => m.mood_label) && (
                     <div className="pt-3 border-t border-[#E8E4F3]">
-                    <p className="text-xs text-[#7D7589] mb-2">Today's Feelings:</p>
+                    <p className="text-xs text-[#5A4B70] mb-2">Today's Feelings:</p>
                     <div className="flex flex-wrap gap-2">
                         {todayMoods
                         .filter(m => m.mood_label)
                         .map((mood, idx) => (
                             <div key={idx} className="inline-block px-3 py-1.5 bg-[#F5EEF8] rounded-full">
-                            <span className="text-sm font-medium text-[#8B7A9F]">{mood.mood_label}</span>
+                            <span className="text-sm font-medium text-[#5A4B70]">{mood.mood_label}</span>
                             </div>
                         ))}
                     </div>
@@ -204,33 +204,33 @@
 
             {/* Upcoming Tasks */}
             <div className="bg-white rounded-3xl p-6 shadow-sm">
-                <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+                <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
                 Upcoming Tasks
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                 {nextFeeding ? (
                     <div className="flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-[#E8E4F3] to-[#EDD9E8] rounded-2xl">
-                    <Clock className="w-6 h-6 text-[#8B7A9F]" />
+                    <Clock className="w-6 h-6 text-[#5A4B70]" />
                     <p className="text-xs font-medium text-[#4A4458]">Next Feeding</p>
                     <p className="text-sm font-semibold text-[#4A4458]">{format(nextFeeding, 'h:mm a')}</p>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2 p-4 bg-[#F5EEF8] rounded-2xl opacity-50">
-                    <Clock className="w-6 h-6 text-[#8B7A9F]" />
-                    <p className="text-xs font-medium text-[#7D7589]">Tracking...</p>
+                    <Clock className="w-6 h-6 text-[#5A4B70]" />
+                    <p className="text-xs font-medium text-[#5A4B70]">Tracking...</p>
                     </div>
                 )}
                 
                 {nextNap ? (
                     <div className="flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-[#D9EEF2] to-[#E8E4F3] rounded-2xl">
-                    <Clock className="w-6 h-6 text-[#8B7A9F]" />
+                    <Clock className="w-6 h-6 text-[#5A4B70]" />
                     <p className="text-xs font-medium text-[#4A4458]">Next Nap</p>
                     <p className="text-sm font-semibold text-[#4A4458]">{format(nextNap, 'h:mm a')}</p>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2 p-4 bg-[#F5EEF8] rounded-2xl opacity-50">
-                    <Clock className="w-6 h-6 text-[#8B7A9F]" />
-                    <p className="text-xs font-medium text-[#7D7589]">Tracking...</p>
+                    <Clock className="w-6 h-6 text-[#5A4B70]" />
+                    <p className="text-xs font-medium text-[#5A4B70]">Tracking...</p>
                     </div>
                 )}
                 </div>
@@ -239,7 +239,7 @@
             {/* Support Chips - Show selected support for today */}
             {todaySupport.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
-                <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+                <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
                     Support Requested Today
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -257,7 +257,7 @@
 
             {/* Send a Message */}
             <div className="bg-white rounded-3xl p-6 shadow-sm">
-                <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+                <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
                 Send a Message
                 </p>
                 <label htmlFor="partner-message" className="sr-only">Write a supportive message</label>
@@ -271,19 +271,19 @@
                 rows={3}
                 maxLength={150}
                 />
-                <p className="text-xs text-[#7D7589] mb-3">{message.length}/150 characters</p>
+                <p className="text-xs text-[#5A4B70] mb-3">{message.length}/150 characters</p>
                 <Button
                 onClick={handleSendMessage}
                 disabled={!message.trim()}
                 className={`w-full rounded-xl ${
                     messageSent
                     ? 'bg-green-500 hover:bg-green-600'
-                    : 'bg-[#8B7A9F] hover:bg-[#7A6A8E]'
+                    : 'bg-[#5A4B70] hover:bg-[#7A6A8E]'
                 } text-white`}
                 >
                 {messageSent ? '✓ Message Sent' : 'Send Message'}
                 </Button>
-                <p className="text-xs text-[#7D7589] mt-2 text-center italic">
+                <p className="text-xs text-[#5A4B70] mt-2 text-center italic">
                 This will appear in her Affirmations
                 </p>
             </div>
@@ -291,17 +291,17 @@
             {/* Journal Entries */}
             {profile?.share_journals && journals.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
-                <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+                <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
                     Journal Entries
                 </p>
                 <div className="space-y-3">
                     {journals.slice(0, 3).map((entry) => (
                     <div key={entry.id} className="p-4 bg-[#F5EEF8] rounded-xl">
-                        <p className="text-xs text-[#7D7589] mb-2">
+                        <p className="text-xs text-[#5A4B70] mb-2">
                         {format(new Date(entry.created_date), 'MMM d, yyyy')}
                         </p>
                         {entry.prompt && (
-                        <p className="text-sm font-medium text-[#8B7A9F] mb-2">{entry.prompt}</p>
+                        <p className="text-sm font-medium text-[#5A4B70] mb-2">{entry.prompt}</p>
                         )}
                         <p className="text-sm text-[#4A4458] line-clamp-2">{entry.content}</p>
                     </div>
@@ -309,7 +309,7 @@
                 </div>
                 <Link
                     to={createPageUrl('PartnerJournalView')}
-                    className="block text-center text-[#8B7A9F] font-medium mt-4 hover:text-[#7A6A8E] transition-colors"
+                    className="block text-center text-[#5A4B70] font-medium mt-4 hover:text-[#7A6A8E] transition-colors"
                 >
                     View All →
                 </Link>
@@ -318,7 +318,7 @@
 
             {/* Recommended Articles */}
             <div className="bg-white rounded-3xl p-6 shadow-sm">
-                <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+                <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
                 Recommended Articles
                 </p>
                 <div className="space-y-3">
@@ -326,12 +326,12 @@
                     <div key={article.id} className="p-4 bg-gradient-to-br from-[#E8E4F3] to-[#D9EEF2] rounded-2xl">
                     <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center flex-shrink-0">
-                        <FileText className="w-5 h-5 text-[#8B7A9F]" />
+                        <FileText className="w-5 h-5 text-[#5A4B70]" />
                         </div>
                         <div className="flex-1">
                         <h3 className="font-semibold text-[#4A4458] mb-1">{article.title}</h3>
-                        <p className="text-sm text-[#7D7589]">{article.description}</p>
-                        <span className="text-xs font-medium text-[#8B7A9F] bg-white/50 px-2 py-1 rounded-full mt-2 inline-block">
+                        <p className="text-sm text-[#5A4B70]">{article.description}</p>
+                        <span className="text-xs font-medium text-[#5A4B70] bg-white/50 px-2 py-1 rounded-full mt-2 inline-block">
                             {article.tag}
                         </span>
                         </div>
@@ -354,7 +354,7 @@
                 return (
                 <div
                     key={item.name}
-                    className="flex flex-col items-center py-2 px-3 text-[#7D7589]"
+                    className="flex flex-col items-center py-2 px-3 text-[#5A4B70]"
                 >
                     <Icon className="w-5 h-5" />
                     <span className="text-xs mt-1 font-medium">{item.name}</span>

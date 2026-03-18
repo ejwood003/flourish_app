@@ -37,7 +37,7 @@
                 className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === tab.id
                     ? 'bg-white text-[#4A4458] shadow-sm'
-                    : 'text-[#7D7589]'
+                    : 'text-[#5A4B70]'
                 }`}
             >
                 {tab.label}

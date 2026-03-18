@@ -65,7 +65,7 @@
         <div className="space-y-6">
         <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[#7D7589] hover:text-[#8B7A9F] transition-colors"
+            className="flex items-center gap-2 text-[#5A4B70] hover:text-[#8B7A9F] transition-colors"
         >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
@@ -75,7 +75,7 @@
             <h2 className="text-2xl font-semibold text-[#4A4458]">
             What would you like help with?
             </h2>
-            <p className="text-[#7D7589]">Select all that interest you</p>
+            <p className="text-[#5A4B70]">Select all that interest you</p>
         </div>
 
         <div className="grid grid-cols-1 gap-3">
@@ -99,7 +99,7 @@
                     </div>
                     <div className="flex-1">
                     <h3 className="font-semibold text-[#4A4458] mb-1">{card.title}</h3>
-                    <p className="text-sm text-[#7D7589]">{card.description}</p>
+                    <p className="text-sm text-[#5A4B70]">{card.description}</p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
                     isSelected
@@ -122,12 +122,12 @@
             <Button
             onClick={handleContinue}
             disabled={isLoading}
-            className="w-full h-12 bg-[#8B7A9F] hover:bg-[#7A6A8F] text-white rounded-2xl text-base"
+            className="w-full h-12 bg-[#7D6F99] hover:bg-[#7A6A8F] text-white rounded-2xl text-base"
             >
             {isLoading ? 'Setting up...' : 'Finish Setup'}
             </Button>
             
-            <p className="text-center text-xs text-[#7D7589]">
+            <p className="text-center text-xs text-[#5A4B70]">
             You can customize later in Settings
             </p>
         </div>

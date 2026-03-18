@@ -101,7 +101,7 @@ return (
         >
             <div className="bg-[#E8E4F3]/30 rounded-2xl p-4 space-y-3">
             <div>
-                <p className="text-xs font-medium text-[#7D7589] mb-2">Type</p>
+                <p className="text-xs font-medium text-[#5A4B70] mb-2">Type</p>
                 <div className="flex flex-wrap gap-2">
                 {['all', 'general', 'breastfeeding', 'sleep', 'partner'].map(cat => (
                     <button
@@ -110,7 +110,7 @@ return (
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         categoryFilter === cat
                         ? 'bg-[#8B7A9F] text-white'
-                        : 'bg-white text-[#7D7589]'
+                        : 'bg-white text-[#5A4B70]'
                     }`}
                     >
                     {cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -119,7 +119,7 @@ return (
                 </div>
             </div>
             <div>
-                <p className="text-xs font-medium text-[#7D7589] mb-2">Duration</p>
+                <p className="text-xs font-medium text-[#5A4B70] mb-2">Duration</p>
                 <div className="flex flex-wrap gap-2">
                 {[
                     { id: 'all', label: 'All' },
@@ -133,7 +133,7 @@ return (
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         durationFilter === dur.id
                         ? 'bg-[#8B7A9F] text-white'
-                        : 'bg-white text-[#7D7589]'
+                        : 'bg-white text-[#5A4B70]'
                     }`}
                     >
                     {dur.label}
@@ -151,7 +151,7 @@ return (
         className={`py-2 px-4 rounded-xl font-medium transition-all flex items-center gap-2 ${
         showFavoritesOnly
             ? 'bg-[#8B7A9F] text-white'
-            : 'bg-[#E8E4F3] text-[#7D7589]'
+            : 'bg-[#E8E4F3] text-[#5A4B70]'
         }`}
     >
         <Star className="w-4 h-4" fill={showFavoritesOnly ? 'currentColor' : 'none'} />
@@ -173,7 +173,7 @@ return (
             <div className="flex items-start justify-between mb-3">
             <div>
                 <h3 className="font-semibold text-[#4A4458] mb-1">{meditation.title}</h3>
-                <p className="text-sm text-[#7D7589]">{meditation.description}</p>
+                <p className="text-sm text-[#5A4B70]">{meditation.description}</p>
             </div>
             <button
                 onClick={() => toggleFavorite(meditation.id)}
@@ -191,7 +191,7 @@ return (
             </span>
             <button 
                 onClick={() => navigate(createPageUrl('LiveMeditation') + `?type=${meditation.category}&duration=${meditation.duration}&from=meditations`)}
-                className="flex items-center gap-2 bg-[#8B7A9F] text-white px-4 py-2 rounded-xl hover:bg-[#7A6B8D] transition-colors"
+                className="flex items-center gap-2 bg-[#7D6F99] text-white px-4 py-2 rounded-xl hover:bg-[#7A6B8D] transition-colors"
             >
                 <Play className="w-4 h-4" fill="currentColor" />
                 <span className="text-sm font-medium">Play</span>
@@ -204,7 +204,7 @@ return (
 
     {filteredMeditations.length === 0 && (
     <div className="text-center py-12">
-        <p className="text-[#7D7589]">No meditations found</p>
+        <p className="text-[#5A4B70]">No meditations found</p>
     </div>
     )}
 </div>

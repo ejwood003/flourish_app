@@ -1,21 +1,20 @@
-    import React from 'react';
-    import { Button } from '@/components/ui/button';
-    import { Heart, Users, ArrowLeft } from 'lucide-react';
 
-    export default function AccountTypeStep({ onNext, onBack }) {
+import { Heart, Users, ArrowLeft } from 'lucide-react';
+
+export default function AccountTypeStep({ onNext, onBack }) {
     return (
         <div className="space-y-8 py-12">
         <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[#7D7589] hover:text-[#8B7A9F] transition-colors"
+            className="flex items-center gap-2 text-[#5A4B70] hover:text-[#8B7A9F] transition-colors"
         >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
         </button>
 
         <div className="space-y-3 text-center">
-            <h1 className="text-3xl font-semibold text-[#4A4458]">I am a...</h1>
-            <p className="text-lg text-[#7D7589]">Select your account type</p>
+            <h1 className="text-3xl font-semibold text-[#5A4B70]">I am a...</h1>
+            <p className="text-lg text-[#5A4B70]">Select your account type</p>
         </div>
 
         <div className="space-y-4 pt-4">
@@ -28,7 +27,7 @@
                 <Heart className="w-7 h-7 text-[#8B7A9F]" />
                 </div>
                 <div>
-                <h3 className="text-xl font-semibold text-[#4A4458]">Mother</h3>
+                <h3 className="text-xl font-semibold text-[#5A4B70]">Mother</h3>
                 <p className="text-sm text-[#7D7589]">Track your wellness journey</p>
                 </div>
             </div>
@@ -43,7 +42,7 @@
                 <Users className="w-7 h-7 text-[#8B7A9F]" />
                 </div>
                 <div>
-                <h3 className="text-xl font-semibold text-[#4A4458]">Support System</h3>
+                <h3 className="text-xl font-semibold text-[#5A4B70]">Support System</h3>
                 <p className="text-sm text-[#7D7589]">Connect to support a mother</p>
                 </div>
             </div>

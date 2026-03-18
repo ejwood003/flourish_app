@@ -58,7 +58,7 @@ return (
     <h3 className="text-lg font-semibold text-[#4A4458]">Edit Home Page</h3>
     </div>
     
-    <p className="text-sm text-[#7D7589] mb-4">
+    <p className="text-sm text-[#5A4B70] mb-4">
     Toggle features and drag to reorder
     </p>
 
@@ -109,7 +109,7 @@ return (
     <Button
     onClick={() => navigate(createPageUrl('PartnerHome'))}
     variant="outline"
-    className="w-full mt-6 border-[#8B7A9F] text-[#8B7A9F] hover:bg-[#F5EEF8]"
+    className="w-full mt-6 border-[#8B7A9F] text-[#5A4B70] hover:bg-[#F5EEF8]"
     >
     <Eye className="w-4 h-4 mr-2" />
     Preview Partner Home Screen

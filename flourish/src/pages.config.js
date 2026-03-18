@@ -50,7 +50,7 @@
 import ArticleView from './pages/ArticleView.jsx';
 import Baby from './pages/Baby.jsx';
 import Calendar from './pages/Calendar.jsx';
-import CalendarDayDetail from './pages/CalendarDayDetail.jsx';
+// import CalendarDayDetail from './pages/CalendarDayDetail.jsx';
 import Home from './pages/Home.jsx';
 import Journal from './pages/Journal.jsx';
 import LiveMeditation from './pages/LiveMeditation.jsx';
@@ -61,13 +61,14 @@ import PartnerJournalView from './pages/PartnerJournalView.jsx';
 import Profile from './pages/Profile.jsx';
 import Resources from './pages/Resources.jsx';
 import __Layout from './Layout.jsx';
+import Insights from './pages/Insights.jsx'
 
 
 export const PAGES = {
     "ArticleView": ArticleView,
     "Baby": Baby,
     "Calendar": Calendar,
-    "CalendarDayDetail": CalendarDayDetail,
+    // "CalendarDayDetail": CalendarDayDetail,
     "Home": Home,
     "Journal": Journal,
     "LiveMeditation": LiveMeditation,
@@ -77,6 +78,7 @@ export const PAGES = {
     "PartnerJournalView": PartnerJournalView,
     "Profile": Profile,
     "Resources": Resources,
+    "Insights" : Insights
 }
 
 export const pagesConfig = {

@@ -28,12 +28,12 @@
         <div className="mb-2">
             <button
             onClick={() => window.history.back()}
-            className="mb-4 text-[#8B7A9F] hover:text-[#7A6A8E] transition-colors"
+            className="mb-4 text-[#5A4B70] hover:text-[#7A6A8E] transition-colors"
             >
             ← Back
             </button>
             <h1 className="text-2xl font-semibold text-[#4A4458]">My Journal</h1>
-            <p className="text-[#7D7589] mt-1">A gentle space for your thoughts</p>
+            <p className="text-[#5A4B70] mt-1">A gentle space for your thoughts</p>
         </div>
 
         {/* New Entry Form */}
@@ -55,7 +55,7 @@
 
         {/* Past Entries */}
         <div>
-            <p className="text-xs font-medium text-[#9D8AA5] mb-4 uppercase tracking-wide">
+            <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
             Past Entries
             </p>
             

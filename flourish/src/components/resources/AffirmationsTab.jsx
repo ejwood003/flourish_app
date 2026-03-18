@@ -126,7 +126,7 @@ return (
     className={`w-full py-2.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
         showFavoritesOnly
         ? 'bg-[#8B7A9F] text-white'
-        : 'bg-[#E8E4F3] text-[#7D7589]'
+        : 'bg-[#E8E4F3] text-[#5A4B70]'
     }`}
     >
     <ThumbsUp className="w-4 h-4" fill={showFavoritesOnly ? 'currentColor' : 'none'} />
