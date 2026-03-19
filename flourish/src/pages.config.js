@@ -62,14 +62,15 @@ import Profile from './pages/Profile.jsx';
 import Resources from './pages/Resources.jsx';
 import __Layout from './Layout.jsx';
 import Insights from './pages/Insights.jsx'
+import EditHome from './pages/EditHome.jsx'
 
 
 export const PAGES = {
     "ArticleView": ArticleView,
     "Baby": Baby,
     "Calendar": Calendar,
-    // "CalendarDayDetail": CalendarDayDetail,
     "Home": Home,
+    "EditHome": EditHome,
     "Journal": Journal,
     "LiveMeditation": LiveMeditation,
     "MeditationPlayer": MeditationPlayer,

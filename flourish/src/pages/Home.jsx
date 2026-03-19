@@ -80,9 +80,9 @@ export default function Home() {
                 })}
 
                 {/* View Partner Screen Button */}
-                <button onClick={() => navigate(createPageUrl('PartnerHome'))} className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2">
+                <button onClick={() => navigate(createPageUrl('EditHome'))} className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2">
                     <Eye className="w-4 h-4" />
-                    View Partner Screen
+                    Edit Home Screen
                 </button>
             </div>
 
