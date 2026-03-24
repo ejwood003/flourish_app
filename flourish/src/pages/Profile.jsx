@@ -1,11 +1,10 @@
-    import React, { useState, useEffect } from 'react';
+    import React, { useState, useEffect, useRef } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { createPageUrl } from '@/utils';
     import { Button } from '@/components/ui/button';
     import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
     import { base44 } from '@/api/base44Client';
     import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-    import { Loader2, Check } from 'lucide-react';
     import PersonalInfoSection from '@/components/profile/PersonalInfoSection';
     import NotificationsSettings from '@/components/profile/NotificationsSettings';
     import SharingSettings from '@/components/profile/SharingSettings';
@@ -16,7 +15,13 @@
     const queryClient = useQueryClient();
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState({});
-    const [saved, setSaved] = useState(false);
+    const [personalSaveSuccess, setPersonalSaveSuccess] = useState(false);
+    const personalSaveRef = useRef(false);
+    const profileDataRef = useRef({});
+
+    useEffect(() => {
+        profileDataRef.current = profileData;
+    }, [profileData]);
 
     useEffect(() => {
         loadUser();
@@ -54,17 +59,29 @@
         },
         onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        if (personalSaveRef.current) {
+            setPersonalSaveSuccess(true);
+            setTimeout(() => setPersonalSaveSuccess(false), 2000);
+            personalSaveRef.current = false;
+        }
+        },
+        onError: () => {
+        personalSaveRef.current = false;
         },
     });
 
     const handleUpdate = (updates) => {
-        setProfileData({ ...profileData, ...updates });
+        setProfileData((prev) => ({ ...prev, ...updates }));
     };
 
-    const handleSave = () => {
-        updateProfileMutation.mutate(profileData);
+    const handleSettingsPersist = (updates) => {
+        setProfileData((prev) => ({ ...prev, ...updates }));
+        updateProfileMutation.mutate(updates);
+    };
+
+    const handlePersonalSave = () => {
+        personalSaveRef.current = true;
+        updateProfileMutation.mutate(profileDataRef.current);
     };
 
     return (
@@ -101,48 +118,27 @@
                 profile={profileData} 
                 user={user}
                 onUpdate={handleUpdate}
+                onSave={handlePersonalSave}
+                isSaving={updateProfileMutation.isPending}
+                saveSuccess={personalSaveSuccess}
             />
             </TabsContent>
 
             <TabsContent value="settings" className="mt-6 space-y-6">
             <NotificationsSettings 
                 profile={profileData}
-                onUpdate={handleUpdate}
+                onUpdate={handleSettingsPersist}
             />
             <SharingSettings 
                 profile={profileData}
-                onUpdate={handleUpdate}
+                onUpdate={handleSettingsPersist}
             />
             <HomeCustomization 
                 profile={profileData}
-                onUpdate={handleUpdate}
+                onUpdate={handleSettingsPersist}
             />
             </TabsContent>
         </Tabs>
-
-        <Button
-            onClick={handleSave}
-            disabled={updateProfileMutation.isPending}
-            className={`w-full py-6 rounded-2xl font-medium text-white transition-all ${
-            saved
-                ? 'bg-green-500 hover:bg-green-600'
-                : 'bg-[#5A4B70] hover:bg-[#5A4B70]'
-            }`}
-        >
-            {saved ? (
-            <>
-                <Check className="w-5 h-5 mr-2" />
-                Saved Successfully
-            </>
-            ) : updateProfileMutation.isPending ? (
-            <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Saving...
-            </>
-            ) : (
-            'Save Changes'
-            )}
-        </Button>
 
         <Button
             onClick={() => navigate(createPageUrl('Onboarding'))}
