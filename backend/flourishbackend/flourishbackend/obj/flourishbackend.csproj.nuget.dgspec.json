@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/ethan/Desktop/Documents IS Junior Core (WINTER)/IS 401/Flourish/flourish_app/backend/flourishbackend/flourishbackend/flourishbackend.csproj": {}
+    "/Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend/flourishbackend.csproj": {}
   },
   "projects": {
-    "/Users/ethan/Desktop/Documents IS Junior Core (WINTER)/IS 401/Flourish/flourish_app/backend/flourishbackend/flourishbackend/flourishbackend.csproj": {
+    "/Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend/flourishbackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/ethan/Desktop/Documents IS Junior Core (WINTER)/IS 401/Flourish/flourish_app/backend/flourishbackend/flourishbackend/flourishbackend.csproj",
+        "projectUniqueName": "/Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend/flourishbackend.csproj",
         "projectName": "flourishbackend",
-        "projectPath": "/Users/ethan/Desktop/Documents IS Junior Core (WINTER)/IS 401/Flourish/flourish_app/backend/flourishbackend/flourishbackend/flourishbackend.csproj",
-        "packagesPath": "/Users/ethan/.nuget/packages/",
-        "outputPath": "/Users/ethan/Desktop/Documents IS Junior Core (WINTER)/IS 401/Flourish/flourish_app/backend/flourishbackend/flourishbackend/obj/",
+        "projectPath": "/Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend/flourishbackend.csproj",
+        "packagesPath": "/Users/lukecarr/.nuget/packages/",
+        "outputPath": "/Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/ethan/.nuget/NuGet/NuGet.Config"
+          "/Users/lukecarr/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
