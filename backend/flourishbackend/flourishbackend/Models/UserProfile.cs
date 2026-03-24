@@ -7,36 +7,39 @@ namespace Flourish.Models
     public class UserProfile
     {
         [Key]
-        public Guid UserId { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        public string Username { get; set; }
+        public string Username { get; set; } = string.Empty;
 
-        public string UserFirstName { get; set; }
+        public string User_First_Name { get; set; } = string.Empty;
 
-        public string UserLastName { get; set; }
+        public string User_Last_Name { get; set; } = string.Empty;
 
-        public string Password { get; set; }
+        public string password { get; set; } = string.Empty;
 
-        public string PhoneNumber { get; set; }
+        public string Phone_Number { get; set; } = string.Empty;
 
         public bool NotificationsMoodEnabled { get; set; }
 
-        public List<string> NotificationsMoodTimes { get; set; }
+        public List<string> Notifications_Mood_Times { get; set; } = new List<string>();
 
         public bool NotificationsFeedingEnabled { get; set; }
 
-        public List<string> NotificationsFeedingTimes { get; set; }
+        public List<string> Notifications_Feeding_Times { get; set; } = new List<string>();
 
         public bool NotificationsNapEnabled { get; set; }
 
-        public List<string> NotificationsNapTimes { get; set; }
+        public List<string> Notifications_Nap_Times { get; set; } = new List<string>();
 
-        // Represents the selected home features as a list of strings
         public List<string> HomeFeatures { get; set; } = new List<string> 
         { 
             "affirmation", "mood", "mood_chips", "mindfulness", "tasks", 
             "baby", "support", "breathing", "journal", "meditations", "articles" 
         };
+
+        public bool Share_Journals { get; set; }
+        public bool Share_Mood { get; set; }
+        public bool Share_Baby_Tracking { get; set; }
 
     }
 }

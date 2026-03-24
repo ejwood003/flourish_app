@@ -46,6 +46,21 @@ namespace flourishbackend.Data
                 .Metadata.SetValueComparer(stringListComparer);
 
             modelBuilder.Entity<UserProfile>()
+                .Property(e => e.Notifications_Mood_Times)
+                .HasConversion(stringListConverter)
+                .Metadata.SetValueComparer(stringListComparer);
+
+            modelBuilder.Entity<UserProfile>()
+                .Property(e => e.Notifications_Feeding_Times)
+                .HasConversion(stringListConverter)
+                .Metadata.SetValueComparer(stringListComparer);
+
+            modelBuilder.Entity<UserProfile>()
+                .Property(e => e.Notifications_Nap_Times)
+                .HasConversion(stringListConverter)
+                .Metadata.SetValueComparer(stringListComparer);
+
+            modelBuilder.Entity<UserProfile>()
                 .Property(e => e.HomeFeatures)
                 .HasConversion(stringListConverter)
                 .Metadata.SetValueComparer(stringListComparer);
