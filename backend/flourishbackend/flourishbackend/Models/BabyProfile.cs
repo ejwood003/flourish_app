@@ -6,12 +6,10 @@ namespace Flourish.Models
     public class BabyProfile
     {
         [Key]
-        public Guid Baby_Id { get; set; } = Guid.NewGuid();
+        public Guid BabyId { get; set; } = Guid.NewGuid();
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public string BabyName { get; set; }
 
-        public string Baby_Name { get; set; }
-
-        public DateTime Baby_Date_of_Birth { get; set; }
+        public DateTime BabyDateOfBirth { get; set; }
     }
 }

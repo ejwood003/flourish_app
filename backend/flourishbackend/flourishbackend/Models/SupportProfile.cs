@@ -6,20 +6,26 @@ namespace Flourish.Models
     public class SupportProfile
     {
         [Key]
-        public Guid Support_Id { get; set; } = Guid.NewGuid();
+        public Guid SupportId { get; set; } = Guid.NewGuid();
 
-        public string Support_Type { get; set; }
+        public string? SupportType { get; set; }
 
-        public string Support_Name { get; set; }
+        public string? SupportName { get; set; }
 
-        public string Support_Email { get; set; }
+        public string? SupportEmail { get; set; }
 
-        public string Support_Phone { get; set; }
+        public string? SupportPhone { get; set; }
 
-        public bool Share_Journals { get; set; }
+        public bool ShareJournals { get; set; } = false;
 
-        public bool Share_Mood { get; set; }
+        public bool ShareMood { get; set; } = false;
 
-        public bool Share_Baby_Tracking { get; set; }
+        public bool ShareBabyTracking { get; set; } = false;
+
+        [Required]
+        [ForeignKey("UserProfile")]
+        public Guid UserId { get; set; }
+
+        public UserProfile UserProfile { get; set; }
     }
 }

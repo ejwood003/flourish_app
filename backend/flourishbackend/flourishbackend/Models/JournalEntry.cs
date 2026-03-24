@@ -6,9 +6,7 @@ namespace Flourish.Models
     public class JournalEntry
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public Guid JournalEntryId { get; set; } = Guid.NewGuid();
 
         [Required]
         public string Content { get; set; } = string.Empty;
@@ -16,5 +14,11 @@ namespace Flourish.Models
         public string? Prompt { get; set; }
 
         public bool ShareWithPartner { get; set; } = false;
+
+        [Required]
+        [ForeignKey("BabyProfile")]
+        public Guid BabyId { get; set; }
+
+        public BabyProfile BabyProfile { get; set; }
     }
 }
