@@ -203,8 +203,10 @@ namespace flourishbackend.Controllers
             return JsonContent(json, StatusCodes.Status201Created);
         }
 
-        // PUT: api/apps/{appId}/entities/{entityName}/{id}
+        // PUT / PATCH: api/apps/{appId}/entities/{entityName}/{id}
+        // PATCH avoids 405 when clients, proxies, or hosts only allow PATCH for partial updates.
         [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update(string appId, string entityName, string id)
         {
             var dbSet = GetDbSet(entityName);
