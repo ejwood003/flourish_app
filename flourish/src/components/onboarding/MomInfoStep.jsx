@@ -23,7 +23,7 @@
         <div className="space-y-6">
         <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[#7D7589] hover:text-[#8B7A9F] transition-colors"
+            className="flex items-center gap-2 text-[#5A4B70] hover:text-[#8B7A9F] transition-colors"
         >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
@@ -31,7 +31,7 @@
 
         <div className="text-center space-y-2">
             <h2 className="text-2xl font-semibold text-[#4A4458]">Your Information</h2>
-            <p className="text-[#7D7589]">Just the essentials</p>
+            <p className="text-[#5A4B70]">Just the essentials</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
@@ -61,7 +61,7 @@
             </div>
 
             <div className="space-y-2">
-            <Label htmlFor="phone_number" className="text-[#7D7589]">
+            <Label htmlFor="phone_number" className="text-[#5A4B70]">
                 Phone Number <span className="text-xs">(Optional)</span>
             </Label>
             <Input
@@ -75,7 +75,7 @@
             </div>
 
             <div className="space-y-2">
-            <Label htmlFor="date_of_birth" className="text-[#7D7589]">
+            <Label htmlFor="date_of_birth" className="text-[#5A4B70]">
                 Date of Birth <span className="text-xs">(Optional)</span>
             </Label>
             <Input
@@ -89,7 +89,7 @@
 
             <Button
             type="submit"
-            className="w-full h-12 bg-[#8B7A9F] hover:bg-[#7A6A8F] text-white rounded-2xl text-base mt-2"
+            className="w-full h-12 bg-[#7D6F99] hover:bg-[#7A6A8F] text-white rounded-2xl text-base mt-2"
             >
             Continue
             </Button>

@@ -1,7 +1,9 @@
+// Card for quick access to journal 
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { BookOpen } from 'lucide-react';
 
+// FUNCTION FOR CARD
 export default function JournalCard() {
     const navigate = useNavigate();
 

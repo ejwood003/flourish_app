@@ -29,8 +29,10 @@
 
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-            <label className="block text-sm font-medium text-[#4A4458] mb-2">Email</label>
+            <label htmlFor="signin-email" className="block text-sm font-medium text-[#4A4458] mb-2">Email</label>
             <Input
+                id="signin-email"
+                name="signin-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -41,8 +43,10 @@
             </div>
 
             <div>
-            <label className="block text-sm font-medium text-[#4A4458] mb-2">Password</label>
+            <label htmlFor="signin-password" className="block text-sm font-medium text-[#4A4458] mb-2">Password</label>
             <Input
+                id="signin-password"
+                name="signin-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

@@ -13,20 +13,20 @@
 
         <div className="space-y-3">
             <h1 className="text-3xl font-semibold text-[#4A4458]">Welcome</h1>
-            <p className="text-lg text-[#7D7589]">Let's personalize your space.</p>
+            <p className="text-lg text-[#5A4B70]">Let's personalize your space.</p>
         </div>
 
         <div className="space-y-3 pt-8">
             <Button
             onClick={() => onNext({})}
-            className="w-full h-12 bg-[#8B7A9F] hover:bg-[#7A6A8F] text-white rounded-2xl text-base"
+            className="w-full h-12 bg-[#7D6F99] hover:bg-[#7A6A8F] text-white rounded-2xl text-base"
             >
             Get Started
             </Button>
             
             <button 
             onClick={onSignIn}
-            className="text-sm text-[#7D7589] hover:text-[#8B7A9F] transition-colors"
+            className="text-sm text-[#5A4B70] hover:text-[#8B7A9F] transition-colors"
             >
             I already have an account
             </button>

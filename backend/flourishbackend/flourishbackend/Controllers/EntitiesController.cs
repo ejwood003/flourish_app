@@ -57,6 +57,16 @@ namespace flourishbackend.Controllers
             _context = context;
         }
 
+        private static ContentResult JsonContent(string json, int statusCode)
+        {
+            return new ContentResult
+            {
+                Content = json,
+                ContentType = "application/json",
+                StatusCode = statusCode
+            };
+        }
+
         // GET: api/apps/{appId}/entities/{entityName}
         [HttpGet]
         public async Task<IActionResult> List(
@@ -190,11 +200,13 @@ namespace flourishbackend.Controllers
             await _context.SaveChangesAsync();
 
             var json = JsonSerializer.Serialize(entity, _jsonOptions);
-            return Content(json, "application/json");
+            return JsonContent(json, StatusCodes.Status201Created);
         }
 
-        // PUT: api/apps/{appId}/entities/{entityName}/{id}
+        // PUT / PATCH: api/apps/{appId}/entities/{entityName}/{id}
+        // PATCH avoids 405 when clients, proxies, or hosts only allow PATCH for partial updates.
         [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update(string appId, string entityName, string id)
         {
             var dbSet = GetDbSet(entityName);
@@ -270,7 +282,7 @@ namespace flourishbackend.Controllers
             _context.Remove(entity);
             await _context.SaveChangesAsync();
 
-            return Ok(new { success = true });
+            return NoContent();
         }
 
         // --- Helper Methods ---

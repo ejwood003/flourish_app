@@ -41,26 +41,26 @@ if (authError.type === 'user_not_registered') {
 
 // Render the main app
 return (
-<Routes>
-    <Route path="/" element={
-    <LayoutWrapper currentPageName={mainPageKey}>
-        <MainPage />
-    </LayoutWrapper>
-    } />
-    {Object.entries(Pages).map(([path, Page]) => (
-    <Route
-        key={path}
-        path={`/${path}`}
-        element={
-        <LayoutWrapper currentPageName={path}>
-            <Page />
+    <Routes>
+        <Route path="/" element={
+        <LayoutWrapper currentPageName={mainPageKey}>
+            <MainPage />
         </LayoutWrapper>
-        }
-    />
-    ))}
-    <Route path="*" element={<PageNotFound />} />
-</Routes>
-);
+        } />
+        {Object.entries(Pages).map(([path, Page]) => (
+        <Route
+            key={path}
+            path={`/${path}`}
+            element={
+            <LayoutWrapper currentPageName={path}>
+                <Page />
+            </LayoutWrapper>
+            }
+        />
+        ))}
+        <Route path="*" element={<PageNotFound />} />
+    </Routes>
+    );
 };
 
 

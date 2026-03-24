@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -74,7 +75,10 @@ return (
     <div className="flex gap-3">
         <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B7A9F]" />
+        <label htmlFor="tips-search" className="sr-only">Search articles and tips</label>
         <Input
+            id="tips-search"
+            name="tips-search"
             placeholder="Search articles and tips..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -101,7 +105,7 @@ return (
         >
             <div className="bg-[#E8E4F3]/30 rounded-2xl p-4 space-y-3">
             <div>
-                <p className="text-xs font-medium text-[#7D7589] mb-2">Read Status</p>
+                <p className="text-xs font-medium text-[#5A4B70] mb-2">Read Status</p>
                 <div className="flex flex-wrap gap-2">
                 {['all', 'read', 'unread'].map(status => (
                     <button
@@ -110,7 +114,7 @@ return (
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         readFilter === status
                         ? 'bg-[#8B7A9F] text-white'
-                        : 'bg-white text-[#7D7589]'
+                        : 'bg-white text-[#5A4B70]'
                     }`}
                     >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -119,7 +123,7 @@ return (
                 </div>
             </div>
             <div>
-                <p className="text-xs font-medium text-[#7D7589] mb-2">Category</p>
+                <p className="text-xs font-medium text-[#5A4B70] mb-2">Category</p>
                 <div className="flex flex-wrap gap-2">
                 {[
                     { id: 'all', label: 'All' },
@@ -140,7 +144,7 @@ return (
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         categoryFilter === cat.id
                         ? 'bg-[#8B7A9F] text-white'
-                        : 'bg-white text-[#7D7589]'
+                        : 'bg-white text-[#5A4B70]'
                     }`}
                     >
                     {cat.label}
@@ -158,7 +162,7 @@ return (
         className={`py-2 px-4 rounded-xl font-medium transition-all ${
         showSavedOnly
             ? 'bg-[#8B7A9F] text-white'
-            : 'bg-[#E8E4F3] text-[#7D7589]'
+            : 'bg-[#E8E4F3] text-[#5A4B70]'
         }`}
     >
         <Bookmark className="w-4 h-4 inline mr-2" fill={showSavedOnly ? 'currentColor' : 'none'} />
@@ -199,8 +203,8 @@ return (
                     />
                 </button>
                 </div>
-                <p className="text-sm text-[#7D7589] mb-3">{tip.description}</p>
-                <span className="text-xs font-medium text-[#9D8AA5] capitalize bg-[#F5EEF8] px-3 py-1 rounded-full">
+                <p className="text-sm text-[#5A4B70] mb-3">{tip.description}</p>
+                <span className="text-xs font-medium text-[#5A4B70] capitalize bg-[#F5EEF8] px-3 py-1 rounded-full">
                 {tip.type}
                 </span>
             </div>
@@ -212,7 +216,7 @@ return (
 
     {filteredTips.length === 0 && (
     <div className="text-center py-12">
-        <p className="text-[#7D7589]">No tips found</p>
+        <p className="text-[#5A4B70]">No tips found</p>
     </div>
     )}
 </div>

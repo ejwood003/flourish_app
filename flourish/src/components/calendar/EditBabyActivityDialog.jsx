@@ -48,9 +48,9 @@
 
             <div className="space-y-4 mt-4">
             <div>
-                <Label className="text-[#4A4458]">Activity Type</Label>
-                <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="rounded-xl mt-1">
+            <Label htmlFor="activity-type" className="text-[#4A4458]">Activity Type</Label>
+            <Select value={type} onValueChange={setType}>
+                <SelectTrigger id="activity-type" className="rounded-xl mt-1">
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -86,9 +86,9 @@
 
             {type === 'breastfeed' && (
                 <div>
-                <Label className="text-[#4A4458]">Breast Side</Label>
-                <Select value={breastSide} onValueChange={setBreastSide}>
-                    <SelectTrigger className="rounded-xl mt-1">
+                    <Label htmlFor="breast-side" className="text-[#4A4458]">Breast Side</Label>
+                    <Select value={breastSide} onValueChange={setBreastSide}>
+                        <SelectTrigger id="breast-side" className="rounded-xl mt-1">
                     <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

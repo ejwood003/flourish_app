@@ -1,32 +1,32 @@
-    import React, { useState } from 'react';
-    import { format, startOfWeek, addDays, isToday, isSameDay, startOfMonth, endOfMonth, addMonths, subMonths, addMinutes, differenceInMinutes } from 'date-fns';
-    import { ChevronLeft, ChevronRight, Milk, Baby, Moon, MoreHorizontal, Trash2 } from 'lucide-react';
-    import { base44 } from '@/api/base44Client';
-    import { useQueryClient } from '@tanstack/react-query';
-    import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
+import React, { useState } from 'react';
+import { format, startOfWeek, addDays, isToday, isSameDay, startOfMonth, endOfMonth, addMonths, subMonths, addMinutes, differenceInMinutes } from 'date-fns';
+import { ChevronLeft, ChevronRight, Milk, Baby, Moon, MoreHorizontal, Trash2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { useQueryClient } from '@tanstack/react-query';
+import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
 
-    const iconMap = {
+const iconMap = {
     breastfeed: Baby,
     bottle: Milk,
     nap: Moon,
     other: MoreHorizontal,
-    };
+};
 
-    const colorMap = {
+const colorMap = {
     breastfeed: { bg: 'bg-[#EDD9E8]', text: 'text-[#B8A5C4]', dot: 'bg-[#EDD9E8]' },
     bottle: { bg: 'bg-[#E8E4F3]', text: 'text-[#8B7A9F]', dot: 'bg-[#E8E4F3]' },
     nap: { bg: 'bg-[#D9EEF2]', text: 'text-[#7AA5B8]', dot: 'bg-[#D9EEF2]' },
     other: { bg: 'bg-[#F5F5F5]', text: 'text-[#7D7589]', dot: 'bg-[#F5F5F5]' },
-    };
+};
 
-    const filterOptions = [
+const filterOptions = [
     { id: 'all', label: 'All' },
     { id: 'feeding', label: 'Feeding', types: ['breastfeed', 'bottle'] },
     { id: 'nap', label: 'Nap', types: ['nap'] },
     { id: 'other', label: 'Other', types: ['other'] },
-    ];
+];
 
-    export default function HistorySection({ activities, onEditActivity }) {
+export default function HistorySection({ activities, onEditActivity }) {
     const queryClient = useQueryClient();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [weekStart, setWeekStart] = useState(startOfWeek(new Date()));
@@ -219,20 +219,20 @@
 
     return (
         <div className="bg-white rounded-3xl p-6 shadow-sm">
-        <p className="text-xs font-medium text-[#8B7A9F] mb-4 uppercase tracking-wide">
+        <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
             History
         </p>
 
         {/* Month Header */}
         <div className="flex items-center justify-between mb-4">
             <button onClick={handlePrevMonth} className="p-2 hover:bg-[#F5EEF8] rounded-lg transition-colors">
-            <ChevronLeft className="w-5 h-5 text-[#8B7A9F]" />
+                <ChevronLeft className="w-5 h-5 text-[#8B7A9F]" />
             </button>
             <p className="text-lg font-semibold text-[#4A4458]">
-            {format(currentMonth, 'MMMM yyyy')}
+                {format(currentMonth, 'MMMM yyyy')}
             </p>
             <button onClick={handleNextMonth} className="p-2 hover:bg-[#F5EEF8] rounded-lg transition-colors">
-            <ChevronRight className="w-5 h-5 text-[#8B7A9F]" />
+                <ChevronRight className="w-5 h-5 text-[#8B7A9F]" />
             </button>
         </div>
 
@@ -252,11 +252,11 @@
                     key={day.toString()}
                     onClick={() => setSelectedDate(day)}
                     className={`flex flex-col items-center py-2 rounded-xl transition-all ${
-                    isSelected ? 'bg-[#8B7A9F] text-white' : 'hover:bg-[#F5EEF8]'
+                    isSelected ? 'bg-[#7D6F99] text-white' : 'hover:bg-[#F5EEF8]'
                     }`}
                 >
-                    <span className={`text-xs ${isSelected ? 'text-white' : 'text-[#7D7589]'}`}>
-                    {format(day, 'EEE')}
+                    <span className={`text-xs ${isSelected ? 'text-white' : 'text-[#5A4B70]'}`}>
+                        {format(day, 'EEE')}
                     </span>
                     <span className={`text-sm font-semibold mt-1 ${
                     isSelected ? 'text-white' : isCurrentDay ? 'text-[#8B7A9F]' : 'text-[#4A4458]'
@@ -291,7 +291,7 @@
                 className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all ${
                 filter === option.id
                     ? 'bg-white text-[#4A4458] shadow-sm'
-                    : 'text-[#7D7589]'
+                    : 'text-[#5A4B70]'
                 }`}
             >
                 {option.label}
@@ -326,19 +326,19 @@
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between gap-2">
-                        <p className={`font-medium capitalize text-sm ${isEstimate ? 'text-[#7D7589]' : 'text-[#4A4458]'}`}>
+                        <p className={`font-medium capitalize text-sm ${isEstimate ? 'text-[#5A4B70]' : 'text-[#5A4B70]'}`}>
                             {isEstimate && 'Estimated '}
                             {activity.type === 'breastfeed' ? 'Breastfeeding' : 
                             activity.type === 'bottle' ? 'Bottle' : 
                             activity.custom_type || activity.type}
                         </p>
-                        <p className="text-xs text-[#7D7589] flex-shrink-0">
+                        <p className="text-xs text-[#5A4B70] flex-shrink-0">
                             {format(new Date(activity.timestamp), 'h:mm a')}
                         </p>
                         </div>
                     {!isEstimate && (
                         <>
-                        <div className="text-xs text-[#7D7589] mt-1 flex flex-wrap gap-2">
+                        <div className="text-xs text-[#5A4B70] mt-1 flex flex-wrap gap-2">
                             {activity.duration_minutes && (
                             <span className="bg-[#E8E4F3]/50 px-2 py-0.5 rounded-full">
                                 {activity.duration_minutes} min
@@ -393,4 +393,4 @@
         />
         </div>
     );
-    }
+}

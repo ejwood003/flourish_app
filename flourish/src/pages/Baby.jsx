@@ -1,10 +1,10 @@
-    import React, { useState } from 'react';
-    import { useQuery, useQueryClient } from '@tanstack/react-query';
-    import { base44 } from '@/api/base44Client';
-    import QuickAddSection from '@/components/baby/QuickAddSection';
-    import FutureFeedingsSection from '@/components/baby/FutureFeedingsSection';
-    import HistorySection from '@/components/baby/HistorySection';
-    import { Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import QuickAddSection from '@/components/baby/QuickAddSection';
+import HistorySection from '@/components/baby/HistorySection';
+import { Loader2 } from 'lucide-react';
+import UpcomingTasks from '@/components/home/UpcomingTasks';
 
     export default function Baby() {
     const queryClient = useQueryClient();
@@ -44,7 +44,7 @@
             editingActivity={editingActivity}
             onCancelEdit={() => setEditingActivity(null)}
         />
-        <FutureFeedingsSection activities={activities} />
+        <UpcomingTasks/>
         <HistorySection 
             activities={activities} 
             onEditActivity={handleEditActivity}

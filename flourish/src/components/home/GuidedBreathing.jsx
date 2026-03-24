@@ -1,3 +1,4 @@
+// Guided breathing function (the actual breathing part)
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -11,6 +12,7 @@ const affirmations = [
 "You are learning alongside your baby.",
 ];
 
+// FUNCTION FOR PAGE
 export default function GuidedBreathing({ onClose }) {
     const [phase, setPhase] = useState('inhale');
     const [seconds, setSeconds] = useState(4);

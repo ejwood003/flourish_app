@@ -72,25 +72,25 @@
         <div className="mb-6">
             <button
             onClick={() => window.history.back()}
-            className="mb-4 text-[#8B7A9F] hover:text-[#7A6A8E] transition-colors"
+            className="mb-4 text-[#5A4B70] hover:text-[#5A4B70] transition-colors"
             >
             ← Back
             </button>
             <h1 className="text-2xl font-semibold text-[#4A4458]">Profile</h1>
-            <p className="text-[#7D7589] mt-1">Manage your information and settings</p>
+            <p className="text-[#5A4B70] mt-1">Manage your information and settings</p>
         </div>
 
         <Tabs defaultValue="personal" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-white rounded-2xl p-1 shadow-sm">
             <TabsTrigger 
                 value="personal"
-                className="rounded-xl data-[state=active]:bg-[#E8E4F3] data-[state=active]:text-[#8B7A9F]"
+                className="rounded-xl data-[state=active]:bg-[#E8E4F3] data-[state=active]:text-[#5A4B70]"
             >
                 Personal Info
             </TabsTrigger>
             <TabsTrigger 
                 value="settings"
-                className="rounded-xl data-[state=active]:bg-[#E8E4F3] data-[state=active]:text-[#8B7A9F]"
+                className="rounded-xl data-[state=active]:bg-[#E8E4F3] data-[state=active]:text-[#5A4B70]"
             >
                 Settings
             </TabsTrigger>
@@ -126,7 +126,7 @@
             className={`w-full py-6 rounded-2xl font-medium text-white transition-all ${
             saved
                 ? 'bg-green-500 hover:bg-green-600'
-                : 'bg-[#8B7A9F] hover:bg-[#7A6A8E]'
+                : 'bg-[#5A4B70] hover:bg-[#5A4B70]'
             }`}
         >
             {saved ? (
@@ -147,7 +147,7 @@
         <Button
             onClick={() => navigate(createPageUrl('Onboarding'))}
             variant="outline"
-            className="w-full py-6 rounded-2xl font-medium border-[#E8E4F3] text-[#7D7589] hover:bg-[#F5EEF8]"
+            className="w-full py-6 rounded-2xl font-medium border-[#E8E4F3] text-[#5A4B70] hover:bg-[#F5EEF8]"
         >
             Preview Onboarding Process
         </Button>

@@ -1,44 +1,44 @@
-    import React, { useState } from 'react';
-    import { ChevronDown, ChevronUp, Smile, Baby, BookOpen, Milk, Moon, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
-    import { format } from 'date-fns';
-    import { useNavigate } from 'react-router-dom';
-    import { createPageUrl } from '@/utils';
-    import { base44 } from '@/api/base44Client';
-    import { useQueryClient } from '@tanstack/react-query';
-    import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
-    import EditMoodDialog from '@/components/calendar/EditMoodDialog';
-    import EditBabyActivityDialog from '@/components/calendar/EditBabyActivityDialog';
+import { useState } from 'react';
+import { ChevronDown, ChevronUp, Smile, Baby, BookOpen, Milk, Moon, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
+import { useQueryClient } from '@tanstack/react-query';
+import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
+import EditMoodDialog from '@/components/calendar/EditMoodDialog';
+import EditBabyActivityDialog from '@/components/calendar/EditBabyActivityDialog';
 
-    const iconMap = {
+const iconMap = {
     breastfeed: Baby,
     bottle: Milk,
     nap: Moon,
     other: MoreHorizontal,
-    };
+};
 
-    const getMoodColor = (value) => {
+const getMoodColor = (value) => {
     if (value <= 20) return 'bg-[#B8A5C4]';
     if (value <= 40) return 'bg-[#C4A3A7]';
     if (value <= 60) return 'bg-[#E8E4F3]';
     if (value <= 80) return 'bg-[#D9EEF2]';
     return 'bg-[#A8D5BA]';
-    };
+};
 
-    const getMoodLabel = (value) => {
+const getMoodLabel = (value) => {
     if (value <= 20) return 'Struggling';
     if (value <= 40) return 'Low';
     if (value <= 60) return 'Okay';
     if (value <= 80) return 'Good';
     return 'Great';
-    };
+};
 
-    const getActivityColor = (type) => {
+const getActivityColor = (type) => {
     if (type === 'breastfeed' || type === 'bottle') return 'bg-[#F5E6EA]';
     if (type === 'nap') return 'bg-[#D9EEF2]';
     return 'bg-[#E8E4F3]';
-    };
+};
 
-    export default function DayDetailsDropdowns({ moodEntries, babyActivities, journalEntries }) {
+export default function DayDetailsDropdowns({ moodEntries, babyActivities, journalEntries }) {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [expandedSection, setExpandedSection] = useState('mood');
@@ -116,15 +116,15 @@
                 <Smile className="w-5 h-5 text-[#8B7A9F]" />
                 <span className="font-medium text-[#4A4458]">Mood</span>
                 {moodEntries.length > 0 && (
-                <span className="text-xs bg-[#E8E4F3] px-2 py-0.5 rounded-full text-[#7D7589]">
+                <span className="text-xs bg-[#E8E4F3] px-2 py-0.5 rounded-full text-[#5A4B70]">
                     {moodEntries.length}
                 </span>
                 )}
             </div>
             {expandedSection === 'mood' ? (
-                <ChevronUp className="w-5 h-5 text-[#7D7589]" />
+                <ChevronUp className="w-5 h-5 text-[#5A4B70]" />
             ) : (
-                <ChevronDown className="w-5 h-5 text-[#7D7589]" />
+                <ChevronDown className="w-5 h-5 text-[#5A4B70]" />
             )}
             </button>
             
@@ -132,7 +132,7 @@
             <div className="px-4 pb-4 space-y-3">
                 {avgMood && moodEntries.length > 1 && (
                 <div className="p-3 bg-[#F5EEF8] rounded-xl">
-                    <p className="text-xs text-[#7D7589] mb-1">Daily Average Mood</p>
+                    <p className="text-xs text-[#5A4B70] mb-1">Daily Average Mood</p>
                     <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${getMoodColor(avgMood)}`} />
                     <span className="font-medium text-[#4A4458]">{getMoodLabel(avgMood)}</span>
@@ -141,7 +141,7 @@
                 )}
                 
                 {moodEntries.length === 0 ? (
-                <p className="text-sm text-[#7D7589] text-center py-4">No mood entries</p>
+                <p className="text-sm text-[#5A4B70] text-center py-4">No mood entries</p>
                 ) : (
                 <div className="space-y-2">
                     {moodEntries.map((mood, index) => (
@@ -152,11 +152,11 @@
                             <span className="text-sm text-[#4A4458]">
                             {mood.mood_label || getMoodLabel(mood.mood_value)}
                             </span>
-                            <p className="text-xs text-[#7D7589]">{Math.round(mood.mood_value / 10)}/10</p>
+                            <p className="text-xs text-[#5A4B70]">{Math.round(mood.mood_value / 10)}/10</p>
                         </div>
                         </div>
                         <div className="flex items-center gap-2">
-                        <span className="text-xs text-[#7D7589]">
+                        <span className="text-xs text-[#5A4B70]">
                         {mood.time || format(new Date(), 'h:mm a')}
                         </span>
                         <button
@@ -190,22 +190,22 @@
                 <Baby className="w-5 h-5 text-[#8B7A9F]" />
                 <span className="font-medium text-[#4A4458]">Baby Activities</span>
                 {babyActivities.length > 0 && (
-                <span className="text-xs bg-[#E8E4F3] px-2 py-0.5 rounded-full text-[#7D7589]">
+                <span className="text-xs bg-[#E8E4F3] px-2 py-0.5 rounded-full text-[#5A4B70]">
                     {babyActivities.length}
                 </span>
                 )}
             </div>
             {expandedSection === 'baby' ? (
-                <ChevronUp className="w-5 h-5 text-[#7D7589]" />
+                <ChevronUp className="w-5 h-5 text-[#5A4B70]" />
             ) : (
-                <ChevronDown className="w-5 h-5 text-[#7D7589]" />
+                <ChevronDown className="w-5 h-5 text-[#5A4B70]" />
             )}
             </button>
             
             {expandedSection === 'baby' && (
             <div className="px-4 pb-4 space-y-2">
                 {babyActivities.length === 0 ? (
-                <p className="text-sm text-[#7D7589] text-center py-4">No activities logged</p>
+                <p className="text-sm text-[#5A4B70] text-center py-4">No activities logged</p>
                 ) : (
                 babyActivities.map((activity) => {
                     const Icon = iconMap[activity.type] || MoreHorizontal;
@@ -221,7 +221,7 @@
                             activity.type}
                             </span>
                             <div className="flex items-center gap-2">
-                            <span className="text-xs text-[#7D7589]">
+                            <span className="text-xs text-[#5A4B70]">
                             {format(new Date(activity.timestamp), 'h:mm a')}
                             </span>
                             <button
@@ -239,14 +239,14 @@
                             </div>
                         </div>
                         {(activity.breast_side || activity.duration_minutes || activity.amount_oz) && (
-                            <p className="text-xs text-[#7D7589] mt-1">
+                            <p className="text-xs text-[#5A4B70] mt-1">
                             {activity.breast_side && `${activity.breast_side}, `}
                             {activity.duration_minutes && `${activity.duration_minutes} min`}
                             {activity.amount_oz && `${activity.amount_oz} oz`}
                             </p>
                         )}
                         {activity.notes && (
-                            <p className="text-xs text-[#7D7589] mt-1 italic">"{activity.notes}"</p>
+                            <p className="text-xs text-[#5A4B70] mt-1 italic">"{activity.notes}"</p>
                         )}
                         </div>
                     </div>
@@ -267,22 +267,22 @@
                 <BookOpen className="w-5 h-5 text-[#8B7A9F]" />
                 <span className="font-medium text-[#4A4458]">Journal Entries</span>
                 {journalEntries.length > 0 && (
-                <span className="text-xs bg-[#E8E4F3] px-2 py-0.5 rounded-full text-[#7D7589]">
+                <span className="text-xs bg-[#E8E4F3] px-2 py-0.5 rounded-full text-[#5A4B70]">
                     {journalEntries.length}
                 </span>
                 )}
             </div>
             {expandedSection === 'journal' ? (
-                <ChevronUp className="w-5 h-5 text-[#7D7589]" />
+                <ChevronUp className="w-5 h-5 text-[#5A4B70]" />
             ) : (
-                <ChevronDown className="w-5 h-5 text-[#7D7589]" />
+                <ChevronDown className="w-5 h-5 text-[#5A4B70]" />
             )}
             </button>
             
             {expandedSection === 'journal' && (
             <div className="px-4 pb-4 space-y-3">
                 {journalEntries.length === 0 ? (
-                <p className="text-sm text-[#7D7589] text-center py-4">No journal entries</p>
+                <p className="text-sm text-[#5A4B70] text-center py-4">No journal entries</p>
                 ) : (
                 journalEntries.map((entry) => (
                     <div 
@@ -291,7 +291,7 @@
                     >
                     <div className="flex items-start justify-between mb-2">
                         {entry.prompt && (
-                        <p className="text-xs text-[#8B7A9F] font-medium">{entry.prompt}</p>
+                        <p className="text-xs text-[#5A4B70] font-bold">{entry.prompt}</p>
                         )}
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
@@ -309,7 +309,7 @@
                         </div>
                     </div>
                     <p className="text-sm text-[#4A4458] mb-2 line-clamp-3">{entry.content}</p>
-                    <p className="text-xs text-[#7D7589]">
+                    <p className="text-xs text-[#5A4B70]">
                         {format(new Date(entry.created_date), 'h:mm a')}
                     </p>
                     </div>
