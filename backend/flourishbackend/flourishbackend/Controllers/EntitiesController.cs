@@ -16,32 +16,32 @@ namespace flourishbackend.Controllers
         // Map frontend entity names to DbContext property names
         private static readonly Dictionary<string, string> EntityMap = new(StringComparer.OrdinalIgnoreCase)
         {
+            ["Affirmation"] = "Affirmations",
             ["AffirmationReaction"] = "AffirmationReactions",
             ["BabyActivity"] = "BabyActivities",
             ["BabyMood"] = "BabyMoods",
-            ["CustomAffirmation"] = "CustomAffirmations",
+            ["BabyProfile"] = "BabyProfiles",
             ["JournalEntry"] = "JournalEntries",
             ["MoodEntry"] = "MoodEntries",
             ["SavedResource"] = "SavedResources",
-            ["SelectedSupportRequest"] = "SelectedSupportRequests",
+            ["SupportProfile"] = "SupportProfiles",
             ["SupportRequest"] = "SupportRequests",
-            ["User"] = "Users",
             ["UserProfile"] = "UserProfiles",
         };
 
         // Map entity names to their CLR types
         private static readonly Dictionary<string, Type> EntityTypeMap = new(StringComparer.OrdinalIgnoreCase)
         {
+            ["Affirmation"] = typeof(Flourish.Models.Affirmation),
             ["AffirmationReaction"] = typeof(Flourish.Models.AffirmationReaction),
             ["BabyActivity"] = typeof(Flourish.Models.BabyActivity),
             ["BabyMood"] = typeof(Flourish.Models.BabyMood),
-            ["CustomAffirmation"] = typeof(Flourish.Models.CustomAffirmation),
+            ["BabyProfile"] = typeof(Flourish.Models.BabyProfile),
             ["JournalEntry"] = typeof(Flourish.Models.JournalEntry),
             ["MoodEntry"] = typeof(Flourish.Models.MoodEntry),
             ["SavedResource"] = typeof(Flourish.Models.SavedResource),
-            ["SelectedSupportRequest"] = typeof(Flourish.Models.SelectedSupportRequest),
+            ["SupportProfile"] = typeof(Flourish.Models.SupportProfile),
             ["SupportRequest"] = typeof(Flourish.Models.SupportRequest),
-            ["User"] = typeof(Flourish.Models.User),
             ["UserProfile"] = typeof(Flourish.Models.UserProfile),
         };
 
@@ -203,8 +203,10 @@ namespace flourishbackend.Controllers
             return JsonContent(json, StatusCodes.Status201Created);
         }
 
-        // PUT: api/apps/{appId}/entities/{entityName}/{id}
+        // PUT / PATCH: api/apps/{appId}/entities/{entityName}/{id}
+        // PATCH avoids 405 when clients, proxies, or hosts only allow PATCH for partial updates.
         [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update(string appId, string entityName, string id)
         {
             var dbSet = GetDbSet(entityName);

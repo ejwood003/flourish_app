@@ -1,19 +1,28 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flourish.Models
 {
     public class AffirmationReaction
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public Guid AffirmationReactionId { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string AffirmationId { get; set; } = string.Empty;
+        [ForeignKey("Affirmation")]
+        public Guid AffirmationId { get; set; }
+
+        public Affirmation Affirmation { get; set; }
 
         [Required]
         public string Reaction { get; set; } = string.Empty; // 'up' or 'down'
+
+        [Required]
+        [ForeignKey("UserProfile")]
+        public Guid UserId { get; set; }
+
+        public UserProfile UserProfile { get; set; }
     }
 }
+

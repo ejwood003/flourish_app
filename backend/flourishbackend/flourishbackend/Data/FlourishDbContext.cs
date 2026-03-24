@@ -12,16 +12,16 @@ namespace flourishbackend.Data
         
         }
 
+        public DbSet<Affirmation> Affirmations { get; set; }
         public DbSet<AffirmationReaction> AffirmationReactions { get; set; }
         public DbSet<BabyActivity> BabyActivities { get; set; }
         public DbSet<BabyMood> BabyMoods { get; set; }
-        public DbSet<CustomAffirmation> CustomAffirmations { get; set; }
+        public DbSet<BabyProfile> BabyProfiles { get; set; }
         public DbSet<JournalEntry> JournalEntries { get; set; }
         public DbSet<MoodEntry> MoodEntries { get; set; }
         public DbSet<SavedResource> SavedResources { get; set; }
-        public DbSet<SelectedSupportRequest> SelectedSupportRequests { get; set; }
+        public DbSet<SupportProfile> SupportProfiles { get; set; }
         public DbSet<SupportRequest> SupportRequests { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
