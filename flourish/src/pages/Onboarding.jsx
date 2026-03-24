@@ -74,10 +74,31 @@
         },
     });
 
-    const handleSignIn = (signInData) => {
-        console.log('Sign in:', signInData);
-        setAuth('mother');
-        navigate(createPageUrl('Home'));
+    const handleSignIn = async ({ username, password }) => {
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+    
+            if (!response.ok) {
+                alert('Invalid username or password');
+                return;
+            }
+    
+            const data = await response.json();
+            setAuth(data.userType);
+    
+            if (data.userType === 'partner') {
+                navigate(createPageUrl('PartnerHome'));
+            } else {
+                navigate(createPageUrl('Home'));
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            alert('Something went wrong. Please try again.');
+        }
     };
 
     const handleAccountTypeSelect = (data) => {
