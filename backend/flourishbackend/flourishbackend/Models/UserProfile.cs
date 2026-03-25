@@ -17,6 +17,9 @@ namespace Flourish.Models
         private string _username = string.Empty;
         public string Username { get => _username; set => _username = value ?? string.Empty; }
 
+        /// <summary>Sign-in email (distinct from <see cref="Username"/> when you use a separate login name).</summary>
+        public string? Email { get; set; }
+
         private string _userFirstName = string.Empty;
         public string UserFirstName { get => _userFirstName; set => _userFirstName = value ?? string.Empty; }
 

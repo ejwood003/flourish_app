@@ -4,10 +4,10 @@ import { getMoodEntries } from '@/api/moodApi';
 import { listJournalEntries } from '@/api/journalEntryApi';
 import { listBabyActivities } from '@/api/babyActivityApi';
 import { listBabyMoods } from '@/api/babyMoodApi';
-import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
-import { pickPrimaryUserProfile } from '@/lib/devUser';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import { journalEntryCreatedAt } from '@/lib/journalEntryFields';
 import { format, isSameDay } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DayDetailsDropdowns from '@/components/calendar/DayDetailsDropdowns';
 import MonthView from '@/components/calendar/MonthView';
@@ -21,12 +21,7 @@ export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
 
-    const { data: profiles = [] } = useQuery({
-        queryKey: USER_PROFILES_QUERY_KEY,
-        queryFn: () => listUserProfiles(),
-    });
-    const profile = pickPrimaryUserProfile(profiles);
-    const userId = profile?.user_id ?? profile?.userId;
+    const { userId, isResolvingUser } = useCurrentUserId();
 
     const { data: moodEntries = [] } = useQuery({
         queryKey: ['moodEntries', userId],
@@ -134,9 +129,15 @@ export default function Calendar() {
                 </button>
             </div>
 
-            {!userId && (
+            {isResolvingUser && (
+                <div className="flex justify-center py-6">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#9D8AA5]" />
+                </div>
+            )}
+
+            {!isResolvingUser && !userId && (
                 <p className="text-sm text-center text-[#5A4B70] px-4">
-                    Add or select a user profile to see your mood, baby activity, and journal data on the calendar.
+                    Sign in again to see your mood, baby activity, and journal data on the calendar.
                 </p>
             )}
 

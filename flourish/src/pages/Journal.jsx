@@ -2,8 +2,7 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { listJournalEntries } from '@/api/journalEntryApi';
-import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
-import { pickPrimaryUserProfile } from '@/lib/devUser';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import NewEntryForm from '@/components/journal/NewEntryForm';
 import JournalEntryCard from '@/components/journal/JournalEntryCard';
 import { Loader2, Search } from 'lucide-react';
@@ -16,12 +15,7 @@ export default function Journal() {
     const [searchParams] = useSearchParams();
     const editId = searchParams.get('edit');
 
-    const { data: profiles = [] } = useQuery({
-        queryKey: USER_PROFILES_QUERY_KEY,
-        queryFn: () => listUserProfiles(),
-    });
-    const profile = pickPrimaryUserProfile(profiles);
-    const userId = profile?.user_id ?? profile?.userId;
+    const { userId, isResolvingUser } = useCurrentUserId();
 
     const { data: entries = [], isLoading } = useQuery({
         queryKey: ['journalEntries', userId],
@@ -79,9 +73,13 @@ export default function Journal() {
                     Past Entries
                 </p>
 
-                {!userId ? (
+                {isResolvingUser ? (
+                    <div className="flex justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-[#9D8AA5]" />
+                    </div>
+                ) : !userId ? (
                     <div className="text-center py-12 bg-white rounded-2xl">
-                        <p className="text-[#7D7589]">Add a user profile to use your journal.</p>
+                        <p className="text-[#7D7589]">Sign in again to use your journal.</p>
                     </div>
                 ) : isLoading ? (
                     <div className="flex justify-center py-8">

@@ -1,31 +1,36 @@
-import { Toaster } from "@/components/ui/toaster"
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from '@/lib/query-client'
-import NavigationTracker from '@/lib/NavigationTracker'
-import { pagesConfig } from './pages.config'
+import { useEffect, useState } from 'react';
+import { Toaster } from '@/components/ui/toaster';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClientInstance } from '@/lib/query-client';
+import { AUTH_ME_KEY } from '@/hooks/useCurrentUserId';
+import NavigationTracker from '@/lib/NavigationTracker';
+import { pagesConfig } from './pages.config';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
-import { isLoggedIn, getUserType } from '@/lib/auth';
+import { isLoggedIn, getUserType, setAuth, clearAuth } from '@/lib/auth';
+import { fetchSession } from '@/api/authApi';
 
 const { Pages, Layout } = pagesConfig;
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-    <Layout currentPageName={currentPageName}>{children}</Layout>
-    : <>{children}</>;
+const PUBLIC_PAGE_NAMES = ['Welcome', 'Onboarding'];
 
-// Pages partners are allowed to access
-const PARTNER_PAGES = ['PartnerHome', 'PartnerJournalView', 'Onboarding'];
+const LayoutWrapper = ({ children, currentPageName }) =>
+    Layout ? (
+        <Layout currentPageName={currentPageName}>{children}</Layout>
+    ) : (
+        <>{children}</>
+    );
+
+const PARTNER_PAGES = ['PartnerHome', 'PartnerJournalView', 'Onboarding', 'Welcome'];
 
 const ProtectedRoute = ({ pageName, Page }) => {
     const loggedIn = isLoggedIn();
     const userType = getUserType();
 
-    // Not logged in → always go to Onboarding
     if (!loggedIn) {
-        return <Navigate to="/Onboarding" replace />;
+        return <Navigate to="/Welcome" replace />;
     }
 
-    // Partner trying to access a mother-only page → send to PartnerHome
     if (userType === 'partner' && !PARTNER_PAGES.includes(pageName)) {
         return <Navigate to="/PartnerHome" replace />;
     }
@@ -42,7 +47,7 @@ const AppRoutes = () => {
     const userType = getUserType();
 
     const homePath = !loggedIn
-        ? '/Onboarding'
+        ? '/Welcome'
         : userType === 'partner'
             ? '/PartnerHome'
             : '/Home';
@@ -50,15 +55,12 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<Navigate to={homePath} replace />} />
-            
-            {/* Public route - no auth check */}
-            <Route path="/Onboarding" element={
-                <Pages.Onboarding />
-            } />
 
-            {/* All other pages are protected */}
+            <Route path="/Welcome" element={<Pages.Welcome />} />
+            <Route path="/Onboarding" element={<Pages.Onboarding />} />
+
             {Object.entries(Pages)
-                .filter(([path]) => path !== 'Onboarding')
+                .filter(([path]) => !PUBLIC_PAGE_NAMES.includes(path))
                 .map(([path, Page]) => (
                     <Route
                         key={path}
@@ -71,13 +73,57 @@ const AppRoutes = () => {
     );
 };
 
+function AppShell() {
+    const [sessionReady, setSessionReady] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const data = await fetchSession();
+                if (cancelled) return;
+                if (data) {
+                    queryClientInstance.setQueryData(AUTH_ME_KEY, data);
+                    const ut = data.user_type ?? data.userType;
+                    const uid = data.user_id ?? data.userId;
+                    if (ut) setAuth(ut, uid);
+                    else clearAuth();
+                } else {
+                    queryClientInstance.setQueryData(AUTH_ME_KEY, null);
+                    clearAuth();
+                }
+            } catch {
+                if (!cancelled) {
+                    queryClientInstance.setQueryData(AUTH_ME_KEY, null);
+                    clearAuth();
+                }
+            } finally {
+                if (!cancelled) setSessionReady(true);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (!sessionReady) {
+        return <div className="min-h-screen bg-[#FEF9F5]" aria-busy="true" />;
+    }
+
+    return (
+        <>
+            <NavigationTracker />
+            <AppRoutes />
+            <Toaster />
+        </>
+    );
+}
+
 function App() {
     return (
         <QueryClientProvider client={queryClientInstance}>
             <Router>
-                <NavigationTracker />
-                <AppRoutes />
-                <Toaster />
+                <AppShell />
             </Router>
         </QueryClientProvider>
     );

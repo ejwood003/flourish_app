@@ -3,7 +3,12 @@
     import { createPageUrl } from '@/utils';
     import { ArrowLeft, Bookmark } from 'lucide-react';
     import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
-    import { base44 } from '@/api/base44Client';
+    import {
+        listSavedResources,
+        createSavedResource,
+        deleteSavedResource,
+    } from '@/api/savedResourceApi';
+    import { getUserId } from '@/lib/auth';
 
     const articleContent = {
     tip1: {
@@ -345,10 +350,16 @@
     const fromTab = params.get('from');
     
     const article = articleContent[articleId];
+    const uid = getUserId();
 
     const { data: savedResources = [] } = useQuery({
-        queryKey: ['savedTips'],
-        queryFn: () => base44.entities.SavedResource.list('-created_date', 100),
+        queryKey: ['savedTips', uid],
+        queryFn: () =>
+            listSavedResources({
+                filter: { user_id: uid },
+                limit: 200,
+            }),
+        enabled: Boolean(uid),
     });
 
     const isSaved = savedResources.some(
@@ -357,21 +368,24 @@
 
     const toggleSaveMutation = useMutation({
         mutationFn: async () => {
+        if (!uid) return;
         const existing = savedResources.find(
             r => r.resource_id === articleId && r.resource_type === 'tip'
         );
 
         if (existing) {
-            await base44.entities.SavedResource.delete(existing.id);
+            const sid = existing.saved_resource_id ?? existing.SavedResourceId ?? existing.id;
+            await deleteSavedResource(sid);
         } else {
-            await base44.entities.SavedResource.create({
+            await createSavedResource({
             resource_id: articleId,
             resource_type: 'tip',
+            user_id: uid,
             });
         }
         },
         onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['savedTips'] });
+        queryClient.invalidateQueries({ queryKey: ['savedTips', uid] });
         },
     });
 

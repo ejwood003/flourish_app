@@ -5,8 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createBabyActivity } from '@/api/babyActivityApi';
 import { createBabyMood } from '@/api/babyMoodApi';
 import { createBabyProfile, listBabyProfiles } from '@/api/babyProfileApi';
-import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
-import { pickPrimaryUserProfile } from '@/lib/devUser';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Baby, Milk, Moon, Clock } from 'lucide-react';
@@ -20,12 +19,7 @@ export default function BabyQuickActions() {
     const [isBabyMoodDragging, setIsBabyMoodDragging] = useState(false);
     const ensureBabyAttemptedRef = useRef(false);
 
-    const { data: profiles = [] } = useQuery({
-        queryKey: USER_PROFILES_QUERY_KEY,
-        queryFn: () => listUserProfiles(),
-    });
-    const profile = pickPrimaryUserProfile(profiles);
-    const userId = profile?.user_id ?? profile?.userId;
+    const { userId } = useCurrentUserId();
 
     useEffect(() => {
         ensureBabyAttemptedRef.current = false;

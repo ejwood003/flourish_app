@@ -1,18 +1,24 @@
-// auth.js - localStorage-based auth helper
-
 const AUTH_KEY = 'flourish_auth';
 
 export const getAuth = () => {
     const stored = localStorage.getItem(AUTH_KEY);
     if (!stored) return null;
-    return JSON.parse(stored);
+    try {
+        return JSON.parse(stored);
+    } catch {
+        return null;
+    }
 };
 
-export const setAuth = (userType) => {
-    localStorage.setItem(AUTH_KEY, JSON.stringify({
-        loggedIn: true,
-        userType,
-    }));
+export const setAuth = (userType, userId = null) => {
+    localStorage.setItem(
+        AUTH_KEY,
+        JSON.stringify({
+            loggedIn: true,
+            userType,
+            ...(userId != null && userId !== '' ? { userId } : {}),
+        }),
+    );
 };
 
 export const clearAuth = () => {
@@ -29,4 +35,10 @@ export const getUserType = () => {
     const auth = getAuth();
     if (!auth) return null;
     return auth.userType;
+};
+
+export const getUserId = () => {
+    const auth = getAuth();
+    if (!auth) return null;
+    return auth.userId ?? auth.user_id ?? null;
 };

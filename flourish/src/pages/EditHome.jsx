@@ -1,55 +1,53 @@
 // Page that allows users to edit home screen (from Home screen (NOT profile))
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+    listUserProfiles,
+    updateUserProfile,
+    createUserProfile,
+    USER_PROFILES_QUERY_KEY,
+} from '@/api/userProfileApi';
+import { getUserId } from '@/lib/auth';
 import HomeCustomization from '@/components/profile/HomeCustomization';
 
 export default function EditHome() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const [user, setUser] = useState(null);
+    const uid = getUserId();
     const [profileData, setProfileData] = useState({});
     const [saved, setSaved] = useState(false);
 
-    useEffect(() => {
-        loadUser();
-    }, []);
-
     const { data: profiles = [] } = useQuery({
-        queryKey: ['userProfiles'],
-        queryFn: () => base44.entities.UserProfile.list(),
+        queryKey: [...USER_PROFILES_QUERY_KEY, 'mine', uid],
+        queryFn: () =>
+            listUserProfiles({
+                filter: { user_id: uid },
+                limit: 5,
+            }),
+        enabled: Boolean(uid),
     });
 
     const profile = profiles[0];
 
     useEffect(() => {
         if (profile) {
-        setProfileData(profile);
+            setProfileData(profile);
         }
     }, [profile]);
 
-    const loadUser = async () => {
-        try {
-        const userData = await base44.auth.me();
-        setUser(userData);
-        } catch (e) {
-        // Not logged in
-        }
-    };
-
     const updateProfileMutation = useMutation({
         mutationFn: async (data) => {
-        if (profile?.id) {
-            return await base44.entities.UserProfile.update(profile.id, data);
-        } else {
-            return await base44.entities.UserProfile.create(data);
-        }
+            const id = profile?.user_id ?? profile?.userId ?? profile?.id;
+            if (id) {
+                return updateUserProfile(id, data);
+            }
+            return createUserProfile(data);
         },
         onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+            queryClient.invalidateQueries({ queryKey: USER_PROFILES_QUERY_KEY });
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
         },
     });
 
@@ -61,24 +59,28 @@ export default function EditHome() {
         updateProfileMutation.mutate(profileData);
     };
 
-
     return (
-        <div className="space-y-6 pb-8">
-            {/* Header */}
-            <div className="mb-2">
+        <div className="min-h-screen bg-[#FEF9F5] p-6 pb-24">
+            <div className="max-w-lg mx-auto">
                 <button
-                onClick={() => window.history.back()}
-                className="mb-4 text-[#5A4B70] hover:text-[#7A6A8E] transition-colors"
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="mb-4 text-[#5A4B70] hover:text-[#8B7A9F]"
                 >
-                ← Back
+                    ← Back
                 </button>
-                <h1 className="text-2xl font-semibold text-[#4A4458]">Edit Home Screen</h1>
+                <h1 className="text-2xl font-semibold text-[#4A4458] mb-2">Customize Home</h1>
+                <p className="text-[#5A4B70] mb-6">Choose what you want to see on your home screen.</p>
+                <HomeCustomization profile={profileData} onUpdate={handleUpdate} />
+                <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={updateProfileMutation.isPending}
+                    className="mt-8 w-full py-4 rounded-2xl bg-[#8B7A9F] text-white font-medium disabled:opacity-50"
+                >
+                    {saved ? 'Saved!' : updateProfileMutation.isPending ? 'Saving…' : 'Save changes'}
+                </button>
             </div>
-
-            <HomeCustomization 
-                profile={profileData}
-                onUpdate={handleUpdate}
-            />
         </div>
     );
 }

@@ -30,13 +30,13 @@ export default function SignInStep({ onSignIn, onBack }) {
 
         <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
             <div className="space-y-2">
-            <Label htmlFor="username" className="text-[#4A4458]">Username</Label>
+            <Label htmlFor="username" className="text-[#4A4458]">Email</Label>
             <Input
                 id="username"
-                type="text"
+                type="email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Your username"
+                placeholder="your@email.com"
                 className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
                 required
             />

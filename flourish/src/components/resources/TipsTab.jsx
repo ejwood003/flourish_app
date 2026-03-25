@@ -1,7 +1,12 @@
 
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import {
+    listSavedResources,
+    createSavedResource,
+    deleteSavedResource,
+} from '@/api/savedResourceApi';
+import { getUserId } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Search, Bookmark, FileText, Lightbulb, Filter } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
@@ -32,10 +37,16 @@ const [categoryFilter, setCategoryFilter] = useState('all');
 const [readFilter, setReadFilter] = useState('all');
 const [showFilters, setShowFilters] = useState(false);
 const queryClient = useQueryClient();
+const uid = getUserId();
 
 const { data: savedResources = [] } = useQuery({
-queryKey: ['savedTips'],
-queryFn: () => base44.entities.SavedResource.list('-created_date', 100),
+queryKey: ['savedTips', uid],
+queryFn: () =>
+    listSavedResources({
+        filter: { user_id: uid },
+        limit: 200,
+    }),
+enabled: Boolean(uid),
 });
 
 const savedIds = savedResources
@@ -54,19 +65,22 @@ return matchesSearch && matchesSaved && matchesCategory && matchesRead;
 });
 
 const toggleSaved = async (tipId) => {
+if (!uid) return;
 const existing = savedResources.find(
     r => r.resource_id === tipId && r.resource_type === 'tip'
 );
 
 if (existing) {
-    await base44.entities.SavedResource.delete(existing.id);
+    const sid = existing.saved_resource_id ?? existing.SavedResourceId ?? existing.id;
+    await deleteSavedResource(sid);
 } else {
-    await base44.entities.SavedResource.create({
+    await createSavedResource({
     resource_id: tipId,
     resource_type: 'tip',
+    user_id: uid,
     });
 }
-queryClient.invalidateQueries({ queryKey: ['savedTips'] });
+queryClient.invalidateQueries({ queryKey: ['savedTips', uid] });
 };
 
 return (

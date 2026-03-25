@@ -24,7 +24,7 @@ import UpcomingTasks from '@/components/home/UpcomingTasks';
 import RecommendedArticle from '@/components/home/RecommendedArticle';
 import MindfulnessHub from '@/components/home/MindfulnessHub';
 import BabyQuickActions from '@/components/home/BabyQuickActions';
-import { pickPrimaryUserProfile } from '@/lib/devUser';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import {
     DEFAULT_HOME_FEATURES,
     isIncompleteStoredHomeFeatures,
@@ -32,21 +32,21 @@ import {
     sanitizeHomeFeatureIds,
 } from '@/lib/homeFeatures';
 
-const DEV_SEED_USER_ID = '11111111-1111-1111-1111-111111111111';
-
-function profilePrimaryKey(p) {
-    return p?.user_id ?? p?.userId ?? '';
-}
-
 export default function Home() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [showBreathing, setShowBreathing] = useState(false); // set breathing to false to hide the breathing card
 
-    // Get the user's profiles
+    const { userId: sessionUserId } = useCurrentUserId();
+
     const { data: profiles = [], refetch } = useQuery({
-        queryKey: USER_PROFILES_QUERY_KEY,
-        queryFn: () => listUserProfiles(),
+        queryKey: [...USER_PROFILES_QUERY_KEY, 'mine', sessionUserId],
+        queryFn: () =>
+            listUserProfiles({
+                filter: { user_id: sessionUserId },
+                limit: 10,
+            }),
+        enabled: Boolean(sessionUserId),
     });
 
     const { mutate: repairHomeFeatures, isPending: repairHomeFeaturesPending } = useMutation({
@@ -62,7 +62,7 @@ export default function Home() {
         refetch();
     }, [refetch]);
 
-    const profile = pickPrimaryUserProfile(profiles);
+    const profile = profiles[0];
 
     const storedFeatures = profile?.home_features ?? profile?.homeFeatures;
     const homeFeaturesSerialized = JSON.stringify(storedFeatures ?? null);
@@ -101,14 +101,14 @@ export default function Home() {
             return (
                 <MoodCheckIn
                     key={featureId}
-                    userId={profile?.user_id ?? profile?.userId}
+                    userId={profile?.user_id ?? profile?.userId ?? sessionUserId}
                 />
             );
         case 'mood_chips':
             return (
                 <MoodChips
                     key={featureId}
-                    userId={profile?.user_id ?? profile?.userId}
+                    userId={profile?.user_id ?? profile?.userId ?? sessionUserId}
                 />
             );
         case 'baby':

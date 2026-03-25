@@ -4,8 +4,7 @@ import { getMoodEntries } from '@/api/moodApi';
 import { listJournalEntries } from '@/api/journalEntryApi';
 import { listBabyActivities } from '@/api/babyActivityApi';
 import { listBabyMoods } from '@/api/babyMoodApi';
-import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
-import { pickPrimaryUserProfile } from '@/lib/devUser';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import MomInsights from '@/components/insights/MomInsights';
 import BabyInsights from '@/components/insights/BabyInsights';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -19,12 +18,7 @@ export default function Insights() {
     const [moodTimeView, setMoodTimeView] = useState('day');
     const [trendTimeframe, setTrendTimeframe] = useState('week');
 
-    const { data: profiles = [] } = useQuery({
-        queryKey: USER_PROFILES_QUERY_KEY,
-        queryFn: () => listUserProfiles(),
-    });
-    const userProfile = pickPrimaryUserProfile(profiles);
-    const userId = userProfile?.user_id ?? userProfile?.userId;
+    const { userId, isResolvingUser } = useCurrentUserId();
 
     const { data: moodEntries = [] } = useQuery({
         queryKey: ['moodEntries', userId],
@@ -98,9 +92,13 @@ export default function Insights() {
                 </button>
             </div>
 
-            {!userId && (
+            {isResolvingUser && (
+                <p className="text-sm text-center text-[#5A4B70] px-4">Loading your profile…</p>
+            )}
+
+            {!isResolvingUser && !userId && (
                 <p className="text-sm text-center text-[#5A4B70] px-4">
-                    Add or select a user profile to see insights for your data.
+                    Sign in again to see insights for your data.
                 </p>
             )}
 

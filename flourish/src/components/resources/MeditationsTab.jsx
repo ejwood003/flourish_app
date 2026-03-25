@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import {
+    listSavedResources,
+    createSavedResource,
+    deleteSavedResource,
+} from '@/api/savedResourceApi';
+import { getUserId } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Search, Play, Star, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,10 +32,16 @@ const [categoryFilter, setCategoryFilter] = useState('all');
 const [durationFilter, setDurationFilter] = useState('all');
 const [showFilters, setShowFilters] = useState(false);
 const queryClient = useQueryClient();
+const uid = getUserId();
 
 const { data: savedResources = [] } = useQuery({
-queryKey: ['savedMeditations'],
-queryFn: () => base44.entities.SavedResource.list('-created_date', 100),
+queryKey: ['savedMeditations', uid],
+queryFn: () =>
+    listSavedResources({
+        filter: { user_id: uid },
+        limit: 200,
+    }),
+enabled: Boolean(uid),
 });
 
 const favoriteIds = savedResources
@@ -50,19 +61,22 @@ return matchesSearch && matchesFavorites && matchesCategory && matchesDuration;
 });
 
 const toggleFavorite = async (meditationId) => {
+if (!uid) return;
 const existing = savedResources.find(
     r => r.resource_id === meditationId && r.resource_type === 'meditation'
 );
 
 if (existing) {
-    await base44.entities.SavedResource.delete(existing.id);
+    const sid = existing.saved_resource_id ?? existing.SavedResourceId ?? existing.id;
+    await deleteSavedResource(sid);
 } else {
-    await base44.entities.SavedResource.create({
+    await createSavedResource({
     resource_id: meditationId,
     resource_type: 'meditation',
+    user_id: uid,
     });
 }
-queryClient.invalidateQueries({ queryKey: ['savedMeditations'] });
+queryClient.invalidateQueries({ queryKey: ['savedMeditations', uid] });
 };
 
 return (

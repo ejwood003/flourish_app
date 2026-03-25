@@ -1,7 +1,8 @@
     import React, { useState } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { createPageUrl } from '@/utils';
-    import { base44 } from '@/api/base44Client';
+    import { createUserProfile } from '@/api/userProfileApi';
+    import { setAuth } from '@/lib/auth';
     import { ArrowLeft, Link2, Loader2 } from 'lucide-react';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -25,9 +26,20 @@
             is_support_account: true,
         };
         
-        return await base44.entities.UserProfile.create(profileData);
+        return await createUserProfile({
+            username: `${partnerCode}@partner.flourish`,
+            email: `${partnerCode}@partner.flourish`,
+            password: `connect_${partnerCode}`,
+            user_first_name: partnerName,
+            user_last_name: '',
+            support_type: supportType,
+            support_name: partnerName,
+            created_by: partnerCode,
+        });
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+        const uid = data?.user_id ?? data?.userId;
+        setAuth('mother', uid);
         navigate(createPageUrl('PartnerHome'));
         },
         onError: (error) => {

@@ -2,11 +2,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using flourishbackend;
 using flourishbackend.Data;
+using Flourish.Models;
 
 namespace flourishbackend.Controllers
 {
@@ -55,9 +58,37 @@ namespace flourishbackend.Controllers
             PropertyNameCaseInsensitive = true,
         };
 
+        /// <summary>Entities with a UserId that must match the signed-in user (list scope); partners may list another id if linked via SupportEmail.</summary>
+        private static readonly HashSet<string> UserOwnedEntityNames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "BabyActivity",
+            "BabyMood",
+            "BabyProfile",
+            "JournalEntry",
+            "MoodEntry",
+            "SavedResource",
+            "SupportRequest",
+            "AffirmationReaction",
+            "SupportProfile",
+        };
+
         public EntitiesController(FlourishDbContext context)
         {
             _context = context;
+        }
+
+        private UnauthorizedObjectResult? RequireAuthenticated()
+        {
+            if (User?.Identity?.IsAuthenticated == true) return null;
+            return Unauthorized(new { error = "Authentication required" });
+        }
+
+        /// <summary>Allow anonymous only for mother/partner self-registration (UserProfile create).</summary>
+        private UnauthorizedObjectResult? RequireAuthenticatedForCreate(string entityName)
+        {
+            if (string.Equals(entityName, "UserProfile", StringComparison.OrdinalIgnoreCase))
+                return null;
+            return RequireAuthenticated();
         }
 
         private static ContentResult JsonContent(string json, int statusCode)
@@ -83,31 +114,43 @@ namespace flourishbackend.Controllers
             var dbSet = GetDbSet(entityName);
             if (dbSet == null) return NotFound(new { error = $"Entity '{entityName}' not found" });
 
+            var authFail = RequireAuthenticated();
+            if (authFail != null) return authFail;
+
             var entityType = EntityTypeMap[entityName];
 
             IQueryable query = (IQueryable)dbSet;
 
-            // Apply filtering if q parameter is provided (must translate to SQL — no reflection GetValue in LINQ)
+            if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var currentUserId))
+                return Unauthorized(new { error = "Authentication required" });
+
+            Dictionary<string, JsonElement>? filterDict = null;
             if (!string.IsNullOrEmpty(q))
             {
                 try
                 {
-                    var filterDict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(q, _jsonOptions);
-                    if (filterDict != null)
-                    {
-                        foreach (var (key, value) in filterDict)
-                        {
-                            var propInfo = FindProperty(entityType, key);
-                            if (propInfo == null) continue;
-                            var targetValue = ConvertJsonElement(value, propInfo.PropertyType);
-                            if (targetValue != null)
-                                query = ApplyWherePropertyEquals(query, entityType, propInfo, targetValue);
-                        }
-                    }
+                    filterDict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(q, _jsonOptions);
                 }
                 catch
                 {
-                    // Silently ignore malformed filter queries
+                    filterDict = null;
+                }
+            }
+
+            var (scopedQuery, scopeError) = await ApplyUserOwnedListScopeAsync(query, entityType, entityName, currentUserId, filterDict).ConfigureAwait(false);
+            if (scopeError != null)
+                return scopeError;
+            query = scopedQuery;
+
+            if (filterDict != null)
+            {
+                foreach (var (key, value) in filterDict)
+                {
+                    var propInfo = FindProperty(entityType, key);
+                    if (propInfo == null) continue;
+                    var targetValue = ConvertJsonElement(value, propInfo.PropertyType);
+                    if (targetValue != null)
+                        query = ApplyWherePropertyEquals(query, entityType, propInfo, targetValue);
                 }
             }
 
@@ -141,8 +184,17 @@ namespace flourishbackend.Controllers
             if (!Guid.TryParse(id, out Guid guidId))
                 return BadRequest(new { error = "Invalid ID format" });
 
+            var authFailGet = RequireAuthenticated();
+            if (authFailGet != null) return authFailGet;
+
+            if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var currentUserIdGet))
+                return Unauthorized(new { error = "Authentication required" });
+
             var entity = await _context.FindAsync(EntityTypeMap[entityName], guidId);
             if (entity == null) return NotFound(new { error = "Record not found" });
+
+            var accessGet = EnsureDirectUserOwnedAccess(entity, entityName, currentUserIdGet);
+            if (accessGet != null) return accessGet;
 
             var json = JsonSerializer.Serialize(entity, _jsonOptions);
             return Content(json, "application/json");
@@ -154,6 +206,9 @@ namespace flourishbackend.Controllers
         {
             var dbSet = GetDbSet(entityName);
             if (dbSet == null) return NotFound(new { error = $"Entity '{entityName}' not found" });
+
+            var createAuth = RequireAuthenticatedForCreate(entityName);
+            if (createAuth != null) return createAuth;
 
             var entityType = EntityTypeMap[entityName];
 
@@ -176,6 +231,15 @@ namespace flourishbackend.Controllers
 
             if (entity is Flourish.Models.UserProfile userProfile)
                 userProfile.EnsureDefaults();
+
+            if (!string.Equals(entityName, "UserProfile", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var creatorUserId))
+                    return Unauthorized(new { error = "Authentication required" });
+                ForceUserIdOnNewEntity(entity, creatorUserId);
+                var babyRefErr = await ValidateBabyCreateReferencesAsync(entity).ConfigureAwait(false);
+                if (babyRefErr != null) return babyRefErr;
+            }
 
             // Ensure a new GUID is set for the primary key ([Key] or legacy "Id")
             var idProp = entityType.GetProperties().FirstOrDefault(p => Attribute.IsDefined(p, typeof(System.ComponentModel.DataAnnotations.KeyAttribute)))
@@ -204,6 +268,9 @@ namespace flourishbackend.Controllers
             _context.Add(entity);
             await _context.SaveChangesAsync();
 
+            if (entity is Flourish.Models.UserProfile createdProfile)
+                await HttpContext.SignInFlourishUserAsync(_context, createdProfile.UserId);
+
             var json = JsonSerializer.Serialize(entity, _jsonOptions);
             return JsonContent(json, StatusCodes.Status201Created);
         }
@@ -220,9 +287,18 @@ namespace flourishbackend.Controllers
             if (!Guid.TryParse(id, out Guid guidId))
                 return BadRequest(new { error = "Invalid ID format" });
 
+            var authFailUpdate = RequireAuthenticated();
+            if (authFailUpdate != null) return authFailUpdate;
+
+            if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var currentUserIdUpdate))
+                return Unauthorized(new { error = "Authentication required" });
+
             var entityType = EntityTypeMap[entityName];
             var existing = await _context.FindAsync(entityType, guidId);
             if (existing == null) return NotFound(new { error = "Record not found" });
+
+            var accessUpdate = EnsureDirectUserOwnedAccess(existing, entityName, currentUserIdUpdate);
+            if (accessUpdate != null) return accessUpdate;
 
             // Read the raw JSON body
             using var reader = new StreamReader(Request.Body);
@@ -291,8 +367,17 @@ namespace flourishbackend.Controllers
             if (!Guid.TryParse(id, out Guid guidId))
                 return BadRequest(new { error = "Invalid ID format" });
 
+            var authFailDelete = RequireAuthenticated();
+            if (authFailDelete != null) return authFailDelete;
+
+            if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var currentUserIdDelete))
+                return Unauthorized(new { error = "Authentication required" });
+
             var entity = await _context.FindAsync(EntityTypeMap[entityName], guidId);
             if (entity == null) return NotFound(new { error = "Record not found" });
+
+            var accessDelete = EnsureDirectUserOwnedAccess(entity, entityName, currentUserIdDelete);
+            if (accessDelete != null) return accessDelete;
 
             _context.Remove(entity);
             await _context.SaveChangesAsync();
@@ -301,6 +386,146 @@ namespace flourishbackend.Controllers
         }
 
         // --- Helper Methods ---
+
+        private async Task<(IQueryable Query, IActionResult? Error)> ApplyUserOwnedListScopeAsync(
+            IQueryable query,
+            Type entityType,
+            string entityName,
+            Guid currentUserId,
+            Dictionary<string, JsonElement>? filterDict)
+        {
+            var userIdProp = entityType.GetProperty("UserId");
+            if (userIdProp == null || userIdProp.PropertyType != typeof(Guid))
+                return (query, null);
+
+            if (UserOwnedEntityNames.Contains(entityName))
+            {
+                var clientRequested = ExtractUserIdFromFilterDict(filterDict);
+                filterDict?.Remove("user_id");
+
+                Guid effectiveUserId;
+                if (clientRequested is null || clientRequested.Value == currentUserId)
+                    effectiveUserId = currentUserId;
+                else
+                {
+                    if (!await PartnerCanViewMotherDataAsync(currentUserId, clientRequested.Value).ConfigureAwait(false))
+                        return (query, StatusCode(StatusCodes.Status403Forbidden, new { error = "Forbidden" }));
+                    effectiveUserId = clientRequested.Value;
+                }
+
+                query = ApplyWherePropertyEquals(query, entityType, userIdProp, effectiveUserId);
+                return (query, null);
+            }
+
+            if (string.Equals(entityName, "UserProfile", StringComparison.OrdinalIgnoreCase))
+            {
+                if (filterDict != null && filterDict.ContainsKey("support_email"))
+                    return (query, null);
+
+                var clientRequested = ExtractUserIdFromFilterDict(filterDict);
+                filterDict?.Remove("user_id");
+
+                Guid effectiveUserId;
+                if (clientRequested is null || clientRequested.Value == currentUserId)
+                    effectiveUserId = currentUserId;
+                else
+                {
+                    if (!await PartnerCanViewMotherDataAsync(currentUserId, clientRequested.Value).ConfigureAwait(false))
+                        return (query, StatusCode(StatusCodes.Status403Forbidden, new { error = "Forbidden" }));
+                    effectiveUserId = clientRequested.Value;
+                }
+
+                query = ApplyWherePropertyEquals(query, entityType, userIdProp, effectiveUserId);
+                return (query, null);
+            }
+
+            return (query, null);
+        }
+
+        private static Guid? ExtractUserIdFromFilterDict(Dictionary<string, JsonElement>? filterDict)
+        {
+            if (filterDict == null || !filterDict.TryGetValue("user_id", out var el))
+                return null;
+            if (el.ValueKind != JsonValueKind.String)
+                return null;
+            var s = el.GetString();
+            return Guid.TryParse(s, out var g) ? g : null;
+        }
+
+        private async Task<bool> PartnerCanViewMotherDataAsync(Guid partnerUserId, Guid motherUserId)
+        {
+            var partner = await _context.UserProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == partnerUserId).ConfigureAwait(false);
+            var mother = await _context.UserProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == motherUserId).ConfigureAwait(false);
+            if (partner == null || mother == null || string.IsNullOrWhiteSpace(mother.SupportEmail))
+                return false;
+            var target = mother.SupportEmail.Trim();
+            var pEmail = partner.Email?.Trim();
+            var pUser = partner.Username?.Trim();
+            return (pEmail != null && string.Equals(pEmail, target, StringComparison.OrdinalIgnoreCase)) ||
+                   (pUser != null && string.Equals(pUser, target, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private IActionResult? EnsureDirectUserOwnedAccess(object? entity, string entityName, Guid currentUserId)
+        {
+            if (entity is null) return null;
+            if (string.Equals(entityName, "UserProfile", StringComparison.OrdinalIgnoreCase))
+            {
+                if (entity is not UserProfile up) return null;
+                return up.UserId == currentUserId
+                    ? null
+                    : StatusCode(StatusCodes.Status403Forbidden, new { error = "Forbidden" });
+            }
+
+            if (!UserOwnedEntityNames.Contains(entityName)) return null;
+            var p = entity.GetType().GetProperty("UserId");
+            if (p?.GetValue(entity) is not Guid ownerId) return null;
+            return ownerId == currentUserId
+                ? null
+                : StatusCode(StatusCodes.Status403Forbidden, new { error = "Forbidden" });
+        }
+
+        private static void ForceUserIdOnNewEntity(object entity, Guid userId)
+        {
+            switch (entity)
+            {
+                case BabyActivity ba: ba.UserId = userId; break;
+                case BabyMood bm: bm.UserId = userId; break;
+                case BabyProfile bp: bp.UserId = userId; break;
+                case JournalEntry je: je.UserId = userId; break;
+                case MoodEntry me: me.UserId = userId; break;
+                case SavedResource sr: sr.UserId = userId; break;
+                case SupportRequest sreq: sreq.UserId = userId; break;
+                case AffirmationReaction ar: ar.UserId = userId; break;
+                case SupportProfile sp: sp.UserId = userId; break;
+            }
+        }
+
+        private async Task<IActionResult?> ValidateBabyCreateReferencesAsync(object entity)
+        {
+            switch (entity)
+            {
+                case BabyActivity ba:
+                {
+                    var bp = await _context.BabyProfiles.AsNoTracking()
+                        .FirstOrDefaultAsync(b => b.BabyId == ba.BabyId).ConfigureAwait(false);
+                    if (bp == null || bp.UserId != ba.UserId)
+                        return BadRequest(new { error = "baby_id does not belong to the signed-in user" });
+                    break;
+                }
+                case BabyMood bm:
+                {
+                    var bp = await _context.BabyProfiles.AsNoTracking()
+                        .FirstOrDefaultAsync(b => b.BabyId == bm.BabyId).ConfigureAwait(false);
+                    if (bp == null || bp.UserId != bm.UserId)
+                        return BadRequest(new { error = "baby_id does not belong to the signed-in user" });
+                    break;
+                }
+            }
+
+            return null;
+        }
 
         private object? GetDbSet(string entityName)
         {

@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    listAffirmations,
+    createAffirmation,
+    updateAffirmation,
+    deleteAffirmation,
+} from '@/api/affirmationApi';
+import { createAffirmationReaction } from '@/api/affirmationReactionApi';
+import { getUserId } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,17 +38,16 @@ const queryClient = useQueryClient();
 
 const { data: customAffirmations = [] } = useQuery({
 queryKey: ['customAffirmations'],
-queryFn: () => base44.entities.CustomAffirmation.list('-created_date', 100),
-});
-
-const { data: affirmationReactions = [] } = useQuery({
-queryKey: ['affirmationReactions'],
-queryFn: () => base44.entities.AffirmationReaction.list('-created_date', 200),
+queryFn: () => listAffirmations({ limit: 200 }),
 });
 
 const allAffirmations = [
 ...defaultAffirmations,
-...customAffirmations.map(a => ({ ...a, is_default: false }))
+...customAffirmations.map((a) => ({
+    ...a,
+    id: a.affirmation_id ?? a.AffirmationId ?? a.id,
+    is_default: false,
+})),
 ];
 
 const filteredAffirmations = allAffirmations.filter(a => {
@@ -54,7 +60,7 @@ return matchesSearch && matchesFavorites;
 
 const handleAddAffirmation = async () => {
 if (!newAffirmation.trim()) return;
-await base44.entities.CustomAffirmation.create({ text: newAffirmation });
+await createAffirmation({ text: newAffirmation });
 queryClient.invalidateQueries({ queryKey: ['customAffirmations'] });
 setNewAffirmation('');
 setShowAddForm(false);
@@ -65,11 +71,14 @@ const key = `${affirmation.is_default ? 'default' : 'custom'}_${affirmation.id}`
 setReactions(prev => ({ ...prev, [key]: type }));
 
 if (!affirmation.is_default) {
-    await base44.entities.AffirmationReaction.create({
+    const uid = getUserId();
+    if (uid) {
+    await createAffirmationReaction({
     affirmation_id: affirmation.id,
     reaction: type,
+    user_id: uid,
     });
-    queryClient.invalidateQueries({ queryKey: ['affirmationReactions'] });
+    }
 }
 };
 
@@ -77,7 +86,7 @@ const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
 
 const handleDelete = async () => {
 try {
-    await base44.entities.CustomAffirmation.delete(deleteDialog.id);
+    await deleteAffirmation(deleteDialog.id);
     queryClient.invalidateQueries({ queryKey: ['customAffirmations'] });
 } catch (error) {
     console.error('Error deleting affirmation:', error);
@@ -92,7 +101,7 @@ setEditText(affirmation.text);
 
 const handleSaveEdit = async () => {
 if (!editText.trim()) return;
-await base44.entities.CustomAffirmation.update(editingId, { text: editText });
+await updateAffirmation(editingId, { text: editText });
 queryClient.invalidateQueries({ queryKey: ['customAffirmations'] });
 setEditingId(null);
 setEditText('');
