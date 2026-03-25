@@ -33,5 +33,11 @@ namespace Flourish.Models
         public Guid BabyId { get; set; }
 
         public BabyProfile BabyProfile { get; set; }
+
+        [Required]
+        [ForeignKey("UserProfile")]
+        public Guid UserId { get; set; }
+
+        public UserProfile UserProfile { get; set; }
     }
 }

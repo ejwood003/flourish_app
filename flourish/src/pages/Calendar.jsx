@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { getMoodEntries } from '@/api/moodApi';
+import { listJournalEntries } from '@/api/journalEntryApi';
+import { listBabyActivities } from '@/api/babyActivityApi';
+import { listBabyMoods } from '@/api/babyMoodApi';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
+import { journalEntryCreatedAt } from '@/lib/journalEntryFields';
 import { format, isSameDay } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DayDetailsDropdowns from '@/components/calendar/DayDetailsDropdowns';
 import MonthView from '@/components/calendar/MonthView';
@@ -15,42 +21,91 @@ export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
 
+    const { userId, isResolvingUser } = useCurrentUserId();
+
     const { data: moodEntries = [] } = useQuery({
-        queryKey: ['moodEntries'],
-        queryFn: () => base44.entities.MoodEntry.list('-date', 100),
+        queryKey: ['moodEntries', userId],
+        queryFn: () =>
+            getMoodEntries({
+                filter: { user_id: userId },
+                sort: '-date',
+                limit: 100,
+            }),
+        enabled: Boolean(userId),
     });
 
     const { data: babyActivities = [] } = useQuery({
-        queryKey: ['babyActivitiesCalendar'],
-        queryFn: () => base44.entities.BabyActivity.list('-timestamp', 200),
+        queryKey: ['babyActivities', userId],
+        queryFn: () =>
+            listBabyActivities({
+                filter: { user_id: userId },
+                sort: '-timestamp',
+                limit: 200,
+            }),
+        enabled: Boolean(userId),
+    });
+
+    const { data: babyMoods = [] } = useQuery({
+        queryKey: ['babyMoods', userId],
+        queryFn: () =>
+            listBabyMoods({
+                filter: { user_id: userId },
+                sort: '-timestamp',
+                limit: 200,
+            }),
+        enabled: Boolean(userId),
     });
 
     const { data: journalEntries = [] } = useQuery({
-        queryKey: ['journalEntriesCalendar'],
-        queryFn: () => base44.entities.JournalEntry.list('-created_date', 100),
+        queryKey: ['journalEntriesCalendar', userId],
+        queryFn: () =>
+            listJournalEntries({
+                filter: { user_id: userId },
+                sort: '-created_date',
+                limit: 100,
+            }),
+        enabled: Boolean(userId),
     });
 
     const getMoodsForDate = (date) => {
         const dateStr = format(date, 'yyyy-MM-dd');
-        return moodEntries.filter(m => m.date === dateStr);
+        return moodEntries.filter((m) => {
+            const d = m.date ?? m.Date;
+            return d === dateStr;
+        });
     };
 
     const getActivitiesForDate = (date) => {
-        return babyActivities.filter(a => isSameDay(new Date(a.timestamp), date));
+        return babyActivities.filter((a) => {
+            const ts = a.timestamp ?? a.Timestamp;
+            return ts && isSameDay(new Date(ts), date);
+        });
+    };
+
+    const getBabyMoodsForDate = (date) => {
+        return babyMoods.filter((m) => {
+            const ts = m.timestamp ?? m.Timestamp;
+            return ts && isSameDay(new Date(ts), date);
+        });
     };
 
     const getJournalEntriesForDate = (date) => {
-        return journalEntries.filter(j => isSameDay(new Date(j.created_date), date));
+        return journalEntries.filter((j) => {
+            const created = journalEntryCreatedAt(j);
+            return created && isSameDay(created, date);
+        });
     };
 
-    const selectedMoods = getMoodsForDate(selectedDate);
-    const selectedActivities = getActivitiesForDate(selectedDate);
-    const selectedJournals = getJournalEntriesForDate(selectedDate);
+    const selectedMoods = userId ? getMoodsForDate(selectedDate) : [];
+    const selectedActivities = userId ? getActivitiesForDate(selectedDate) : [];
+    const selectedBabyMoods = userId ? getBabyMoodsForDate(selectedDate) : [];
+    const selectedJournals = userId ? getJournalEntriesForDate(selectedDate) : [];
 
     return (
         <div className="space-y-6 pb-8">
             <div className="flex gap-2 p-1 bg-[#E8E4F3]/50 rounded-2xl">
                 <button
+                    type="button"
                     onClick={() => navigate('/calendar')}
                     className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         activeTab === 'calendar'
@@ -62,6 +117,7 @@ export default function Calendar() {
                 </button>
 
                 <button
+                    type="button"
                     onClick={() => navigate('/insights')}
                     className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         activeTab === 'insights'
@@ -72,6 +128,18 @@ export default function Calendar() {
                     Insights
                 </button>
             </div>
+
+            {isResolvingUser && (
+                <div className="flex justify-center py-6">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#9D8AA5]" />
+                </div>
+            )}
+
+            {!isResolvingUser && !userId && (
+                <p className="text-sm text-center text-[#5A4B70] px-4">
+                    Sign in again to see your mood, baby activity, and journal data on the calendar.
+                </p>
+            )}
 
             <MonthView
                 currentDate={currentDate}
@@ -89,6 +157,7 @@ export default function Calendar() {
                 <DayDetailsDropdowns
                     moodEntries={selectedMoods}
                     babyActivities={selectedActivities}
+                    babyMoods={selectedBabyMoods}
                     journalEntries={selectedJournals}
                 />
             </div>

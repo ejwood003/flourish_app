@@ -45,10 +45,21 @@ namespace flourishbackend.Data
                 .HasConversion(stringListConverter)
                 .Metadata.SetValueComparer(stringListComparer);
 
-            modelBuilder.Entity<UserProfile>()
-                .Property(e => e.HomeFeatures)
-                .HasConversion(stringListConverter)
-                .Metadata.SetValueComparer(stringListComparer);
+            modelBuilder.Entity<UserProfile>(entity =>
+            {
+                entity.Property(e => e.HomeFeatures)
+                    .HasConversion(stringListConverter)
+                    .Metadata.SetValueComparer(stringListComparer);
+                entity.Property(e => e.NotificationsMoodTimes)
+                    .HasConversion(stringListConverter)
+                    .Metadata.SetValueComparer(stringListComparer);
+                entity.Property(e => e.NotificationsFeedingTimes)
+                    .HasConversion(stringListConverter)
+                    .Metadata.SetValueComparer(stringListComparer);
+                entity.Property(e => e.NotificationsNapTimes)
+                    .HasConversion(stringListConverter)
+                    .Metadata.SetValueComparer(stringListComparer);
+            });
         }
     }
 }

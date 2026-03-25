@@ -1,6 +1,10 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
+import { pickPrimaryUserProfile } from '@/lib/devUser';
+import { listSupportProfiles } from '@/api/supportProfileApi';
+import { createSupportRequest, deleteSupportRequest, listSupportRequests } from '@/api/supportRequestApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -44,39 +48,78 @@ export default function SupportWidget() {
     const [customRequest, setCustomRequest] = useState('');
     const [selectedSuggestions, setSelectedSuggestions] = useState([]);
 
-    const { data: profile } = useQuery({
-        queryKey: ['userProfiles'],
-        queryFn: () => base44.entities.UserProfile.list().then(p => p[0]),
+    const { data: profiles = [] } = useQuery({
+        queryKey: USER_PROFILES_QUERY_KEY,
+        queryFn: () => listUserProfiles(),
+    });
+
+    const profile = pickPrimaryUserProfile(profiles);
+    const userId = profile?.user_id ?? profile?.userId;
+
+    const { data: supportProfiles = [] } = useQuery({
+        queryKey: ['supportProfiles', userId],
+        queryFn: () => listSupportProfiles({ filter: { user_id: userId } }),
+        enabled: Boolean(userId),
     });
 
     const { data: requests = [] } = useQuery({
-        queryKey: ['supportRequests'],
-        queryFn: () => base44.entities.SupportRequest.list(),
+        queryKey: ['supportRequests', userId],
+        queryFn: () => listSupportRequests({ filter: { user_id: userId } }),
+        enabled: Boolean(userId),
     });
 
     const createRequestMutation = useMutation({
-        mutationFn: (data) => base44.entities.SupportRequest.create(data),
-        onSuccess: () => {
+        mutationFn: (data) => createSupportRequest(data),
+        onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['supportRequests'] });
+            if (variables?.user_id) {
+                queryClient.invalidateQueries({
+                    queryKey: ['supportRequests', variables.user_id],
+                });
+            }
             setCustomRequest('');
             setShowCustomInput(false);
         },
     });
 
+    const addSelectedSuggestionsMutation = useMutation({
+        mutationFn: async ({ uid, texts }) => {
+            await Promise.all(
+                texts.map((request_text) =>
+                    createSupportRequest({
+                        user_id: uid,
+                        request_text,
+                        is_custom: false,
+                    }),
+                ),
+            );
+        },
+        onSuccess: (_, { uid }) => {
+            queryClient.invalidateQueries({ queryKey: ['supportRequests', uid] });
+            queryClient.invalidateQueries({ queryKey: ['supportRequests'] });
+            setSelectedSuggestions([]);
+            setShowSuggestions(false);
+        },
+    });
+
     const deleteRequestMutation = useMutation({
-        mutationFn: (id) => base44.entities.SupportRequest.delete(id),
+        mutationFn: (id) => deleteSupportRequest(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['supportRequests'] });
+            if (userId) {
+                queryClient.invalidateQueries({ queryKey: ['supportRequests', userId] });
+            }
         },
     });
 
     const allRequests = requests;
 
     const handleAddCustom = () => {
-        if (customRequest.trim()) {
+        if (customRequest.trim() && userId) {
             createRequestMutation.mutate({
+            user_id: userId,
             request_text: customRequest.trim(),
-            is_custom: true
+            is_custom: true,
             });
         }
     };
@@ -89,7 +132,9 @@ export default function SupportWidget() {
             // If it's existing, allow toggle/deselect by deleting
             const existingRequest = allRequests.find(r => r.request_text === suggestionText);
             if (existingRequest) {
-            deleteRequestMutation.mutate(existingRequest.id);
+            deleteRequestMutation.mutate(
+                existingRequest.support_request_id ?? existingRequest.id,
+            );
             }
         } else {
             // If it's new, toggle in the modal selection
@@ -102,41 +147,14 @@ export default function SupportWidget() {
     };
 
     const handleAddSelectedSuggestions = () => {
-        selectedSuggestions.forEach(suggestionText => {
-            createRequestMutation.mutate({
-            request_text: suggestionText,
-            is_custom: false
-            });
+        if (!userId || selectedSuggestions.length === 0) return;
+        addSelectedSuggestionsMutation.mutate({
+            uid: userId,
+            texts: [...selectedSuggestions],
         });
-        setSelectedSuggestions([]);
-        setShowSuggestions(false);
     };
 
-    const partnerName = profile?.support_name || 'your partner';
-
-    const { data: selectedRequestsData = [] } = useQuery({
-        queryKey: ['selectedSupportRequests'],
-        queryFn: () => base44.entities.SelectedSupportRequest.filter({
-            selected_date: new Date().toISOString().split('T')[0]
-        }),
-    });
-
-    const selectRequestMutation = useMutation({
-        mutationFn: (requestText) => base44.entities.SelectedSupportRequest.create({
-            request_text: requestText,
-            selected_date: new Date().toISOString().split('T')[0]
-        }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['selectedSupportRequests'] });
-        },
-    });
-
-    const deselectRequestMutation = useMutation({
-        mutationFn: (id) => base44.entities.SelectedSupportRequest.delete(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['selectedSupportRequests'] });
-        },
-    });
+    const partnerName = supportProfiles[0]?.support_name || 'your partner';
 
     return (
         <div className="bg-white rounded-3xl p-6 shadow-sm">
@@ -153,13 +171,20 @@ export default function SupportWidget() {
 
             <div className="grid grid-cols-2 gap-2 mb-4">
             {allRequests.map((request) => (
-                <div key={request.id} className="relative group">
+                <div
+                    key={request.support_request_id ?? request.id}
+                    className="relative group"
+                >
                     <div className="w-full p-3 rounded-xl text-sm bg-[#DCEAF0] text-[#3F4A57] font-medium">
                         {request.request_text}
                     </div>
                     <button
                         type="button"
-                        onClick={() => deleteRequestMutation.mutate(request.id)}
+                        onClick={() =>
+                            deleteRequestMutation.mutate(
+                                request.support_request_id ?? request.id,
+                            )
+                        }
                         className="absolute -top-2 -right-2 p-1 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
                         aria-label={`Delete request: ${request.request_text}`}
                     >
@@ -180,7 +205,7 @@ export default function SupportWidget() {
                 />
                 <Button
                 onClick={handleAddCustom}
-                disabled={!customRequest.trim()}
+                disabled={!customRequest.trim() || !userId || createRequestMutation.isPending}
                 className="bg-[#7D6F99] hover:bg-[#6F618A] text-white"
                 >
                 Add
@@ -251,10 +276,16 @@ export default function SupportWidget() {
                 <Button
                     type="button"
                     onClick={handleAddSelectedSuggestions}
-                    disabled={selectedSuggestions.length === 0}
+                    disabled={
+                        selectedSuggestions.length === 0 ||
+                        !userId ||
+                        addSelectedSuggestionsMutation.isPending
+                    }
                     className="w-full bg-[#7D6F99] hover:bg-[#6F618A] text-white"
                 >
-                    Add Selected ({selectedSuggestions.length})
+                    {addSelectedSuggestionsMutation.isPending
+                        ? 'Adding…'
+                        : `Add Selected (${selectedSuggestions.length})`}
                 </Button>
                 </div>
             </DialogContent>

@@ -1,0 +1,19 @@
+Using launch settings from /Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend/Properties/launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:4000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/lukecarr/Desktop/Flourishers/backend/flourishbackend/flourishbackend
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+      Failed to determine the https port for redirect.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 121), @p2='?' (DbType = Boolean), @p3='?' (Size = 2), @p4='?' (DbType = Boolean), @p5='?' (Size = 2), @p6='?' (DbType = Boolean), @p7='?' (Size = 2), @p8='?', @p9='?' (DbType = Boolean), @p10='?' (DbType = Boolean), @p11='?' (DbType = Boolean), @p12='?', @p13='?', @p14='?' (Size = 4), @p15='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "UserProfiles" ("Id", "HomeFeatures", "Notifications_Feeding_Enabled", "Notifications_Feeding_Times", "Notifications_Mood_Enabled", "Notifications_Mood_Times", "Notifications_Nap_Enabled", "Notifications_Nap_Times", "Phone_Number", "Share_Baby_Tracking", "Share_Journals", "Share_Mood", "User_First_Name", "User_Last_Name", "Username", "password")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15);

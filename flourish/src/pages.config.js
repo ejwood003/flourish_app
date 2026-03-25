@@ -56,20 +56,23 @@ import Journal from './pages/Journal.jsx';
 import LiveMeditation from './pages/LiveMeditation.jsx';
 import MeditationPlayer from './pages/MeditationPlayer.jsx';
 import Onboarding from './pages/Onboarding.jsx';
+import Welcome from './pages/Welcome.jsx';
 import PartnerHome from './pages/PartnerHome.jsx';
 import PartnerJournalView from './pages/PartnerJournalView.jsx';
 import Profile from './pages/Profile.jsx';
 import Resources from './pages/Resources.jsx';
 import __Layout from './Layout.jsx';
 import Insights from './pages/Insights.jsx'
+import EditHome from './pages/EditHome.jsx'
 
 
 export const PAGES = {
+    "Welcome": Welcome,
     "ArticleView": ArticleView,
     "Baby": Baby,
     "Calendar": Calendar,
-    // "CalendarDayDetail": CalendarDayDetail,
     "Home": Home,
+    "EditHome": EditHome,
     "Journal": Journal,
     "LiveMeditation": LiveMeditation,
     "MeditationPlayer": MeditationPlayer,

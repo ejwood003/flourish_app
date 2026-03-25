@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { createMoodEntry } from '@/api/moodApi';
 import { Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -18,21 +19,23 @@ const MOOD_OPTIONS = [
 { label: 'Hopeful' },
 ];
 
-export default function MoodChips() {
+export default function MoodChips({ userId }) {
     const [selectedMoods, setSelectedMoods] = useState([]);
     const [saved, setSaved] = useState(false);
     const queryClient = useQueryClient();
 
     const logMoodsMutation = useMutation({
     mutationFn: async (moods) => {
+        if (!userId) throw new Error('Missing user id');
         const now = new Date();
-        const promises = moods.map(mood => {
+        const promises = moods.map((mood) => {
         const moodValue = ['Happy', 'Grateful', 'Hopeful', 'Content'].includes(mood) ? 75 :
                             ['Calm'].includes(mood) ? 60 :
                             ['Tired'].includes(mood) ? 40 :
                             ['Overwhelmed', 'Anxious', 'Irritable'].includes(mood) ? 30 : 20;
-        
-        return base44.entities.MoodEntry.create({
+
+        return createMoodEntry({
+            user_id: userId,
             mood_value: moodValue,
             date: now.toISOString().split('T')[0],
             time: now.toTimeString().slice(0, 5),
@@ -60,7 +63,7 @@ export default function MoodChips() {
     };
 
     const handleSave = () => {
-    if (selectedMoods.length > 0) {
+    if (selectedMoods.length > 0 && userId) {
         logMoodsMutation.mutate(selectedMoods);
     }
     };
@@ -82,7 +85,7 @@ export default function MoodChips() {
                     key={mood.label}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => toggleMood(mood.label)}
-                    disabled={logMoodsMutation.isPending}
+                    disabled={logMoodsMutation.isPending || !userId}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                     isSelected ? 'bg-[#A8C5D5] text-[#4A4458]' : 'bg-[#D9EEF2] text-[#4A4458]'
                     }`}
@@ -96,7 +99,7 @@ export default function MoodChips() {
             {selectedMoods.length > 0 && (
             <Button
                 onClick={handleSave}
-                disabled={logMoodsMutation.isPending}
+                disabled={logMoodsMutation.isPending || !userId}
                 className={`w-full rounded-xl transition-colors ${
                     saved
                     ? 'bg-[#8B7FA8] hover:bg-[#7D6F99] text-white'

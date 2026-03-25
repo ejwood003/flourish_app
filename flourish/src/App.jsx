@@ -1,82 +1,132 @@
-import { Toaster } from "@/components/ui/toaster"
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from '@/lib/query-client'
-import NavigationTracker from '@/lib/NavigationTracker'
-import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Toaster } from '@/components/ui/toaster';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClientInstance } from '@/lib/query-client';
+import { AUTH_ME_KEY } from '@/hooks/useCurrentUserId';
+import NavigationTracker from '@/lib/NavigationTracker';
+import { pagesConfig } from './pages.config';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
-import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { isLoggedIn, getUserType, setAuth, clearAuth } from '@/lib/auth';
+import { fetchSession } from '@/api/authApi';
 
-const { Pages, Layout, mainPage } = pagesConfig;
-const mainPageKey = mainPage ?? Object.keys(Pages)[0];
-const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
+const { Pages, Layout } = pagesConfig;
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-<Layout currentPageName={currentPageName}>{children}</Layout>
-: <>{children}</>;
+const PUBLIC_PAGE_NAMES = ['Welcome', 'Onboarding'];
 
-const AuthenticatedApp = () => {
-const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+const LayoutWrapper = ({ children, currentPageName }) =>
+    Layout ? (
+        <Layout currentPageName={currentPageName}>{children}</Layout>
+    ) : (
+        <>{children}</>
+    );
 
-// Show loading spinner while checking app public settings or auth
-if (isLoadingPublicSettings || isLoadingAuth) {
-return (
-    <div className="fixed inset-0 flex items-center justify-center">
-    <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-    </div>
-);
-}
+const PARTNER_PAGES = ['PartnerHome', 'PartnerJournalView', 'Onboarding', 'Welcome'];
 
-// Handle authentication errors
-if (authError) {
-if (authError.type === 'user_not_registered') {
-    return <UserNotRegisteredError />;
-} else if (authError.type === 'auth_required') {
-    // Redirect to login automatically
-    navigateToLogin();
-    return null;
-}
-}
+const ProtectedRoute = ({ pageName, Page }) => {
+    const loggedIn = isLoggedIn();
+    const userType = getUserType();
 
-// Render the main app
-return (
-    <Routes>
-        <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-            <MainPage />
+    if (!loggedIn) {
+        return <Navigate to="/Welcome" replace />;
+    }
+
+    if (userType === 'partner' && !PARTNER_PAGES.includes(pageName)) {
+        return <Navigate to="/PartnerHome" replace />;
+    }
+
+    return (
+        <LayoutWrapper currentPageName={pageName}>
+            <Page />
         </LayoutWrapper>
-        } />
-        {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-            key={path}
-            path={`/${path}`}
-            element={
-            <LayoutWrapper currentPageName={path}>
-                <Page />
-            </LayoutWrapper>
-            }
-        />
-        ))}
-        <Route path="*" element={<PageNotFound />} />
-    </Routes>
     );
 };
 
+const AppRoutes = () => {
+    const loggedIn = isLoggedIn();
+    const userType = getUserType();
 
-function App() {
+    const homePath = !loggedIn
+        ? '/Welcome'
+        : userType === 'partner'
+            ? '/PartnerHome'
+            : '/Home';
 
-return (
-<AuthProvider>
-    <QueryClientProvider client={queryClientInstance}>
-    <Router>
-        <NavigationTracker />
-        <AuthenticatedApp />
-    </Router>
-    <Toaster />
-    </QueryClientProvider>
-</AuthProvider>
-)
+    return (
+        <Routes>
+            <Route path="/" element={<Navigate to={homePath} replace />} />
+
+            <Route path="/Welcome" element={<Pages.Welcome />} />
+            <Route path="/Onboarding" element={<Pages.Onboarding />} />
+
+            {Object.entries(Pages)
+                .filter(([path]) => !PUBLIC_PAGE_NAMES.includes(path))
+                .map(([path, Page]) => (
+                    <Route
+                        key={path}
+                        path={`/${path}`}
+                        element={<ProtectedRoute pageName={path} Page={Page} />}
+                    />
+                ))}
+            <Route path="*" element={<PageNotFound />} />
+        </Routes>
+    );
+};
+
+function AppShell() {
+    const [sessionReady, setSessionReady] = useState(false);
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const data = await fetchSession();
+                if (cancelled) return;
+                if (data) {
+                    queryClientInstance.setQueryData(AUTH_ME_KEY, data);
+                    const ut = data.user_type ?? data.userType;
+                    const uid = data.user_id ?? data.userId;
+                    if (ut) setAuth(ut, uid);
+                    else clearAuth();
+                } else {
+                    queryClientInstance.setQueryData(AUTH_ME_KEY, null);
+                    clearAuth();
+                }
+            } catch {
+                if (!cancelled) {
+                    queryClientInstance.setQueryData(AUTH_ME_KEY, null);
+                    clearAuth();
+                }
+            } finally {
+                if (!cancelled) setSessionReady(true);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (!sessionReady) {
+        return <div className="min-h-screen bg-[#FEF9F5]" aria-busy="true" />;
+    }
+
+    return (
+        <>
+            <NavigationTracker />
+            <AppRoutes />
+            <Toaster />
+        </>
+    );
 }
 
-export default App
+function App() {
+    return (
+        <QueryClientProvider client={queryClientInstance}>
+            <Router>
+                <AppShell />
+            </Router>
+        </QueryClientProvider>
+    );
+}
+
+export default App;

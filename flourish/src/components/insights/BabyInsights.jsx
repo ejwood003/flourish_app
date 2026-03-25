@@ -1,4 +1,11 @@
 import { format } from 'date-fns';
+import {
+    babyActivityTimestamp,
+    babyActivityType,
+    babyActivityDurationMinutes,
+    babyMoodValue,
+    babyMoodTags,
+} from '@/lib/babyEntityFields';
 import { Moon, Droplets, TrendingUp } from 'lucide-react';
 import {
     BarChart,
@@ -12,27 +19,44 @@ import {
     ResponsiveContainer
 } from 'recharts';
 
-export default function BabyInsights({ babyActivities, babyMoods }) {
+function activityDateKey(a) {
+    const ts = babyActivityTimestamp(a);
+    if (ts == null) return null;
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? null : format(d, 'yyyy-MM-dd');
+}
+
+function moodDateKey(bm) {
+    const ts = babyActivityTimestamp(bm);
+    if (ts == null) return null;
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? null : format(d, 'yyyy-MM-dd');
+}
+
+export default function BabyInsights({ babyActivities = [], babyMoods = [] }) {
     const babyMoodSleepData = babyMoods.map(bm => {
-        const date = format(new Date(bm.timestamp), 'yyyy-MM-dd');
+        const date = moodDateKey(bm);
+        if (!date) return null;
         const naps = babyActivities.filter(
-            a => a.type === 'nap' && format(new Date(a.timestamp), 'yyyy-MM-dd') === date
+            a => babyActivityType(a) === 'nap' && activityDateKey(a) === date
         );
-        const totalSleepHours = naps.reduce((sum, n) => sum + (n.duration_minutes || 0), 0) / 60;
+        const totalSleepHours = naps.reduce((sum, n) => sum + babyActivityDurationMinutes(n), 0) / 60;
 
         return {
-            mood: bm.mood_value,
+            mood: babyMoodValue(bm),
             sleep: Math.round(totalSleepHours * 10) / 10,
-            tags: bm.tags || []
+            tags: babyMoodTags(bm),
         };
-    }).filter(d => d.sleep > 0);
+    }).filter(Boolean).filter(d => d.sleep > 0);
 
     const feedingsByHour = Array.from({ length: 24 }, (_, hour) => {
-        const feedings = babyActivities.filter(
-            a =>
-                ['breastfeed', 'bottle'].includes(a.type) &&
-                new Date(a.timestamp).getHours() === hour
-        );
+        const feedings = babyActivities.filter(a => {
+            const ts = babyActivityTimestamp(a);
+            if (ts == null) return false;
+            const d = new Date(ts);
+            if (Number.isNaN(d.getTime())) return false;
+            return ['breastfeed', 'bottle'].includes(babyActivityType(a)) && d.getHours() === hour;
+        });
 
         return {
             hour: hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`,
@@ -41,9 +65,13 @@ export default function BabyInsights({ babyActivities, babyMoods }) {
     }).filter(d => d.count > 0);
 
     const napsByHour = Array.from({ length: 24 }, (_, hour) => {
-        const naps = babyActivities.filter(
-            a => a.type === 'nap' && new Date(a.timestamp).getHours() === hour
-        );
+        const naps = babyActivities.filter(a => {
+            const ts = babyActivityTimestamp(a);
+            if (ts == null) return false;
+            const d = new Date(ts);
+            if (Number.isNaN(d.getTime())) return false;
+            return babyActivityType(a) === 'nap' && d.getHours() === hour;
+        });
 
         return {
             hour: hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`,
@@ -52,14 +80,15 @@ export default function BabyInsights({ babyActivities, babyMoods }) {
     }).filter(d => d.count > 0);
 
     const babyMoodByNapLength = babyMoods.map(bm => {
-        const date = format(new Date(bm.timestamp), 'yyyy-MM-dd');
+        const date = moodDateKey(bm);
+        if (!date) return null;
         const naps = babyActivities.filter(
-            a => a.type === 'nap' && format(new Date(a.timestamp), 'yyyy-MM-dd') === date
+            a => babyActivityType(a) === 'nap' && activityDateKey(a) === date
         );
-        const totalNapMinutes = naps.reduce((sum, n) => sum + (n.duration_minutes || 0), 0);
+        const totalNapMinutes = naps.reduce((sum, n) => sum + babyActivityDurationMinutes(n), 0);
 
-        return { mood: bm.mood_value, napHours: totalNapMinutes / 60 };
-    });
+        return { mood: babyMoodValue(bm), napHours: totalNapMinutes / 60 };
+    }).filter(Boolean);
 
     const longNaps = babyMoodByNapLength.filter(d => d.napHours >= 2);
     const shortNaps = babyMoodByNapLength.filter(d => d.napHours < 2 && d.napHours > 0);
@@ -74,7 +103,11 @@ export default function BabyInsights({ babyActivities, babyMoods }) {
 
     const tagsByTime = {};
     babyMoods.forEach(bm => {
-        const hour = new Date(bm.timestamp).getHours();
+        const ts = babyActivityTimestamp(bm);
+        if (ts == null) return;
+        const dt = new Date(ts);
+        if (Number.isNaN(dt.getTime())) return;
+        const hour = dt.getHours();
         const period =
             hour >= 6 && hour < 12
                 ? 'Morning'
@@ -82,7 +115,7 @@ export default function BabyInsights({ babyActivities, babyMoods }) {
                     ? 'Afternoon'
                     : 'Evening';
 
-        (bm.tags || []).forEach(tag => {
+        babyMoodTags(bm).forEach(tag => {
             if (!tagsByTime[tag]) {
                 tagsByTime[tag] = { Morning: 0, Afternoon: 0, Evening: 0 };
             }

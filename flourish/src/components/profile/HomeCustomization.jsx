@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -6,24 +7,36 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { GripVertical, Layout, Eye } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import {
+    DEFAULT_HOME_FEATURES,
+    insertFeatureInDefaultSlot,
+    resolveHomeFeatureOrder,
+} from '@/lib/homeFeatures';
 
-const FEATURES = [
-{ id: 'affirmation', label: 'Affirmation' },
-{ id: 'mood', label: 'Mood Check-In' },
-{ id: 'mood_chips', label: 'Mood Chips' },
-{ id: 'baby', label: 'Baby Quick Actions' },
-{ id: 'meditations', label: 'Meditations' },
-{ id: 'breathing', label: 'Guided Breathing' },
-{ id: 'journal', label: 'Journal' },
-{ id: 'support', label: 'Support' },
-{ id: 'tasks', label: 'Upcoming Tasks' },
-{ id: 'articles', label: 'Recommended Articles' },
-{ id: 'mindfulness', label: 'Mindfulness' },
-];
+const FEATURE_LABELS = {
+    affirmation: 'Affirmation',
+    mood: 'Mood Check-In',
+    mood_chips: 'Mood Chips',
+    mindfulness: 'Mindfulness',
+    tasks: 'Upcoming Tasks',
+    baby: 'Baby Quick Actions',
+    support: 'Support',
+    breathing: 'Guided Breathing',
+    journal: 'Journal',
+    meditations: 'Meditations',
+    articles: 'Recommended Articles',
+};
+
+/** Same order as `DEFAULT_HOME_FEATURES` so the editor matches the home screen default. */
+const FEATURES = DEFAULT_HOME_FEATURES.map((id) => ({
+    id,
+    label: FEATURE_LABELS[id],
+}));
 
 export default function HomeCustomization({ profile, onUpdate }) {
 const navigate = useNavigate();
-const enabledFeatures = profile?.home_features || FEATURES.map(f => f.id);
+const stored = profile?.home_features ?? profile?.homeFeatures;
+const enabledFeatures = resolveHomeFeatureOrder(stored, DEFAULT_HOME_FEATURES);
 
 // Get ordered list of enabled features + disabled features at the end
 const orderedFeatures = [
@@ -47,7 +60,13 @@ const toggleFeature = (featureId) => {
 if (enabledFeatures.includes(featureId)) {
     onUpdate({ home_features: enabledFeatures.filter(id => id !== featureId) });
 } else {
-    onUpdate({ home_features: [...enabledFeatures, featureId] });
+    onUpdate({
+        home_features: insertFeatureInDefaultSlot(
+            enabledFeatures,
+            featureId,
+            DEFAULT_HOME_FEATURES,
+        ),
+    });
 }
 };
 

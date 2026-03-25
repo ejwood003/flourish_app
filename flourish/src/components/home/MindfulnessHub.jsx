@@ -20,6 +20,8 @@ const meditationDurations = [
 
 // FUNCTION FOR CARD
 export default function MindfulnessHub({ onBreathingStart }) {
+
+
     const navigate = useNavigate();
     const [showMeditationModal, setShowMeditationModal] = useState(false);
     const [meditationType, setMeditationType] = useState(null);

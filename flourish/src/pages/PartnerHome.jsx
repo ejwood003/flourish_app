@@ -1,11 +1,19 @@
     import React, { useState } from 'react';
-    import { useQuery } from '@tanstack/react-query';
-    import { base44 } from '@/api/base44Client';
-    import { ArrowLeft, Home, Baby, Calendar, Library, Sparkles, Wind, Clock, ThumbsUp, FileText, Heart } from 'lucide-react';
+    import { useQuery, useQueryClient } from '@tanstack/react-query';
+    import { getMoodEntries } from '@/api/moodApi';
+    import { listBabyActivities } from '@/api/babyActivityApi';
+    import { listSupportRequests } from '@/api/supportRequestApi';
+    import { listJournalEntries } from '@/api/journalEntryApi';
+    import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
+    import { createAffirmation } from '@/api/affirmationApi';
+    import { getUserId } from '@/lib/auth';
+    import { babyActivityTimestamp, babyActivityType } from '@/lib/babyEntityFields';
+    import { journalEntryCreatedAt, journalEntryId } from '@/lib/journalEntryFields';
+    import { ArrowLeft, Home, Baby, Calendar, Library, Clock, FileText, Heart } from 'lucide-react';
     import { format } from 'date-fns';
     import { Button } from '@/components/ui/button';
     import { Textarea } from '@/components/ui/textarea';
-    import { Link, useNavigate } from 'react-router-dom';
+    import { Link } from 'react-router-dom';
     import { createPageUrl } from '@/utils';
     import { AnimatePresence } from 'framer-motion';
     import BabyQuickActions from '@/components/home/BabyQuickActions';
@@ -27,55 +35,91 @@
     };
 
     export default function PartnerHome() {
-    const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [message, setMessage] = useState('');
     const [messageSent, setMessageSent] = useState(false);
     const [showBreathing, setShowBreathing] = useState(false);
 
+    const partnerId = getUserId();
+
+    const { data: partnerRows = [] } = useQuery({
+        queryKey: [...USER_PROFILES_QUERY_KEY, 'self', partnerId],
+        queryFn: () =>
+            listUserProfiles({
+                filter: { user_id: partnerId },
+                limit: 5,
+            }),
+        enabled: Boolean(partnerId),
+    });
+    const partnerRow = partnerRows[0];
+    const partnerEmail = partnerRow?.username ?? '';
+
+    const { data: motherRows = [] } = useQuery({
+        queryKey: [...USER_PROFILES_QUERY_KEY, 'bySupportEmail', partnerEmail],
+        queryFn: () =>
+            listUserProfiles({
+                filter: { support_email: partnerEmail },
+                limit: 5,
+            }),
+        enabled: Boolean(partnerEmail),
+    });
+    const motherProfile = motherRows[0];
+    const motherId = motherProfile?.user_id ?? motherProfile?.userId;
+
     const { data: moodEntries = [] } = useQuery({
-        queryKey: ['moodEntries'],
-        queryFn: () => base44.entities.MoodEntry.list('-created_date', 10),
+        queryKey: ['moodEntries', motherId],
+        queryFn: () =>
+            getMoodEntries({
+                filter: { user_id: motherId },
+                sort: '-date',
+                limit: 40,
+            }),
+        enabled: Boolean(motherId),
     });
 
     const { data: activities = [] } = useQuery({
-        queryKey: ['babyActivities'],
-        queryFn: () => base44.entities.BabyActivity.list('-timestamp', 50),
+        queryKey: ['babyActivities', motherId],
+        queryFn: () =>
+            listBabyActivities({
+                filter: { user_id: motherId },
+                sort: '-timestamp',
+                limit: 50,
+            }),
+        enabled: Boolean(motherId),
     });
 
     const { data: supportRequests = [] } = useQuery({
-        queryKey: ['supportRequests'],
-        queryFn: () => base44.entities.SupportRequest.list(),
+        queryKey: ['supportRequests', motherId],
+        queryFn: () =>
+            listSupportRequests({
+                filter: { user_id: motherId },
+                limit: 20,
+            }),
+        enabled: Boolean(motherId),
     });
 
     const { data: journals = [] } = useQuery({
-        queryKey: ['journals'],
-        queryFn: () => base44.entities.JournalEntry.list('-created_date', 5),
+        queryKey: ['journalEntries', motherId],
+        queryFn: () =>
+            listJournalEntries({
+                filter: { user_id: motherId },
+                sort: '-created_date',
+                limit: 5,
+            }),
+        enabled: Boolean(motherId),
     });
 
-    const { data: profiles = [] } = useQuery({
-        queryKey: ['userProfiles'],
-        queryFn: () => base44.entities.UserProfile.list(),
-    });
-
-    const { data: selectedSupport = [] } = useQuery({
-        queryKey: ['selectedSupport'],
-        queryFn: () => base44.entities.SelectedSupportRequest.list('-selected_date', 10),
-    });
-
-    const profile = profiles[0];
-    const todayMoods = moodEntries.filter(m => m.date === new Date().toISOString().split('T')[0]);
+    const todayKey = new Date().toISOString().split('T')[0];
+    const todayMoods = moodEntries.filter((m) => m.date === todayKey);
     const latestMood = todayMoods[0];
-    const todaySupport = selectedSupport.filter(s => s.selected_date === new Date().toISOString().split('T')[0]);
 
     const handleSendMessage = async () => {
         if (!message.trim()) return;
-        
-        const partnerName = profile?.support_name || 'Partner';
-        await base44.entities.CustomAffirmation.create({
-        text: `"${message}" — ${partnerName}`,
-        is_favorite: false,
+        const partnerName = motherProfile?.support_name || 'Partner';
+        await createAffirmation({
+            text: `"${message}" — ${partnerName}`,
         });
-        
+        queryClient.invalidateQueries({ queryKey: ['affirmations'] });
         setMessage('');
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 3000);
@@ -83,42 +127,62 @@
 
     const calculateNextFeeding = () => {
         const feedings = activities
-        .filter(a => ['breastfeed', 'bottle'].includes(a.type))
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
+            .filter((a) => ['breastfeed', 'bottle'].includes(babyActivityType(a)))
+            .sort(
+                (a, b) =>
+                    new Date(babyActivityTimestamp(b)).getTime() -
+                    new Date(babyActivityTimestamp(a)).getTime(),
+            )
+            .slice(0, 5);
 
         if (feedings.length < 2) return null;
-        
+
         let totalMinutes = 0;
         for (let i = 0; i < feedings.length - 1; i++) {
-        const diff = Math.abs(new Date(feedings[i].timestamp) - new Date(feedings[i + 1].timestamp)) / 60000;
-        totalMinutes += diff;
+            const diff =
+                Math.abs(
+                    new Date(babyActivityTimestamp(feedings[i])).getTime() -
+                        new Date(babyActivityTimestamp(feedings[i + 1])).getTime(),
+                ) / 60000;
+            totalMinutes += diff;
         }
         const avgMinutes = Math.round(totalMinutes / (feedings.length - 1));
-        
+
         if (feedings[0]) {
-        return new Date(new Date(feedings[0].timestamp).getTime() + avgMinutes * 60000);
+            return new Date(
+                new Date(babyActivityTimestamp(feedings[0])).getTime() + avgMinutes * 60000,
+            );
         }
         return null;
     };
 
     const calculateNextNap = () => {
         const naps = activities
-        .filter(a => a.type === 'nap')
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
+            .filter((a) => babyActivityType(a) === 'nap')
+            .sort(
+                (a, b) =>
+                    new Date(babyActivityTimestamp(b)).getTime() -
+                    new Date(babyActivityTimestamp(a)).getTime(),
+            )
+            .slice(0, 5);
 
         if (naps.length < 2) return null;
-        
+
         let totalMinutes = 0;
         for (let i = 0; i < naps.length - 1; i++) {
-        const diff = Math.abs(new Date(naps[i].timestamp) - new Date(naps[i + 1].timestamp)) / 60000;
-        totalMinutes += diff;
+            const diff =
+                Math.abs(
+                    new Date(babyActivityTimestamp(naps[i])).getTime() -
+                        new Date(babyActivityTimestamp(naps[i + 1])).getTime(),
+                ) / 60000;
+            totalMinutes += diff;
         }
         const avgMinutes = Math.round(totalMinutes / (naps.length - 1));
-        
+
         if (naps[0]) {
-        return new Date(new Date(naps[0].timestamp).getTime() + avgMinutes * 60000);
+            return new Date(
+                new Date(babyActivityTimestamp(naps[0])).getTime() + avgMinutes * 60000,
+            );
         }
         return null;
     };
@@ -176,7 +240,7 @@
                     <div className="flex-1">
                     <p className="text-xl font-semibold text-[#4A4458] mb-1">{getMoodLabel(latestMood.mood_value)}</p>
                     <p className="text-sm text-[#5A4B70]">
-                        {latestMood.time ? `Logged at ${latestMood.time}` : `Logged ${format(new Date(latestMood.created_date), 'h:mm a')}`}
+                        {latestMood.time ? `Logged at ${latestMood.time}` : 'Logged today'}
                     </p>
                     {todayMoods.length > 1 && (
                         <p className="text-xs text-[#5A4B70] mt-1">Logged {todayMoods.length} moods today</p>
@@ -236,19 +300,18 @@
                 </div>
             </div>
 
-            {/* Support Chips - Show selected support for today */}
-            {todaySupport.length > 0 && (
+            {supportRequests.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                 <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
-                    Support Requested Today
+                    Support requests
                 </p>
                 <div className="grid grid-cols-2 gap-2">
-                    {todaySupport.map((request) => (
+                    {supportRequests.slice(0, 6).map((request) => (
                     <div
-                        key={request.id}
+                        key={request.support_request_id ?? request.id}
                         className="p-3 bg-[#C4B5D0] text-white rounded-xl text-sm text-center"
                     >
-                        {request.request_text}
+                        {request.request_text ?? request.RequestText}
                     </div>
                     ))}
                 </div>
@@ -289,16 +352,16 @@
             </div>
 
             {/* Journal Entries */}
-            {profile?.share_journals && journals.length > 0 && (
+            {motherProfile?.share_journals && journals.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                 <p className="text-xs font-medium text-[#5A4B70] mb-4 uppercase tracking-wide">
                     Journal Entries
                 </p>
                 <div className="space-y-3">
                     {journals.slice(0, 3).map((entry) => (
-                    <div key={entry.id} className="p-4 bg-[#F5EEF8] rounded-xl">
+                    <div key={journalEntryId(entry)} className="p-4 bg-[#F5EEF8] rounded-xl">
                         <p className="text-xs text-[#5A4B70] mb-2">
-                        {format(new Date(entry.created_date), 'MMM d, yyyy')}
+                        {format(journalEntryCreatedAt(entry) ?? new Date(), 'MMM d, yyyy')}
                         </p>
                         {entry.prompt && (
                         <p className="text-sm font-medium text-[#5A4B70] mb-2">{entry.prompt}</p>

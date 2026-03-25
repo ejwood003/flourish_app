@@ -3,10 +3,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { User, Baby, Users, Trash2 } from 'lucide-react';
+import { User, Baby, Users, Trash2, Loader2, Check } from 'lucide-react';
 import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
 
-export default function PersonalInfoSection({ profile, user, onUpdate }) {
+export default function PersonalInfoSection({
+  profile,
+  user,
+  onUpdate,
+  onSave,
+  isSaving,
+  saveSuccess,
+}) {
 const [showRemoveDialog, setShowRemoveDialog] = useState(false);
 
 const handleRemoveSupport = () => {
@@ -209,6 +216,31 @@ return (
       title="Remove support person?"
       description="This will clear all support person information from your profile."
     />
+
+    <Button
+      type="button"
+      onClick={onSave}
+      disabled={isSaving}
+      className={`w-full py-6 rounded-2xl font-medium text-white transition-all ${
+        saveSuccess
+          ? 'bg-green-500 hover:bg-green-600'
+          : 'bg-[#5A4B70] hover:bg-[#5A4B70]'
+      }`}
+    >
+      {saveSuccess ? (
+        <>
+          <Check className="w-5 h-5 mr-2" />
+          Saved Successfully
+        </>
+      ) : isSaving ? (
+        <>
+          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+          Saving...
+        </>
+      ) : (
+        'Save Changes'
+      )}
+    </Button>
   </div>
 );
 }

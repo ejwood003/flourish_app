@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// @ts-nocheck
+import React, { useState, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    listUserProfiles,
+    updateUserProfile,
+    USER_PROFILES_QUERY_KEY,
+} from '@/api/userProfileApi';
 import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -19,15 +24,37 @@ import UpcomingTasks from '@/components/home/UpcomingTasks';
 import RecommendedArticle from '@/components/home/RecommendedArticle';
 import MindfulnessHub from '@/components/home/MindfulnessHub';
 import BabyQuickActions from '@/components/home/BabyQuickActions';
+import { useCurrentUserId } from '@/hooks/useCurrentUserId';
+import {
+    DEFAULT_HOME_FEATURES,
+    isIncompleteStoredHomeFeatures,
+    resolveHomeFeatureOrder,
+    sanitizeHomeFeatureIds,
+} from '@/lib/homeFeatures';
 
 export default function Home() {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [showBreathing, setShowBreathing] = useState(false); // set breathing to false to hide the breathing card
 
-    // Get the user's profiles
+    const { userId: sessionUserId } = useCurrentUserId();
+
     const { data: profiles = [], refetch } = useQuery({
-        queryKey: ['userProfiles'],
-        queryFn: () => base44.entities.UserProfile.list(),
+        queryKey: [...USER_PROFILES_QUERY_KEY, 'mine', sessionUserId],
+        queryFn: () =>
+            listUserProfiles({
+                filter: { user_id: sessionUserId },
+                limit: 10,
+            }),
+        enabled: Boolean(sessionUserId),
+    });
+
+    const { mutate: repairHomeFeatures, isPending: repairHomeFeaturesPending } = useMutation({
+        mutationFn: ({ userId }) =>
+            updateUserProfile(userId, { home_features: [...DEFAULT_HOME_FEATURES] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: USER_PROFILES_QUERY_KEY });
+        },
     });
 
     // Force refetch on mount
@@ -35,10 +62,35 @@ export default function Home() {
         refetch();
     }, [refetch]);
 
-    // Set the profile and default features
     const profile = profiles[0];
-    const defaultFeatures = ['affirmation', 'mood', 'mood_chips', 'mindfulness', 'tasks', 'baby', 'support', 'breathing', 'journal', 'meditations', 'articles'];
-    const enabledFeatures = profile?.home_features || defaultFeatures;
+
+    const storedFeatures = profile?.home_features ?? profile?.homeFeatures;
+    const homeFeaturesSerialized = JSON.stringify(storedFeatures ?? null);
+
+    // Persist full `home_features` when SQLite still has a 1–2 id fragment so Profile / refetch match the UI.
+    useEffect(() => {
+        const userId = profile?.user_id ?? profile?.userId;
+        if (!userId || repairHomeFeaturesPending) return;
+        const cleaned = sanitizeHomeFeatureIds(
+            profile?.home_features ?? profile?.homeFeatures,
+            DEFAULT_HOME_FEATURES,
+        );
+        if (!isIncompleteStoredHomeFeatures(cleaned, DEFAULT_HOME_FEATURES)) {
+            return;
+        }
+        repairHomeFeatures({ userId });
+    }, [
+        profile?.user_id,
+        profile?.userId,
+        homeFeaturesSerialized,
+        repairHomeFeaturesPending,
+        repairHomeFeatures,
+    ]);
+
+    const enabledFeatures = resolveHomeFeatureOrder(
+        storedFeatures,
+        DEFAULT_HOME_FEATURES,
+    );
 
     // Render the features based on the enabled features/order
     const renderFeature = (featureId) => {
@@ -46,9 +98,19 @@ export default function Home() {
         case 'affirmation':
             return <AffirmationCarousel key={featureId} />;
         case 'mood':
-            return <MoodCheckIn key={featureId} />;
+            return (
+                <MoodCheckIn
+                    key={featureId}
+                    userId={profile?.user_id ?? profile?.userId ?? sessionUserId}
+                />
+            );
         case 'mood_chips':
-            return <MoodChips key={featureId} />;
+            return (
+                <MoodChips
+                    key={featureId}
+                    userId={profile?.user_id ?? profile?.userId ?? sessionUserId}
+                />
+            );
         case 'baby':
             return <BabyQuickActions key={featureId} />;
         case 'meditations':
@@ -79,10 +141,10 @@ export default function Home() {
                 return feature;
                 })}
 
-                {/* View Partner Screen Button */}
-                <button onClick={() => navigate(createPageUrl('PartnerHome'))} className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2">
+                {/* Edit Home Screen Button */}
+                <button onClick={() => navigate(createPageUrl('EditHome'))} className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2">
                     <Eye className="w-4 h-4" />
-                    View Partner Screen
+                    Edit Home Screen
                 </button>
             </div>
 

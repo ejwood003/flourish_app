@@ -33,5 +33,4 @@ TestResults/
 
 # Local databases
 *.db
-*.sqlite
 *.sqlite3

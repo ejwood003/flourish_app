@@ -1,10 +1,14 @@
     import React, { useState } from 'react';
     import { motion, AnimatePresence } from 'framer-motion';
-    import { Milk, Moon, MoreHorizontal, X } from 'lucide-react';
+    import { Milk, Moon, MoreHorizontal } from 'lucide-react';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
     import { Textarea } from '@/components/ui/textarea';
-    import { base44 } from '@/api/base44Client';
+    import { useQuery, useQueryClient } from '@tanstack/react-query';
+    import { createBabyActivity, updateBabyActivity } from '@/api/babyActivityApi';
+    import { createBabyMood } from '@/api/babyMoodApi';
+    import { createBabyProfile, listBabyProfiles } from '@/api/babyProfileApi';
+    import { babyActivityId } from '@/lib/babyEntityFields';
     import { format } from 'date-fns';
 
     import { Smile } from 'lucide-react';
@@ -24,7 +28,28 @@
         { id: 'other', label: 'Other' },
     ];
 
-    export default function QuickAddSection({ onActivityAdded, editingActivity, onCancelEdit }) {
+    export default function QuickAddSection({ userId, onActivityAdded, editingActivity, onCancelEdit }) {
+        const queryClient = useQueryClient();
+        const { data: babyProfiles = [] } = useQuery({
+            queryKey: ['babyProfiles', userId],
+            queryFn: () => listBabyProfiles({ filter: { user_id: userId } }),
+            enabled: Boolean(userId),
+        });
+
+        const ensureBabyId = async () => {
+            if (!userId) return '';
+            const fromList = babyProfiles[0]?.baby_id ?? babyProfiles[0]?.babyId;
+            if (fromList) return String(fromList);
+            const created = await createBabyProfile({
+                baby_name: 'Baby',
+                baby_date_of_birth: '2024-06-01T00:00:00.000Z',
+                user_id: userId,
+            });
+            await queryClient.invalidateQueries({ queryKey: ['babyProfiles'] });
+            const bid = created?.baby_id ?? created?.babyId;
+            return bid ? String(bid) : '';
+        };
+
         // UI state: which tile/subtype is currently expanded.
         const [selectedMain, setSelectedMain] = useState(null);
         const [selectedFeedingType, setSelectedFeedingType] = useState(null);
@@ -48,7 +73,8 @@
         // When editing an existing activity, pre-fill the UI selections + form fields from that record.
         React.useEffect(() => {
             if (editingActivity) {
-            const timestamp = format(new Date(editingActivity.timestamp), "yyyy-MM-dd'T'HH:mm");
+            const ts = editingActivity.timestamp ?? editingActivity.Timestamp;
+            const timestamp = format(new Date(ts), "yyyy-MM-dd'T'HH:mm");
             
             if (editingActivity.type === 'breastfeed' || editingActivity.type === 'bottle') {
                 setSelectedMain('feeding');
@@ -56,7 +82,7 @@
             } else if (editingActivity.type === 'nap') {
                 setSelectedMain('nap');
                 const endTime = editingActivity.duration_minutes
-                ? format(new Date(new Date(editingActivity.timestamp).getTime() + editingActivity.duration_minutes * 60000), "yyyy-MM-dd'T'HH:mm")
+                ? format(new Date(new Date(ts).getTime() + editingActivity.duration_minutes * 60000), "yyyy-MM-dd'T'HH:mm")
                 : timestamp;
                 setFormData(prev => ({ ...prev, nap_start: timestamp, nap_end: endTime }));
             } else if (editingActivity.type === 'other') {
@@ -98,36 +124,43 @@
         };
 
         const handleSave = async () => {
+            if (!userId) return;
             setSaving(true);
-        
+
             try {
+                const bid = await ensureBabyId();
+                if (!bid) {
+                    console.error('No baby profile; could not save.');
+                    return;
+                }
+
                 let data = {};
-        
+
                 if (selectedMain === 'feeding') {
                     data = {
                         type: selectedFeedingType,
                         timestamp: new Date(formData.timestamp).toISOString(),
                         notes: formData.notes || undefined,
                     };
-        
+
                     if (selectedFeedingType === 'breastfeed') {
-                        data.breast_side = formData.breast_side;
+                        data.breast_side = formData.breast_side || undefined;
                         data.duration_minutes = formData.duration_minutes
-                            ? parseInt(formData.duration_minutes)
+                            ? parseInt(formData.duration_minutes, 10)
                             : undefined;
                     } else if (selectedFeedingType === 'bottle') {
                         data.amount_oz = formData.amount_oz
                             ? parseFloat(formData.amount_oz)
                             : undefined;
                     } else {
-                        data.food_type = formData.food_type;
-                        data.food_amount = formData.food_amount;
+                        data.food_type = formData.food_type || undefined;
+                        data.food_amount = formData.food_amount || undefined;
                     }
                 } else if (selectedMain === 'nap') {
                     const start = new Date(formData.nap_start);
                     const end = formData.nap_end ? new Date(formData.nap_end) : null;
                     const duration = end ? Math.round((end - start) / 60000) : undefined;
-        
+
                     data = {
                         type: 'nap',
                         timestamp: start.toISOString(),
@@ -135,12 +168,16 @@
                         notes: formData.notes || undefined,
                     };
                 } else if (selectedMain === 'mood') {
-                    await base44.entities.BabyMood.create({
+                    await createBabyMood({
+                        baby_id: bid,
+                        user_id: userId,
                         mood_value: formData.baby_mood_value,
                         timestamp: new Date(formData.timestamp).toISOString(),
-                        tags: formData.baby_mood_tags,
+                        tags: Array.isArray(formData.baby_mood_tags)
+                            ? [...formData.baby_mood_tags]
+                            : [],
                     });
-        
+                    queryClient.invalidateQueries({ queryKey: ['babyMoods'] });
                     onActivityAdded?.();
                     resetForm();
                     return;
@@ -148,17 +185,22 @@
                     data = {
                         type: 'other',
                         timestamp: new Date(formData.timestamp).toISOString(),
-                        custom_type: formData.custom_type,
+                        custom_type: formData.custom_type || undefined,
                         notes: formData.notes || undefined,
                     };
                 }
-        
-                if (editingActivity) {
-                    await base44.entities.BabyActivity.update(editingActivity.id, data);
+
+                const existingId = babyActivityId(editingActivity);
+                if (editingActivity && existingId) {
+                    await updateBabyActivity(existingId, data);
                 } else {
-                    await base44.entities.BabyActivity.create(data);
+                    await createBabyActivity({
+                        ...data,
+                        baby_id: bid,
+                        user_id: userId,
+                    });
                 }
-        
+
                 onActivityAdded?.();
                 resetForm();
                 onCancelEdit?.();

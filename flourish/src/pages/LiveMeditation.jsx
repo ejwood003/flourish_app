@@ -1,8 +1,13 @@
     import React, { useState, useEffect } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { createPageUrl } from '@/utils';
-    import { useQueryClient } from '@tanstack/react-query';
-    import { base44 } from '@/api/base44Client';
+    import { useQuery, useQueryClient } from '@tanstack/react-query';
+    import {
+        listSavedResources,
+        createSavedResource,
+        deleteSavedResource,
+    } from '@/api/savedResourceApi';
+    import { getUserId } from '@/lib/auth';
     import { ArrowLeft, Star } from 'lucide-react';
 
     const meditationContent = {
@@ -21,7 +26,23 @@
 
     const [elapsed, setElapsed] = useState(0);
     const [isPlaying, setIsPlaying] = useState(true);
-    const [isStarred, setIsStarred] = useState(false);
+    const uid = getUserId();
+    const meditationId = `live_${type}_${duration}`;
+
+    const { data: savedResources = [] } = useQuery({
+        queryKey: ['savedMeditations', uid],
+        queryFn: () =>
+            listSavedResources({
+                filter: { user_id: uid },
+                limit: 200,
+            }),
+        enabled: Boolean(uid),
+    });
+
+    const savedRow = savedResources.find(
+        (r) => r.resource_id === meditationId && r.resource_type === 'meditation',
+    );
+    const isStarred = Boolean(savedRow);
 
     useEffect(() => {
         if (!isPlaying) return;
@@ -40,18 +61,18 @@
     }, [isPlaying, duration]);
 
     const handleToggleStar = async () => {
-        const meditationId = `live_${type}_${duration}`;
-        
-        if (isStarred) {
-        setIsStarred(false);
+        if (!uid) return;
+        if (savedRow) {
+            const sid = savedRow.saved_resource_id ?? savedRow.SavedResourceId ?? savedRow.id;
+            await deleteSavedResource(sid);
         } else {
-        await base44.entities.SavedResource.create({
-            resource_id: meditationId,
-            resource_type: 'meditation',
-        });
-        setIsStarred(true);
+            await createSavedResource({
+                resource_id: meditationId,
+                resource_type: 'meditation',
+                user_id: uid,
+            });
         }
-        queryClient.invalidateQueries({ queryKey: ['savedMeditations'] });
+        queryClient.invalidateQueries({ queryKey: ['savedMeditations', uid] });
     };
 
     const formatTime = (seconds) => {

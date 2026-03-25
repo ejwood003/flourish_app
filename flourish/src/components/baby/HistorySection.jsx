@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { format, startOfWeek, addDays, isToday, isSameDay, startOfMonth, endOfMonth, addMonths, subMonths, addMinutes, differenceInMinutes } from 'date-fns';
+import { format, startOfWeek, addDays, isToday, isSameDay, addMonths, subMonths, addMinutes, differenceInMinutes } from 'date-fns';
 import { ChevronLeft, ChevronRight, Milk, Baby, Moon, MoreHorizontal, Trash2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { deleteBabyActivity } from '@/api/babyActivityApi';
 import { useQueryClient } from '@tanstack/react-query';
+import { babyActivityId, babyActivityTimestamp } from '@/lib/babyEntityFields';
 import DeleteConfirmationDialog from '@/components/ui/delete-confirmation-dialog';
 
 const iconMap = {
@@ -36,10 +37,12 @@ export default function HistorySection({ activities, onEditActivity }) {
 
     const handleDelete = async () => {
         try {
-        await base44.entities.BabyActivity.delete(deleteDialog.id);
-        queryClient.invalidateQueries({ queryKey: ['babyActivities'] });
+            if (deleteDialog.id) {
+                await deleteBabyActivity(deleteDialog.id);
+                queryClient.invalidateQueries({ queryKey: ['babyActivities'] });
+            }
         } catch (error) {
-        console.error('Error deleting activity:', error);
+            console.error('Error deleting activity:', error);
         }
         setDeleteDialog({ open: false, id: null });
     };
@@ -47,7 +50,10 @@ export default function HistorySection({ activities, onEditActivity }) {
     const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
     const getActivitiesForDate = (date) => {
-        return activities.filter(a => isSameDay(new Date(a.timestamp), date));
+        return activities.filter((a) => {
+            const ts = babyActivityTimestamp(a);
+            return ts && isSameDay(new Date(ts), date);
+        });
     };
 
     const getActivityTypes = (date) => {
@@ -69,48 +75,56 @@ export default function HistorySection({ activities, onEditActivity }) {
 
     const calculateNextFeeding = () => {
         const feedings = activities
-        .filter(a => ['breastfeed', 'bottle'].includes(a.type))
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
+            .filter((a) => ['breastfeed', 'bottle'].includes(a.type))
+            .sort(
+                (a, b) =>
+                    new Date(babyActivityTimestamp(b)).getTime() -
+                    new Date(babyActivityTimestamp(a)).getTime(),
+            )
+            .slice(0, 5);
 
         if (feedings.length < 2) return null;
 
         let totalMinutes = 0;
         for (let i = 0; i < feedings.length - 1; i++) {
-        const diff = differenceInMinutes(
-            new Date(feedings[i].timestamp),
-            new Date(feedings[i + 1].timestamp)
-        );
-        totalMinutes += diff;
+            const diff = differenceInMinutes(
+                new Date(babyActivityTimestamp(feedings[i])),
+                new Date(babyActivityTimestamp(feedings[i + 1])),
+            );
+            totalMinutes += diff;
         }
         const avgMinutes = Math.round(totalMinutes / (feedings.length - 1));
 
         if (feedings[0]) {
-        return addMinutes(new Date(feedings[0].timestamp), avgMinutes);
+            return addMinutes(new Date(babyActivityTimestamp(feedings[0])), avgMinutes);
         }
         return null;
     };
 
     const calculateNextNap = () => {
         const naps = activities
-        .filter(a => a.type === 'nap')
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
+            .filter((a) => a.type === 'nap')
+            .sort(
+                (a, b) =>
+                    new Date(babyActivityTimestamp(b)).getTime() -
+                    new Date(babyActivityTimestamp(a)).getTime(),
+            )
+            .slice(0, 5);
 
         if (naps.length < 2) return null;
 
         let totalMinutes = 0;
         for (let i = 0; i < naps.length - 1; i++) {
-        const diff = differenceInMinutes(
-            new Date(naps[i].timestamp),
-            new Date(naps[i + 1].timestamp)
-        );
-        totalMinutes += diff;
+            const diff = differenceInMinutes(
+                new Date(babyActivityTimestamp(naps[i])),
+                new Date(babyActivityTimestamp(naps[i + 1])),
+            );
+            totalMinutes += diff;
         }
         const avgMinutes = Math.round(totalMinutes / (naps.length - 1));
 
         if (naps[0]) {
-        return addMinutes(new Date(naps[0].timestamp), avgMinutes);
+            return addMinutes(new Date(babyActivityTimestamp(naps[0])), avgMinutes);
         }
         return null;
     };
@@ -120,47 +134,57 @@ export default function HistorySection({ activities, onEditActivity }) {
         
         // Get average intervals
         const feedings = activities
-        .filter(a => ['breastfeed', 'bottle'].includes(a.type))
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
+            .filter((a) => ['breastfeed', 'bottle'].includes(a.type))
+            .sort(
+                (a, b) =>
+                    new Date(babyActivityTimestamp(b)).getTime() -
+                    new Date(babyActivityTimestamp(a)).getTime(),
+            )
+            .slice(0, 5);
 
         const naps = activities
-        .filter(a => a.type === 'nap')
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 5);
+            .filter((a) => a.type === 'nap')
+            .sort(
+                (a, b) =>
+                    new Date(babyActivityTimestamp(b)).getTime() -
+                    new Date(babyActivityTimestamp(a)).getTime(),
+            )
+            .slice(0, 5);
 
         // Calculate feeding interval
         let feedingInterval = null;
         if (feedings.length >= 2) {
-        let totalMinutes = 0;
-        for (let i = 0; i < feedings.length - 1; i++) {
-            const diff = differenceInMinutes(
-            new Date(feedings[i].timestamp),
-            new Date(feedings[i + 1].timestamp)
-            );
-            totalMinutes += diff;
-        }
-        feedingInterval = Math.round(totalMinutes / (feedings.length - 1));
+            let totalMinutes = 0;
+            for (let i = 0; i < feedings.length - 1; i++) {
+                const diff = differenceInMinutes(
+                    new Date(babyActivityTimestamp(feedings[i])),
+                    new Date(babyActivityTimestamp(feedings[i + 1])),
+                );
+                totalMinutes += diff;
+            }
+            feedingInterval = Math.round(totalMinutes / (feedings.length - 1));
         }
 
         // Calculate nap interval
         let napInterval = null;
         if (naps.length >= 2) {
-        let totalMinutes = 0;
-        for (let i = 0; i < naps.length - 1; i++) {
-            const diff = differenceInMinutes(
-            new Date(naps[i].timestamp),
-            new Date(naps[i + 1].timestamp)
-            );
-            totalMinutes += diff;
-        }
-        napInterval = Math.round(totalMinutes / (naps.length - 1));
+            let totalMinutes = 0;
+            for (let i = 0; i < naps.length - 1; i++) {
+                const diff = differenceInMinutes(
+                    new Date(babyActivityTimestamp(naps[i])),
+                    new Date(babyActivityTimestamp(naps[i + 1])),
+                );
+                totalMinutes += diff;
+            }
+            napInterval = Math.round(totalMinutes / (naps.length - 1));
         }
 
         // Generate estimates for next 3 days
         const now = new Date();
-        let currentFeedingTime = feedings[0] ? new Date(feedings[0].timestamp) : now;
-        let currentNapTime = naps[0] ? new Date(naps[0].timestamp) : now;
+        let currentFeedingTime = feedings[0]
+            ? new Date(babyActivityTimestamp(feedings[0]))
+            : now;
+        let currentNapTime = naps[0] ? new Date(babyActivityTimestamp(naps[0])) : now;
 
         // Only show estimates for selected date if it's today or future
         const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
@@ -197,9 +221,17 @@ export default function HistorySection({ activities, onEditActivity }) {
         return estimates;
     };
 
-    const actualTimeline = getFilteredTimeline().sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const actualTimeline = getFilteredTimeline().sort(
+        (a, b) =>
+            new Date(babyActivityTimestamp(a)).getTime() -
+            new Date(babyActivityTimestamp(b)).getTime(),
+    );
     const futureEstimates = getFutureEstimates();
-    const timeline = [...actualTimeline, ...futureEstimates].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const timeline = [...actualTimeline, ...futureEstimates].sort(
+        (a, b) =>
+            new Date(a.timestamp ?? babyActivityTimestamp(a)).getTime() -
+            new Date(b.timestamp ?? babyActivityTimestamp(b)).getTime(),
+    );
 
     const handlePrevWeek = () => {
         setWeekStart(addDays(weekStart, -7));
@@ -310,10 +342,12 @@ export default function HistorySection({ activities, onEditActivity }) {
                 const Icon = iconMap[activity.type] || MoreHorizontal;
                 const colors = colorMap[activity.type] || colorMap.other;
                 const isEstimate = activity.isEstimate;
-                
+                const rowKey = isEstimate ? activity.id : babyActivityId(activity);
+                const ts = activity.timestamp ?? babyActivityTimestamp(activity);
+
                 return (
                 <div
-                    key={activity.id}
+                    key={rowKey}
                     className={`flex items-start gap-3 w-full group ${isEstimate ? 'opacity-40' : ''}`}
                 >
                     <button
@@ -333,7 +367,7 @@ export default function HistorySection({ activities, onEditActivity }) {
                             activity.custom_type || activity.type}
                         </p>
                         <p className="text-xs text-[#5A4B70] flex-shrink-0">
-                            {format(new Date(activity.timestamp), 'h:mm a')}
+                            {ts ? format(new Date(ts), 'h:mm a') : ''}
                         </p>
                         </div>
                     {!isEstimate && (
@@ -369,9 +403,10 @@ export default function HistorySection({ activities, onEditActivity }) {
                     </button>
                     {!isEstimate && (
                     <button
+                        type="button"
                         onClick={(e) => {
                         e.stopPropagation();
-                        setDeleteDialog({ open: true, id: activity.id });
+                        setDeleteDialog({ open: true, id: babyActivityId(activity) });
                         }}
                         className="opacity-0 group-hover:opacity-100 p-2 hover:bg-[#F5E6EA] rounded-lg transition-all self-start mt-1"
                     >

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flourish.Models
 {
@@ -11,5 +12,11 @@ namespace Flourish.Models
         public string BabyName { get; set; }
 
         public DateTime BabyDateOfBirth { get; set; }
+
+        [Required]
+        [ForeignKey("UserProfile")]
+        public Guid UserId { get; set; }
+
+        public UserProfile UserProfile { get; set; }
     }
 }
