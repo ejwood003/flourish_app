@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
@@ -173,8 +174,12 @@ namespace flourishbackend.Controllers
             if (entity == null)
                 return BadRequest(new { error = "Could not parse request body" });
 
-            // Ensure a new GUID is set for the Id
-            var idProp = entityType.GetProperty("Id");
+            if (entity is Flourish.Models.UserProfile userProfile)
+                userProfile.EnsureDefaults();
+
+            // Ensure a new GUID is set for the primary key ([Key] or legacy "Id")
+            var idProp = entityType.GetProperties().FirstOrDefault(p => Attribute.IsDefined(p, typeof(System.ComponentModel.DataAnnotations.KeyAttribute)))
+                ?? entityType.GetProperty("Id");
             if (idProp != null)
             {
                 idProp.SetValue(entity, Guid.NewGuid());
@@ -241,6 +246,7 @@ namespace flourishbackend.Controllers
             {
                 // Skip id and created_date — these should not be updated
                 if (key.Equals("id", StringComparison.OrdinalIgnoreCase) ||
+                    key.Equals("user_id", StringComparison.OrdinalIgnoreCase) ||
                     key.Equals("created_date", StringComparison.OrdinalIgnoreCase))
                     continue;
 
@@ -250,6 +256,15 @@ namespace flourishbackend.Controllers
                     try
                     {
                         var convertedValue = ConvertJsonElement(value, propInfo.PropertyType);
+                        if (convertedValue == null)
+                        {
+                            // Do not assign null into non-nullable value types (omit = no change)
+                            var u = Nullable.GetUnderlyingType(propInfo.PropertyType);
+                            if (u == null && propInfo.PropertyType.IsValueType)
+                                continue;
+                            propInfo.SetValue(existing, null);
+                            continue;
+                        }
                         propInfo.SetValue(existing, convertedValue);
                     }
                     catch
@@ -316,7 +331,11 @@ namespace flourishbackend.Controllers
             var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
             if (element.ValueKind == JsonValueKind.Null)
+            {
+                if (underlyingType == typeof(List<string>))
+                    return new List<string>();
                 return null;
+            }
 
             if (underlyingType == typeof(string))
                 return element.GetString();

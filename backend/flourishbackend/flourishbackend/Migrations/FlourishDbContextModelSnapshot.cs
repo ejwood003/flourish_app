@@ -308,6 +308,24 @@ namespace flourishbackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("BabyDateOfBirth")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BabyFullName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BabyGender")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DateOfBirth")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("HomeFeatures")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -315,21 +333,21 @@ namespace flourishbackend.Migrations
                     b.Property<bool>("NotificationsFeedingEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.PrimitiveCollection<string>("NotificationsFeedingTimes")
+                    b.Property<string>("NotificationsFeedingTimes")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("NotificationsMoodEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.PrimitiveCollection<string>("NotificationsMoodTimes")
+                    b.Property<string>("NotificationsMoodTimes")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("NotificationsNapEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.PrimitiveCollection<string>("NotificationsNapTimes")
+                    b.Property<string>("NotificationsNapTimes")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -339,6 +357,28 @@ namespace flourishbackend.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("ShareBabyTracking")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShareJournals")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShareMood")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SupportEmail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SupportName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SupportPhone")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SupportType")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserFirstName")

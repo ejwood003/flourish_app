@@ -1,15 +1,16 @@
-    import React, { useState } from 'react';
-    import { Button } from '@/components/ui/button';
-    import { Input } from '@/components/ui/input';
-    import { ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft } from 'lucide-react';
 
-    export default function SignInStep({ onSignIn, onBack }) {
-    const [email, setEmail] = useState('');
+export default function SignInStep({ onSignIn, onBack }) {
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSignIn({ email, password });
+        onSignIn({ username, password });
     };
 
     return (
@@ -27,31 +28,29 @@
             <p className="text-lg text-[#7D7589]">Sign in to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-            <label htmlFor="signin-email" className="block text-sm font-medium text-[#4A4458] mb-2">Email</label>
+        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm space-y-5">
+            <div className="space-y-2">
+            <Label htmlFor="username" className="text-[#4A4458]">Username</Label>
             <Input
-                id="signin-email"
-                name="signin-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="rounded-xl"
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Your username"
+                className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
                 required
             />
             </div>
 
-            <div>
-            <label htmlFor="signin-password" className="block text-sm font-medium text-[#4A4458] mb-2">Password</label>
+            <div className="space-y-2">
+            <Label htmlFor="signin-password" className="text-[#4A4458]">Password</Label>
             <Input
                 id="signin-password"
-                name="signin-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="rounded-xl"
+                className="rounded-xl border-[#E8E4F3] focus:border-[#8B7A9F]"
                 required
             />
             </div>
@@ -65,4 +64,4 @@
         </form>
         </div>
     );
-    }
+}
