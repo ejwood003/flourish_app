@@ -182,8 +182,8 @@ namespace flourishbackend.Controllers
             if (entity == null)
                 return BadRequest(new { error = "Could not parse request body" });
 
-            // Ensure a new GUID is set for the Id
-            var idProp = entityType.GetProperty("Id");
+            // Ensure a new GUID is set for the primary key
+            var idProp = entityType.GetProperties().FirstOrDefault(p => Attribute.IsDefined(p, typeof(System.ComponentModel.DataAnnotations.KeyAttribute))) ?? entityType.GetProperty("Id");
             if (idProp != null)
             {
                 idProp.SetValue(entity, Guid.NewGuid());

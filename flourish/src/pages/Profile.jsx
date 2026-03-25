@@ -46,8 +46,9 @@
 
     const updateProfileMutation = useMutation({
         mutationFn: async (data) => {
-        if (profile?.id) {
-            return await base44.entities.UserProfile.update(profile.id, data);
+        const id = profile?.user_id || profile?.id;
+        if (id) {
+            return await base44.entities.UserProfile.update(id, data);
         } else {
             return await base44.entities.UserProfile.create(data);
         }
