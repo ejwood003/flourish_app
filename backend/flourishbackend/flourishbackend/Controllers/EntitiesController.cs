@@ -182,6 +182,9 @@ namespace flourishbackend.Controllers
             if (entity == null)
                 return BadRequest(new { error = "Could not parse request body" });
 
+            if (entity is Flourish.Models.UserProfile userProfile)
+                userProfile.EnsureDefaults();
+
             // Ensure a new GUID is set for the Id
             var idProp = entityType.GetProperty("Id");
             if (idProp != null)
@@ -250,6 +253,15 @@ namespace flourishbackend.Controllers
                     try
                     {
                         var convertedValue = ConvertJsonElement(value, propInfo.PropertyType);
+                        if (convertedValue == null)
+                        {
+                            // Do not assign null into non-nullable value types (omit = no change)
+                            var u = Nullable.GetUnderlyingType(propInfo.PropertyType);
+                            if (u == null && propInfo.PropertyType.IsValueType)
+                                continue;
+                            propInfo.SetValue(existing, null);
+                            continue;
+                        }
                         propInfo.SetValue(existing, convertedValue);
                     }
                     catch
@@ -316,7 +328,11 @@ namespace flourishbackend.Controllers
             var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
             if (element.ValueKind == JsonValueKind.Null)
+            {
+                if (underlyingType == typeof(List<string>))
+                    return new List<string>();
                 return null;
+            }
 
             if (underlyingType == typeof(string))
                 return element.GetString();

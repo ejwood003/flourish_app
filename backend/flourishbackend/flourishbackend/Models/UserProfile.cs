@@ -11,13 +11,61 @@ namespace Flourish.Models
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        // Represents the selected home features as a list of strings
-        public List<string> HomeFeatures { get; set; } = new List<string> 
-        { 
-            "affirmation", "mood", "mood_chips", "mindfulness", "tasks", 
-            "baby", "support", "breathing", "journal", "meditations", "articles" 
+        /// <summary>Optional link for partner flows (e.g. mother email on support-linked profiles).</summary>
+        public string? CreatedBy { get; set; }
+
+        // --- Personal ---
+        public string? Username { get; set; }
+        public string? PhoneNumber { get; set; }
+        /// <summary>ISO date string from the client (e.g. yyyy-MM-dd).</summary>
+        public string? DateOfBirth { get; set; }
+
+        // --- Baby ---
+        public string? BabyFullName { get; set; }
+        public string? BabyDateOfBirth { get; set; }
+        public string? BabyGender { get; set; }
+
+        // --- Support ---
+        public string? SupportType { get; set; }
+        public string SupportName { get; set; } = "your partner";
+        public string? SupportEmail { get; set; }
+        public string? SupportPhone { get; set; }
+
+        // --- Sharing (support partner visibility) ---
+        public bool ShareJournals { get; set; }
+        public bool ShareMood { get; set; }
+        public bool ShareBabyTracking { get; set; }
+
+        // --- Notifications (preferences; not OS push by themselves) ---
+        public bool NotificationsMoodEnabled { get; set; } = true;
+        public List<string> NotificationsMoodTimes { get; set; } = new List<string> { "09:00" };
+        public bool NotificationsFeedingEnabled { get; set; }
+        public List<string> NotificationsFeedingTimes { get; set; } = new List<string>();
+        public bool NotificationsNapEnabled { get; set; }
+        public List<string> NotificationsNapTimes { get; set; } = new List<string>();
+
+        // --- Home (ordered widget ids) ---
+        public List<string> HomeFeatures { get; set; } = new List<string>
+        {
+            "affirmation", "mood", "mood_chips", "mindfulness", "tasks",
+            "baby", "support", "breathing", "journal", "meditations", "articles"
         };
 
-        public string SupportName { get; set; } = "your partner";
+        /// <summary>
+        /// Ensures list fields and defaults after partial JSON (e.g. settings-only PATCH-style create).
+        /// </summary>
+        public void EnsureDefaults()
+        {
+            if (string.IsNullOrWhiteSpace(SupportName))
+                SupportName = "your partner";
+            HomeFeatures ??= new List<string>
+            {
+                "affirmation", "mood", "mood_chips", "mindfulness", "tasks",
+                "baby", "support", "breathing", "journal", "meditations", "articles"
+            };
+            NotificationsMoodTimes ??= new List<string> { "09:00" };
+            NotificationsFeedingTimes ??= new List<string>();
+            NotificationsNapTimes ??= new List<string>();
+        }
     }
 }
