@@ -59,6 +59,11 @@ export default function EditHome() {
         updateProfileMutation.mutate(profileData);
     };
 
+    const handleSettingsPersist = (updates) => {
+        setProfileData((prev) => ({ ...prev, ...updates }));
+        updateProfileMutation.mutate(updates);
+    };
+
     return (
         <div className="min-h-screen bg-[#FEF9F5] p-6 pb-24">
             <div className="max-w-lg mx-auto">
@@ -71,15 +76,7 @@ export default function EditHome() {
                 </button>
                 <h1 className="text-2xl font-semibold text-[#4A4458] mb-2">Customize Home</h1>
                 <p className="text-[#5A4B70] mb-6">Choose what you want to see on your home screen.</p>
-                <HomeCustomization profile={profileData} onUpdate={handleUpdate} />
-                <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={updateProfileMutation.isPending}
-                    className="mt-8 w-full py-4 rounded-2xl bg-[#8B7A9F] text-white font-medium disabled:opacity-50"
-                >
-                    {saved ? 'Saved!' : updateProfileMutation.isPending ? 'Saving…' : 'Save changes'}
-                </button>
+                <HomeCustomization profile={profileData} onUpdate={handleSettingsPersist} />
             </div>
         </div>
     );
