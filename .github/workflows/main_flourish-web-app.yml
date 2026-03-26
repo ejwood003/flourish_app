@@ -3,6 +3,10 @@
 
 name: Build and deploy ASP.Net Core app to Azure Web App - Flourish-web-app
 
+env:
+  # Must match the App Service name in Azure (used to print VITE_API_URL hint + CLI lookup).
+  AZURE_WEBAPP_NAME: Flourish-web-app
+
 on:
   push:
     branches:
@@ -63,7 +67,28 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Flourish-web-app'
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'Production'
           package: .
+
+      # No Azure Portal needed: copy this value into repo secret VITE_API_URL for the Static Web Apps workflow.
+      - name: Print API base for frontend (VITE_API_URL)
+        shell: bash
+        run: |
+          HOST="$(az webapp list --query "[?name=='${{ env.AZURE_WEBAPP_NAME }}'].defaultHostName | [0]" -o tsv 2>/dev/null || true)"
+          if [ -z "$HOST" ] || [ "$HOST" = "null" ]; then
+            LOWER="$(echo '${{ env.AZURE_WEBAPP_NAME }}' | tr '[:upper:]' '[:lower:]')"
+            HOST="${LOWER}.azurewebsites.net"
+            echo "Could not resolve host via Azure CLI; using default pattern: $HOST"
+          fi
+          BASE="https://${HOST}/api"
+          {
+            echo "### API URL for your Static Web App"
+            echo "In GitHub: **Settings → Secrets → Actions**, set **VITE_API_URL** to:"
+            echo ""
+            echo "\`$BASE\`"
+            echo ""
+            echo "Then re-run the **Azure Static Web Apps** workflow so the SPA rebuilds."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "VITE_API_URL (set this secret on the repo): $BASE"
           
