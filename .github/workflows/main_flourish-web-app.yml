@@ -57,6 +57,8 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_94C930196A1B4ECA8F8D14DC9B670B12 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_99070E9FC7664259AC3E630A045B79DF }}
 
+      # SQLite: the app writes the DB under D:\home\data (Windows) or /home/data (Linux) when WEBSITE_SITE_NAME is set.
+      # Optional App Settings: FLUORISH_DB_DIRECTORY (writable folder) or ConnectionStrings__FlourishConnection=Data Source=C:\full\path\app.db
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3

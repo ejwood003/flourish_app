@@ -19,9 +19,24 @@ jobs:
         with:
           submodules: true
           lfs: false
+      # REQUIRED for login/API: ASP.NET Web API is not deployed as SWA "api_location" (that slot is for Azure Functions).
+      # Point the SPA at your Azure Web App (from main_flourish-web-app.yml), e.g.:
+      #   https://flourish-web-app.azurewebsites.net/api
+      # Create repo secret VITE_API_URL with that value (must end with /api, no trailing slash after api).
+      - name: Check VITE_API_URL secret
+        shell: bash
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        run: |
+          if [ -z "$VITE_API_URL" ]; then
+            echo "::warning::VITE_API_URL is empty. Deployed site will call /api on the Static Web App host and auth will 404."
+            echo "::warning::Add a repository secret VITE_API_URL = https://<your-app-service>.azurewebsites.net/api"
+          fi
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_JOLLY_ROCK_02C10BA1E }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
@@ -29,7 +44,7 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/flourish" # App source code path
-          api_location: "/backend/flourishbackend/flourishbackend" # Api source code path - optional
+          # Do not set api_location for this ASP.NET project — use Azure Web App + VITE_API_URL instead.
           output_location: "dist" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 

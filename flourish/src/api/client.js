@@ -1,6 +1,9 @@
 /**
- * API base: leave VITE_API_URL unset in dev to use same-origin `/api` (Vite proxy → backend)
- * so auth cookies are first-party. Set VITE_API_URL for a full URL when needed.
+ * API base:
+ * - Local dev: leave unset → `/api` (Vite proxy → backend), cookies are first-party.
+ * - Azure Static Web Apps (API in same SWA): leave unset → `/api` on the SWA host.
+ * - Separate API host (e.g. Azure Web App): set VITE_API_URL to the API root including `/api`, e.g.
+ *   https://your-app.azurewebsites.net/api
  */
 const configuredBase = import.meta.env.VITE_API_URL;
 const APP_ID = import.meta.env.VITE_APP_ID || 'flourish';
