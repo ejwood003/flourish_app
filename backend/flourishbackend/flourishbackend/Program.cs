@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using flourishbackend.Data;
+using flourishbackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
