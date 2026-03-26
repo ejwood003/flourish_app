@@ -38,9 +38,6 @@ export default function Baby() {
     if (isResolvingUser) {
         return (
             <div className="space-y-6 pb-8">
-                <div className="mb-2">
-                    <h1 className="text-2xl font-semibold text-[#4A4458]">Baby Dashboard</h1>
-                </div>
                 <div className="flex items-center justify-center py-20">
                     <Loader2 className="w-8 h-8 animate-spin text-[#8B7A9F]" />
                 </div>
@@ -51,9 +48,6 @@ export default function Baby() {
     if (!userId) {
         return (
             <div className="space-y-6 pb-8">
-                <div className="mb-2">
-                    <h1 className="text-2xl font-semibold text-[#4A4458]">Baby Dashboard</h1>
-                </div>
                 <p className="text-sm text-[#5A4B70] text-center py-12 bg-white rounded-3xl">
                     Sign in again to track baby activities.
                 </p>
@@ -71,10 +65,6 @@ export default function Baby() {
 
     return (
         <div className="space-y-6 pb-8">
-            <div className="mb-2">
-                <h1 className="text-2xl font-semibold text-[#4A4458]">Baby Dashboard</h1>
-            </div>
-
             <QuickAddSection
                 userId={userId}
                 onActivityAdded={handleActivityAdded}

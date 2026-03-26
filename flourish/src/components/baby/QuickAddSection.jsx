@@ -293,17 +293,6 @@
                             exit={{ opacity: 0, height: 0 }}
                             className="mt-4 space-y-4 overflow-hidden"
                         >
-                            {/* Time  */}
-                            <div>
-                                <label className="text-sm text-[#595959] mb-2 block">Time</label>
-                                <Input
-                                    type="datetime-local"
-                                    value={formData.timestamp}
-                                    onChange={(e) => setFormData({ ...formData, timestamp: e.target.value })}
-                                    className="border-[#E8E4F3]"
-                                />
-                            </div>
-
                             {/* Side Selection  */}
                             <div>
                                 <label className="text-sm text-[#595959] mb-2 block">Side</label>
@@ -322,6 +311,17 @@
                                     </button>
                                     ))}
                                 </div>
+                            </div>
+                            
+                            {/* Time  */}
+                            <div>
+                                <label className="text-sm text-[#595959] mb-2 block">Time</label>
+                                <Input
+                                    type="datetime-local"
+                                    value={formData.timestamp}
+                                    onChange={(e) => setFormData({ ...formData, timestamp: e.target.value })}
+                                    className="border-[#E8E4F3]"
+                                />
                             </div>
 
                             {/* Breastfeeding Duration  */}
@@ -469,33 +469,7 @@
                         exit={{ opacity: 0, height: 0 }}
                         className="mt-4 space-y-4 overflow-hidden"
                     >
-                        <div className="flex gap-2">
-                        <Button
-                            onClick={() => {
-                            // Convenience button to "stamp" now for start without manual typing.
-                            setFormData({
-                                ...formData,
-                                nap_start: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-                                nap_end: ''
-                            });
-                            }}
-                            className="flex-1 bg-[#D9EEF2] hover:bg-[#C5E4EC] text-[#4A4458]"
-                        >
-                            Start Nap
-                        </Button>
-                        <Button
-                            onClick={() => {
-                            // Convenience button to "stamp" now for end without manual typing.
-                            setFormData({
-                                ...formData,
-                                nap_end: format(new Date(), "yyyy-MM-dd'T'HH:mm")
-                            });
-                            }}
-                            className="flex-1 bg-[#EDD9E8] hover:bg-[#E0C7D9] text-[#4A4458]"
-                        >
-                            End Nap
-                        </Button>
-                        </div>
+                        
 
                         <div>
                         <label className="text-sm text-[#595959] mb-2 block">Start Time</label>

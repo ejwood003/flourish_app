@@ -7,7 +7,11 @@
     import { listUserProfiles, USER_PROFILES_QUERY_KEY } from '@/api/userProfileApi';
     import { createAffirmation } from '@/api/affirmationApi';
     import { getUserId } from '@/lib/auth';
-    import { babyActivityTimestamp, babyActivityType } from '@/lib/babyEntityFields';
+    import {
+        babyActivityTimestamp,
+        babyActivityType,
+        parseBabyActivityTimestampToDate,
+    } from '@/lib/babyEntityFields';
     import { journalEntryCreatedAt, journalEntryId } from '@/lib/journalEntryFields';
     import { ArrowLeft, Home, Baby, Calendar, Library, Clock, FileText, Heart } from 'lucide-react';
     import { format } from 'date-fns';
@@ -128,30 +132,31 @@
     const calculateNextFeeding = () => {
         const feedings = activities
             .filter((a) => ['breastfeed', 'bottle'].includes(babyActivityType(a)))
-            .sort(
-                (a, b) =>
-                    new Date(babyActivityTimestamp(b)).getTime() -
-                    new Date(babyActivityTimestamp(a)).getTime(),
-            )
+            .sort((a, b) => {
+                const tb = parseBabyActivityTimestampToDate(babyActivityTimestamp(b))?.getTime() ?? 0;
+                const ta = parseBabyActivityTimestampToDate(babyActivityTimestamp(a))?.getTime() ?? 0;
+                return tb - ta;
+            })
             .slice(0, 5);
 
         if (feedings.length < 2) return null;
 
         let totalMinutes = 0;
+        let pairCount = 0;
         for (let i = 0; i < feedings.length - 1; i++) {
-            const diff =
-                Math.abs(
-                    new Date(babyActivityTimestamp(feedings[i])).getTime() -
-                        new Date(babyActivityTimestamp(feedings[i + 1])).getTime(),
-                ) / 60000;
-            totalMinutes += diff;
+            const t0 = parseBabyActivityTimestampToDate(babyActivityTimestamp(feedings[i]));
+            const t1 = parseBabyActivityTimestampToDate(babyActivityTimestamp(feedings[i + 1]));
+            if (!t0 || !t1) continue;
+            totalMinutes += Math.abs(t0.getTime() - t1.getTime()) / 60000;
+            pairCount += 1;
         }
-        const avgMinutes = Math.round(totalMinutes / (feedings.length - 1));
+        if (pairCount < 1) return null;
+        const avgMinutes = Math.round(totalMinutes / pairCount);
 
         if (feedings[0]) {
-            return new Date(
-                new Date(babyActivityTimestamp(feedings[0])).getTime() + avgMinutes * 60000,
-            );
+            const first = parseBabyActivityTimestampToDate(babyActivityTimestamp(feedings[0]));
+            if (!first) return null;
+            return new Date(first.getTime() + avgMinutes * 60000);
         }
         return null;
     };
@@ -159,30 +164,31 @@
     const calculateNextNap = () => {
         const naps = activities
             .filter((a) => babyActivityType(a) === 'nap')
-            .sort(
-                (a, b) =>
-                    new Date(babyActivityTimestamp(b)).getTime() -
-                    new Date(babyActivityTimestamp(a)).getTime(),
-            )
+            .sort((a, b) => {
+                const tb = parseBabyActivityTimestampToDate(babyActivityTimestamp(b))?.getTime() ?? 0;
+                const ta = parseBabyActivityTimestampToDate(babyActivityTimestamp(a))?.getTime() ?? 0;
+                return tb - ta;
+            })
             .slice(0, 5);
 
         if (naps.length < 2) return null;
 
         let totalMinutes = 0;
+        let pairCount = 0;
         for (let i = 0; i < naps.length - 1; i++) {
-            const diff =
-                Math.abs(
-                    new Date(babyActivityTimestamp(naps[i])).getTime() -
-                        new Date(babyActivityTimestamp(naps[i + 1])).getTime(),
-                ) / 60000;
-            totalMinutes += diff;
+            const t0 = parseBabyActivityTimestampToDate(babyActivityTimestamp(naps[i]));
+            const t1 = parseBabyActivityTimestampToDate(babyActivityTimestamp(naps[i + 1]));
+            if (!t0 || !t1) continue;
+            totalMinutes += Math.abs(t0.getTime() - t1.getTime()) / 60000;
+            pairCount += 1;
         }
-        const avgMinutes = Math.round(totalMinutes / (naps.length - 1));
+        if (pairCount < 1) return null;
+        const avgMinutes = Math.round(totalMinutes / pairCount);
 
         if (naps[0]) {
-            return new Date(
-                new Date(babyActivityTimestamp(naps[0])).getTime() + avgMinutes * 60000,
-            );
+            const first = parseBabyActivityTimestampToDate(babyActivityTimestamp(naps[0]));
+            if (!first) return null;
+            return new Date(first.getTime() + avgMinutes * 60000);
         }
         return null;
     };

@@ -6,6 +6,7 @@
     import { Label } from '@/components/ui/label';
     import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
     import { format } from 'date-fns';
+    import { parseBabyActivityTimestampToDate } from '@/lib/babyEntityFields';
 
     export default function EditBabyActivityDialog({ activity, open, onOpenChange, onSave }) {
     const [type, setType] = useState('breastfeed');
@@ -18,7 +19,8 @@
     React.useEffect(() => {
         if (activity) {
         setType(activity.type || 'breastfeed');
-        setTimestamp(activity.timestamp ? format(new Date(activity.timestamp), "yyyy-MM-dd'T'HH:mm") : '');
+        const parsed = activity.timestamp ? parseBabyActivityTimestampToDate(activity.timestamp) : null;
+        setTimestamp(parsed ? format(parsed, "yyyy-MM-dd'T'HH:mm") : '');
         setDurationMinutes(activity.duration_minutes || 0);
         setBreastSide(activity.breast_side || 'left');
         setAmountOz(activity.amount_oz || '');

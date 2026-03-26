@@ -5,6 +5,7 @@ import {
     babyActivityDurationMinutes,
     babyMoodValue,
     babyMoodTags,
+    parseBabyActivityTimestampToDate,
 } from '@/lib/babyEntityFields';
 import { Moon, Droplets, TrendingUp } from 'lucide-react';
 import {
@@ -22,15 +23,15 @@ import {
 function activityDateKey(a) {
     const ts = babyActivityTimestamp(a);
     if (ts == null) return null;
-    const d = new Date(ts);
-    return Number.isNaN(d.getTime()) ? null : format(d, 'yyyy-MM-dd');
+    const d = parseBabyActivityTimestampToDate(ts);
+    return d ? format(d, 'yyyy-MM-dd') : null;
 }
 
 function moodDateKey(bm) {
-    const ts = babyActivityTimestamp(bm);
+    const ts = bm?.timestamp ?? bm?.Timestamp;
     if (ts == null) return null;
-    const d = new Date(ts);
-    return Number.isNaN(d.getTime()) ? null : format(d, 'yyyy-MM-dd');
+    const d = parseBabyActivityTimestampToDate(ts);
+    return d ? format(d, 'yyyy-MM-dd') : null;
 }
 
 export default function BabyInsights({ babyActivities = [], babyMoods = [] }) {
@@ -53,8 +54,8 @@ export default function BabyInsights({ babyActivities = [], babyMoods = [] }) {
         const feedings = babyActivities.filter(a => {
             const ts = babyActivityTimestamp(a);
             if (ts == null) return false;
-            const d = new Date(ts);
-            if (Number.isNaN(d.getTime())) return false;
+            const d = parseBabyActivityTimestampToDate(ts);
+            if (!d) return false;
             return ['breastfeed', 'bottle'].includes(babyActivityType(a)) && d.getHours() === hour;
         });
 
@@ -103,10 +104,10 @@ export default function BabyInsights({ babyActivities = [], babyMoods = [] }) {
 
     const tagsByTime = {};
     babyMoods.forEach(bm => {
-        const ts = babyActivityTimestamp(bm);
+        const ts = bm?.timestamp ?? bm?.Timestamp;
         if (ts == null) return;
-        const dt = new Date(ts);
-        if (Number.isNaN(dt.getTime())) return;
+        const dt = parseBabyActivityTimestampToDate(ts);
+        if (!dt) return;
         const hour = dt.getHours();
         const period =
             hour >= 6 && hour < 12

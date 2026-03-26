@@ -13,6 +13,7 @@ import { deleteBabyActivity, updateBabyActivity } from '@/api/babyActivityApi';
 import { deleteBabyMood } from '@/api/babyMoodApi';
 import { deleteJournalEntry } from '@/api/journalEntryApi';
 import { journalEntryCreatedAt, journalEntryId } from '@/lib/journalEntryFields';
+import { parseBabyActivityTimestampToDate } from '@/lib/babyEntityFields';
 
 /** API returns snake_case (.NET); older Base44 data may be camel/snake — support both. */
 function moodEntryId(m) {
@@ -183,12 +184,12 @@ export default function DayDetailsDropdowns({ moodEntries, babyActivities, babyM
             ...babyActivities.map((data) => ({
                 kind: 'activity',
                 data,
-                ts: new Date(babyActivityTimestamp(data) || 0).getTime(),
+                ts: parseBabyActivityTimestampToDate(babyActivityTimestamp(data))?.getTime() ?? 0,
             })),
             ...(babyMoods || []).map((data) => ({
                 kind: 'babyMood',
                 data,
-                ts: new Date(babyMoodTimestamp(data) || 0).getTime(),
+                ts: parseBabyActivityTimestampToDate(babyMoodTimestamp(data))?.getTime() ?? 0,
             })),
         ];
         rows.sort((a, b) => a.ts - b.ts);
@@ -306,6 +307,7 @@ export default function DayDetailsDropdowns({ moodEntries, babyActivities, babyM
                         const mv = babyMoodNumericValue(mood);
                         const tags = babyMoodTags(mood);
                         const ts = babyMoodTimestamp(mood);
+                        const moodAt = ts ? parseBabyActivityTimestampToDate(ts) : null;
                         return (
                             <div
                                 key={babyMoodRowId(mood)}
@@ -319,7 +321,7 @@ export default function DayDetailsDropdowns({ moodEntries, babyActivities, babyM
                                         </span>
                                         <div className="flex items-center gap-2 shrink-0">
                                             <span className="text-xs text-[#5A4B70]">
-                                                {ts ? format(new Date(ts), 'h:mm a') : '—'}
+                                                {moodAt ? format(moodAt, 'h:mm a') : '—'}
                                             </span>
                                             <button
                                                 type="button"
@@ -348,6 +350,7 @@ export default function DayDetailsDropdowns({ moodEntries, babyActivities, babyM
                     const Icon = iconMap[activity.type] || MoreHorizontal;
                     const activityColor = getActivityColor(activity.type);
                     const actTs = babyActivityTimestamp(activity);
+                    const actAt = actTs ? parseBabyActivityTimestampToDate(actTs) : null;
                     return (
                     <div key={babyActivityId(activity)} className={`flex items-start gap-3 p-2 ${activityColor} rounded-lg group`}>
                         <Icon className="w-4 h-4 text-[#8B7A9F] mt-0.5" />
@@ -360,7 +363,7 @@ export default function DayDetailsDropdowns({ moodEntries, babyActivities, babyM
                             </span>
                             <div className="flex items-center gap-2">
                             <span className="text-xs text-[#5A4B70]">
-                            {actTs ? format(new Date(actTs), 'h:mm a') : '—'}
+                            {actAt ? format(actAt, 'h:mm a') : '—'}
                             </span>
                             <button
                             type="button"
