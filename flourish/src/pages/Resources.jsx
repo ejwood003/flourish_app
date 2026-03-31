@@ -19,15 +19,6 @@
 
     return (
         <div className="space-y-6 pb-8">
-        <div className="mb-2 flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-[#4A4458]">Resources</h1>
-            <button
-            onClick={() => navigate(createPageUrl('Profile'))}
-            className="p-2 hover:bg-white/50 rounded-full transition-colors"
-            >
-            <UserCircle className="w-8 h-8 text-[#8B7A9F]" />
-            </button>
-        </div>
 
         <div className="flex gap-2 p-1 bg-[#F5EEF8] rounded-2xl">
             {tabs.map((tab) => (

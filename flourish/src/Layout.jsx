@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { APP_SHELL_MAX_WIDTH_CLASS, createPageUrl } from './utils';
-import { Home, Baby, Library, Calendar } from 'lucide-react';
+import { Home, Baby, Library, Calendar, User } from 'lucide-react';
 
 const navItems = [
 { name: 'Home', icon: Home, page: 'Home' },
 { name: 'Baby', icon: Baby, page: 'Baby' },
 { name: 'Calendar', icon: Calendar, page: 'Calendar' },
 { name: 'Resources', icon: Library, page: 'Resources' },
+{ name: 'Account', icon: User, page: 'Profile' },
 ];
 
 // App-wide shell that wraps each routed page and renders the bottom navigation bar.

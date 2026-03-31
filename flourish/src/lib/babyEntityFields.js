@@ -10,6 +10,25 @@ export function babyActivityTimestamp(a) {
     return a.timestamp ?? a.Timestamp;
 }
 
+/**
+ * Parse API timestamp to a Date in the user's local zone for display.
+ * .NET System.Text.Json often emits UTC instants without a trailing Z (Kind=Unspecified);
+ * ECMAScript treats those as *local* wall time, which shifts times (e.g. 1:22 PM MST → 7–8 PM).
+ * If the string is an ISO datetime without an explicit offset, interpret it as UTC by appending Z.
+ */
+export function parseBabyActivityTimestampToDate(raw) {
+    if (raw == null || raw === '') return null;
+    const s = String(raw).trim();
+    if (!s) return null;
+    const hasExplicitZone = /Z$/i.test(s) || /[+-]\d{2}:\d{2}(:\d{2})?$/.test(s);
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s) && !hasExplicitZone) {
+        const d = new Date(`${s}Z`);
+        return Number.isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(s);
+    return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export function babyActivityType(a) {
     if (!a) return '';
     const t = a.type ?? a.Type ?? '';

@@ -119,7 +119,6 @@ export function resolveHomeFeatureOrder(raw, defaults = DEFAULT_HOME_FEATURES) {
         return [...defaults];
     }
 
-    // Subset (user turned some off): canonical order among enabled ids only.
-    const seen = new Set(cleaned);
-    return defaults.filter((id) => seen.has(id));
+    // Subset (user turned some off): keep the order stored in `cleaned` so drag-and-drop on HomeCustomization matches Home.
+    return cleaned;
 }
