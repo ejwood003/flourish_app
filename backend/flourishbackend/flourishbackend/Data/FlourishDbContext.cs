@@ -21,6 +21,7 @@ namespace flourishbackend.Data
         public DbSet<MoodEntry> MoodEntries { get; set; }
         public DbSet<SavedResource> SavedResources { get; set; }
         public DbSet<SupportProfile> SupportProfiles { get; set; }
+        public DbSet<MeditationSession> MeditationSessions { get; set; }
         public DbSet<SupportRequest> SupportRequests { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
 

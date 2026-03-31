@@ -178,6 +178,7 @@ using (var scope = app.Services.CreateScope())
     DevUserSeed.EnsureDevAffirmationReactions(db);
     DevUserSeed.EnsureDevJournalEntries(db);
     DevUserSeed.EnsureDevMoodEntries(db);
+    DevUserSeed.EnsureDemoUsers(db);
 }
 
 if (app.Environment.IsDevelopment())

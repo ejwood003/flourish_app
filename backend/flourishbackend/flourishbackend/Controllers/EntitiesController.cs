@@ -30,6 +30,7 @@ namespace flourishbackend.Controllers
             ["BabyMood"] = "BabyMoods",
             ["BabyProfile"] = "BabyProfiles",
             ["JournalEntry"] = "JournalEntries",
+            ["MeditationSession"] = "MeditationSessions",
             ["MoodEntry"] = "MoodEntries",
             ["SavedResource"] = "SavedResources",
             ["SupportProfile"] = "SupportProfiles",
@@ -46,6 +47,7 @@ namespace flourishbackend.Controllers
             ["BabyMood"] = typeof(Flourish.Models.BabyMood),
             ["BabyProfile"] = typeof(Flourish.Models.BabyProfile),
             ["JournalEntry"] = typeof(Flourish.Models.JournalEntry),
+            ["MeditationSession"] = typeof(Flourish.Models.MeditationSession),
             ["MoodEntry"] = typeof(Flourish.Models.MoodEntry),
             ["SavedResource"] = typeof(Flourish.Models.SavedResource),
             ["SupportProfile"] = typeof(Flourish.Models.SupportProfile),
@@ -67,6 +69,7 @@ namespace flourishbackend.Controllers
             "BabyMood",
             "BabyProfile",
             "JournalEntry",
+            "MeditationSession",
             "MoodEntry",
             "SavedResource",
             "SupportRequest",
@@ -507,6 +510,7 @@ namespace flourishbackend.Controllers
                 case BabyMood bm: bm.UserId = userId; break;
                 case BabyProfile bp: bp.UserId = userId; break;
                 case JournalEntry je: je.UserId = userId; break;
+                case MeditationSession ms: ms.UserId = userId; break;
                 case MoodEntry me: me.UserId = userId; break;
                 case SavedResource sr: sr.UserId = userId; break;
                 case SupportRequest sreq: sreq.UserId = userId; break;
