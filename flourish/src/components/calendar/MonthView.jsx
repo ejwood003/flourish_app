@@ -51,10 +51,12 @@ export default function MonthView({
         <div className="bg-white rounded-3xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
                 <button
+                    type="button"
                     onClick={previousMonth}
                     className="p-2 rounded-xl hover:bg-[#E8E4F3] transition-colors"
+                    aria-label={`Previous month, currently showing ${format(currentDate, 'MMMM yyyy')}`}
                 >
-                    <ChevronLeft className="w-5 h-5 text-[#8B7A9F]" />
+                    <ChevronLeft className="w-5 h-5 text-[#8B7A9F]" aria-hidden />
                 </button>
 
                 <h2 className="text-lg font-semibold text-[#4A4458]">
@@ -62,10 +64,12 @@ export default function MonthView({
                 </h2>
 
                 <button
+                    type="button"
                     onClick={nextMonth}
                     className="p-2 rounded-xl hover:bg-[#E8E4F3] transition-colors"
+                    aria-label={`Next month, currently showing ${format(currentDate, 'MMMM yyyy')}`}
                 >
-                    <ChevronRight className="w-5 h-5 text-[#8B7A9F]" />
+                    <ChevronRight className="w-5 h-5 text-[#8B7A9F]" aria-hidden />
                 </button>
             </div>
 
@@ -87,12 +91,20 @@ export default function MonthView({
                     const avgMood = getAverageMood(dayMoods);
                     const isSelected = isSameDay(day, selectedDate);
                     const isTodayDate = isToday(day);
+                    const dateLabel = format(day, 'EEEE, MMMM d, yyyy');
+                    const moodHint =
+                        avgMood !== null
+                            ? `, average mood ${avgMood} out of 100`
+                            : ', no mood logged';
 
                     return (
                         <motion.button
                             key={day.toString()}
+                            type="button"
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setSelectedDate(day)}
+                            aria-label={`${dateLabel}${moodHint}${isSelected ? ', selected' : ''}${isTodayDate ? ', today' : ''}`}
+                            aria-pressed={isSelected}
                             className={`aspect-square rounded-xl p-2 relative transition-all ${
                                 isSelected
                                     ? 'bg-[#7D6F99] text-white'

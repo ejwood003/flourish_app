@@ -16,6 +16,7 @@ import SupportStep from '@/components/onboarding/SupportStep';
 import NotificationsStep from '@/components/onboarding/NotificationsStep';
 import InterestsStep from '@/components/onboarding/InterestsStep';
 import ConfirmationStep from '@/components/onboarding/ConfirmationStep';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 function splitFullName(fullName) {
     const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
@@ -25,6 +26,7 @@ function splitFullName(fullName) {
 }
 
 export default function Onboarding() {
+    useDocumentTitle('Onboarding');
     const navigate = useNavigate();
     const location = useLocation();
     const [currentStep, setCurrentStep] = useState(0);

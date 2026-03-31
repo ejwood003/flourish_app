@@ -25,6 +25,7 @@ import RecommendedArticle from '@/components/home/RecommendedArticle';
 import MindfulnessHub from '@/components/home/MindfulnessHub';
 import BabyQuickActions from '@/components/home/BabyQuickActions';
 import { useCurrentUserId } from '@/hooks/useCurrentUserId';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import {
     DEFAULT_HOME_FEATURES,
     isIncompleteStoredHomeFeatures,
@@ -33,6 +34,7 @@ import {
 } from '@/lib/homeFeatures';
 
 export default function Home() {
+    useDocumentTitle('Home');
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [showBreathing, setShowBreathing] = useState(false); // set breathing to false to hide the breathing card
@@ -135,6 +137,7 @@ export default function Home() {
     return (
         <>
             <div className="space-y-6 pb-8">
+                <h1 className="text-2xl font-semibold text-[#4A4458]">Home</h1>
                 {/* Dynamic Features ("Cards") */}
                 {enabledFeatures.map((featureId) => {
                 const feature = renderFeature(featureId);
@@ -142,7 +145,11 @@ export default function Home() {
                 })}
 
                 {/* Edit Home Screen Button */}
-                <button onClick={() => navigate(createPageUrl('EditHome'))} className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2">
+                <button
+                    type="button"
+                    onClick={() => navigate(createPageUrl('EditHome'))}
+                    className="w-full py-3 px-4 rounded-2xl text-sm font-medium text-black hover:text-black bg-[#F5EEF8]/30 hover:bg-[#F5EEF8]/50 transition-all flex items-center justify-center gap-2"
+                >
                     <Eye className="w-4 h-4" />
                     Edit Home Screen
                 </button>

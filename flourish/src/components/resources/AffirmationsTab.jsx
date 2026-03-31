@@ -140,22 +140,27 @@ return (
         />
     </div>
     <Button
+        type="button"
         onClick={() => setShowAddForm(!showAddForm)}
         className="bg-[#8B7A9F] hover:bg-[#7A6B8D] text-white rounded-xl px-4"
+        aria-expanded={showAddForm}
+        aria-label={showAddForm ? 'Close add affirmation form' : 'Add affirmation'}
     >
-        <Plus className="w-4 h-4" />
+        <Plus className="w-4 h-4" aria-hidden />
     </Button>
     </div>
 
     <button
+    type="button"
     onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
     className={`w-full py-2.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
         showFavoritesOnly
         ? 'bg-[#8B7A9F] text-white'
         : 'bg-[#E8E4F3] text-[#5A4B70]'
     }`}
+    aria-pressed={showFavoritesOnly}
     >
-    <ThumbsUp className="w-4 h-4" fill={showFavoritesOnly ? 'currentColor' : 'none'} />
+    <ThumbsUp className="w-4 h-4" fill={showFavoritesOnly ? 'currentColor' : 'none'} aria-hidden />
     Favorites
     </button>
 
@@ -241,6 +246,7 @@ return (
                 <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <motion.button
+                    type="button"
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleReaction(affirmation, 'up')}
                     className={`p-2 rounded-xl transition-all ${
@@ -248,10 +254,13 @@ return (
                         ? 'bg-[#8B7A9F] text-white'
                         : 'bg-[#E8E4F3] text-[#8B7A9F] hover:bg-[#DDD8EB]'
                     }`}
+                    aria-label="Like affirmation"
+                    aria-pressed={reaction === 'up'}
                     >
-                    <ThumbsUp className="w-4 h-4" />
+                    <ThumbsUp className="w-4 h-4" aria-hidden />
                     </motion.button>
                     <motion.button
+                    type="button"
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleReaction(affirmation, 'down')}
                     className={`p-2 rounded-xl transition-all ${
@@ -259,22 +268,28 @@ return (
                         ? 'bg-[#EDD9E8] text-[#8B7A9F]'
                         : 'bg-[#E8E4F3] text-[#8B7A9F] hover:bg-[#DDD8EB]'
                     }`}
+                    aria-label="Dislike affirmation"
+                    aria-pressed={reaction === 'down'}
                     >
-                    <ThumbsDown className="w-4 h-4" />
+                    <ThumbsDown className="w-4 h-4" aria-hidden />
                     </motion.button>
                 </div>
                 <div className="flex items-center gap-2">
                 <button
+                    type="button"
                     onClick={() => handleEdit({ ...affirmation, id: key })}
                     className="p-2 rounded-xl bg-[#E8E4F3] text-[#8B7A9F] hover:bg-[#DDD8EB] transition-all"
+                    aria-label="Edit affirmation"
                 >
-                    <Edit className="w-4 h-4" />
+                    <Edit className="w-4 h-4" aria-hidden />
                 </button>
                 <button
+                    type="button"
                     onClick={() => setDeleteDialog({ open: true, id: key })}
                     className="p-2 rounded-xl bg-[#F5E6EA] text-[#8B4A4A] hover:bg-[#F0DAE0] transition-all"
+                    aria-label="Delete affirmation"
                 >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden />
                 </button>
                 </div>
                 </div>

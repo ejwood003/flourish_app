@@ -9,8 +9,10 @@ import { ArrowLeft, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { APP_SHELL_MAX_WIDTH_CLASS } from '@/utils';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function PartnerJournalView() {
+    useDocumentTitle('Shared journals');
     const [searchQuery, setSearchQuery] = useState('');
 
     const { data: profiles = [] } = useQuery({

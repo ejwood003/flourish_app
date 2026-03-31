@@ -11,8 +11,10 @@ import {
 import { getUserId } from '@/lib/auth';
 import { APP_SHELL_MAX_WIDTH_CLASS } from '@/utils';
 import HomeCustomization from '@/components/profile/HomeCustomization';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function EditHome() {
+    useDocumentTitle('Customize home');
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const uid = getUserId();

@@ -2,11 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { APP_SHELL_MAX_WIDTH_CLASS, createPageUrl } from '@/utils';
 import WelcomeStep from '@/components/onboarding/WelcomeStep';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 /**
  * Public entry: first screen for signed-out users (see App.jsx).
  */
 export default function Welcome() {
+    useDocumentTitle('Welcome');
     const navigate = useNavigate();
 
     return (

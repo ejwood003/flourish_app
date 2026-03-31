@@ -23,6 +23,7 @@
     import BabyQuickActions from '@/components/home/BabyQuickActions';
     import MindfulnessHub from '@/components/home/MindfulnessHub';
     import GuidedBreathing from '@/components/home/GuidedBreathing';
+    import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
     const getMoodColor = (value) => {
     if (value >= 75) return 'bg-[#D9EEF2]';
@@ -39,6 +40,7 @@
     };
 
     export default function PartnerHome() {
+    useDocumentTitle('Partner view');
     const queryClient = useQueryClient();
     const [message, setMessage] = useState('');
     const [messageSent, setMessageSent] = useState(false);

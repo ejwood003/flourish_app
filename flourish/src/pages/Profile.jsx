@@ -15,8 +15,10 @@ import NotificationsSettings from '@/components/profile/NotificationsSettings';
 import SharingSettings from '@/components/profile/SharingSettings';
 import HomeCustomization from '@/components/profile/HomeCustomization';
 import ProfileHeader from '@/components/profile/ProfileHeader';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function Profile() {
+    useDocumentTitle('Profile');
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const uid = getUserId();
