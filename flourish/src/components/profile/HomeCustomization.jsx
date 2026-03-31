@@ -189,14 +189,14 @@ export default function HomeCustomization({ profile, onSavePatch, isSaving, defa
                         </Droppable>
                     </DragDropContext>
 
-                    <button
+                    {/* <button
                         type="button"
                         onClick={() => navigate(createPageUrl('PartnerHome'))}
                         className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 border border-[#8B7A9F] text-[#8B7A9F] rounded-xl text-sm font-medium hover:bg-[#F5EEF8] transition-colors"
                     >
                         <Eye className="w-4 h-4" />
                         Preview Partner Home
-                    </button>
+                    </button> */}
                 </div>
             ) : null}
         </div>
