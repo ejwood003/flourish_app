@@ -19,13 +19,9 @@ Flourish is a wellness and parenting app that helps users track their mood, keep
 10. While the user is journaling, the system shall display guided prompts to support reflection.  
 11. While mood data is being processed, the system shall display a loading or progress indicator.  
 12. When a user opens the app for the first time, the system shall prompt the user to set up a postpartum profile (e.g., delivery date, support preferences).  
-13. The system shall provide an onboarding process for new users.  
+13. The system shall provide an onboarding process for new users.
+14. The system shall give users access to the meditation catalog.  
 
-### Not Completed Requirements
-1. The system shall give users access to the meditation catalog.  
-2. When a user completes a meditation session, the system shall prompt the user to reflect or journal about their experience.  
-3. When a user chooses to share progress with a partner, the system shall grant the partner access to selected mood and journal summaries.  
-4. While the system is offline, the system shall prevent new content streaming and notify the user of limited functionality.  
 
 ## Tech Stack
 
