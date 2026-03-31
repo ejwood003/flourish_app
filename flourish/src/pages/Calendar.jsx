@@ -8,12 +8,14 @@ import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import { journalEntryCreatedAt } from '@/lib/journalEntryFields';
 import { format, isSameDay } from 'date-fns';
 import { Loader2 } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import DayDetailsDropdowns from '@/components/calendar/DayDetailsDropdowns';
 import MonthView from '@/components/calendar/MonthView';
+import CalendarInsightsTabStrip from '@/components/CalendarInsightsTabStrip';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function Calendar() {
-    const navigate = useNavigate();
+    useDocumentTitle('Calendar');
     const location = useLocation();
 
     const activeTab = location.pathname === '/insights' ? 'insights' : 'calendar';
@@ -103,63 +105,48 @@ export default function Calendar() {
 
     return (
         <div className="space-y-6 pb-8">
-            <div className="flex gap-2 p-1 bg-[#E8E4F3]/50 rounded-2xl">
-                <button
-                    type="button"
-                    onClick={() => navigate('/calendar')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        activeTab === 'calendar'
-                            ? 'bg-white text-[#4A4458] shadow-sm'
-                            : 'text-[#5A4B70]'
-                    }`}
-                >
-                    Calendar
-                </button>
+            <h1 className="text-2xl font-semibold text-[#4A4458]">Calendar</h1>
 
-                <button
-                    type="button"
-                    onClick={() => navigate('/insights')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        activeTab === 'insights'
-                            ? 'bg-white text-[#4A4458] shadow-sm'
-                            : 'text-[#5A4B70]'
-                    }`}
-                >
-                    Insights
-                </button>
-            </div>
+            <CalendarInsightsTabStrip activeTab={activeTab} />
 
-            {isResolvingUser && (
-                <div className="flex justify-center py-6">
-                    <Loader2 className="w-6 h-6 animate-spin text-[#9D8AA5]" />
-                </div>
-            )}
+            <div
+                id="calendar-insights-panel"
+                role="tabpanel"
+                aria-labelledby="tab-calendar-view"
+            >
+                {isResolvingUser && (
+                    <div className="flex justify-center py-6" aria-live="polite" aria-busy="true">
+                        <Loader2 className="w-6 h-6 animate-spin text-[#9D8AA5]" aria-hidden />
+                        <span className="sr-only">Loading calendar</span>
+                    </div>
+                )}
 
-            {!isResolvingUser && !userId && (
-                <p className="text-sm text-center text-[#5A4B70] px-4">
-                    Sign in again to see your mood, baby activity, and journal data on the calendar.
-                </p>
-            )}
+                {!isResolvingUser && !userId && (
+                    <p className="text-sm text-center text-[#5A4B70] px-4">
+                        Sign in again to see your mood, baby activity, and journal data on the calendar.
+                    </p>
+                )}
 
-            <MonthView
-                currentDate={currentDate}
-                setCurrentDate={setCurrentDate}
-                selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-                moodEntries={moodEntries}
-            />
-
-            <div className="bg-white rounded-3xl p-6 shadow-sm">
-                <h3 className="font-semibold text-[#4A4458] mb-4">
-                    {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                </h3>
-
-                <DayDetailsDropdowns
-                    moodEntries={selectedMoods}
-                    babyActivities={selectedActivities}
-                    babyMoods={selectedBabyMoods}
-                    journalEntries={selectedJournals}
+                <MonthView
+                    currentDate={currentDate}
+                    setCurrentDate={setCurrentDate}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    moodEntries={moodEntries}
                 />
+
+                <div className="bg-white rounded-3xl p-6 shadow-sm">
+                    <h2 className="font-semibold text-[#4A4458] mb-4">
+                        {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                    </h2>
+
+                    <DayDetailsDropdowns
+                        moodEntries={selectedMoods}
+                        babyActivities={selectedActivities}
+                        babyMoods={selectedBabyMoods}
+                        journalEntries={selectedJournals}
+                    />
+                </div>
             </div>
         </div>
     );

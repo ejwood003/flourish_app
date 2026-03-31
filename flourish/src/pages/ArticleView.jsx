@@ -9,6 +9,7 @@
         deleteSavedResource,
     } from '@/api/savedResourceApi';
     import { getUserId } from '@/lib/auth';
+    import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
     const articleContent = {
     tip1: {
@@ -350,6 +351,7 @@
     const fromTab = params.get('from');
     
     const article = articleContent[articleId];
+    useDocumentTitle(article?.title ?? 'Article');
     const uid = getUserId();
 
     const { data: savedResources = [] } = useQuery({
@@ -402,6 +404,7 @@
         <div className="sticky top-0 bg-white/90 backdrop-blur-lg border-b border-[#E8E4F3]/50 p-4 z-10">
             <div className={`${APP_ARTICLE_MAX_WIDTH_CLASS} flex justify-between items-center`}>
             <button
+                type="button"
                 onClick={() => {
                 if (fromTab === 'home') {
                     navigate(createPageUrl('Home'));
@@ -410,17 +413,21 @@
                 }
                 }}
                 className="p-2 rounded-xl hover:bg-[#F5EEF8] transition-colors"
+                aria-label="Back to previous screen"
             >
-                <ArrowLeft className="w-5 h-5 text-[#4A4458]" />
+                <ArrowLeft className="w-5 h-5 text-[#4A4458]" aria-hidden />
             </button>
             
             <button
+                type="button"
                 onClick={() => toggleSaveMutation.mutate()}
                 className="p-2 rounded-xl hover:bg-[#F5EEF8] transition-colors"
+                aria-label={isSaved ? 'Remove article from saved' : 'Save article'}
             >
                 <Bookmark
                 className={`w-5 h-5 ${isSaved ? 'text-[#8B7A9F]' : 'text-[#8B7A9F]/30'}`}
                 fill={isSaved ? 'currentColor' : 'none'}
+                aria-hidden
                 />
             </button>
             </div>

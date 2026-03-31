@@ -26,7 +26,10 @@ export default function Layout({ children, currentPageName }) {
             </main>
 
             {/* Fixed bottom navigation bar for switching between primary app sections */}
-            <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-[#E8E4F3]/50 safe-area-pb">
+            <nav
+                className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-[#E8E4F3]/50 safe-area-pb"
+                aria-label="Primary navigation"
+            >
             <div className={`${APP_SHELL_MAX_WIDTH_CLASS} flex justify-around items-center py-2`}>
                 {navItems.map((item) => {
                 const Icon = item.icon;

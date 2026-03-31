@@ -6,8 +6,10 @@ import QuickAddSection from '@/components/baby/QuickAddSection';
 import HistorySection from '@/components/baby/HistorySection';
 import { Loader2 } from 'lucide-react';
 import UpcomingTasks from '@/components/home/UpcomingTasks';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function Baby() {
+    useDocumentTitle('Baby');
     const queryClient = useQueryClient();
     const [editingActivity, setEditingActivity] = useState(null);
 
@@ -38,8 +40,9 @@ export default function Baby() {
     if (isResolvingUser) {
         return (
             <div className="space-y-6 pb-8">
-                <div className="flex items-center justify-center py-20">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#8B7A9F]" />
+                <div className="flex items-center justify-center py-20" aria-live="polite" aria-busy="true">
+                    <Loader2 className="w-8 h-8 animate-spin text-[#8B7A9F]" aria-hidden />
+                    <span className="sr-only">Loading baby dashboard</span>
                 </div>
             </div>
         );

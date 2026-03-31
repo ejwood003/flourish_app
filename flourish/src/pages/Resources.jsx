@@ -1,7 +1,5 @@
     import React, { useState } from 'react';
-    import { useNavigate } from 'react-router-dom';
-    import { createPageUrl } from '@/utils';
-    import { UserCircle } from 'lucide-react';
+    import { useDocumentTitle } from '@/hooks/useDocumentTitle';
     import AffirmationsTab from '@/components/resources/AffirmationsTab';
     import MeditationsTab from '@/components/resources/MeditationsTab';
     import TipsTab from '@/components/resources/TipsTab';
@@ -13,17 +11,27 @@
     ];
 
     export default function Resources() {
-    const navigate = useNavigate();
+    useDocumentTitle('Resources');
     const params = new URLSearchParams(window.location.search);
     const [activeTab, setActiveTab] = useState(params.get('tab') || 'meditations');
 
     return (
         <div className="space-y-6 pb-8">
+        <h1 className="text-2xl font-semibold text-[#4A4458]">Resources</h1>
 
-        <div className="flex gap-2 p-1 bg-[#F5EEF8] rounded-2xl">
+        <div
+            role="tablist"
+            aria-label="Resource categories"
+            className="flex gap-2 p-1 bg-[#F5EEF8] rounded-2xl"
+        >
             {tabs.map((tab) => (
             <button
                 key={tab.id}
+                type="button"
+                role="tab"
+                id={`resource-tab-${tab.id}`}
+                aria-selected={activeTab === tab.id}
+                aria-controls="resources-tab-panel"
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === tab.id
@@ -36,9 +44,15 @@
             ))}
         </div>
 
-        {activeTab === 'affirmations' && <AffirmationsTab />}
-        {activeTab === 'meditations' && <MeditationsTab />}
-        {activeTab === 'tips' && <TipsTab />}
+        <div
+            id="resources-tab-panel"
+            role="tabpanel"
+            aria-labelledby={`resource-tab-${activeTab}`}
+        >
+            {activeTab === 'affirmations' && <AffirmationsTab />}
+            {activeTab === 'meditations' && <MeditationsTab />}
+            {activeTab === 'tips' && <TipsTab />}
+        </div>
         </div>
     );
     }

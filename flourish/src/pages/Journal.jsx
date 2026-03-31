@@ -8,8 +8,10 @@ import JournalEntryCard from '@/components/journal/JournalEntryCard';
 import { Loader2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useSearchParams } from 'react-router-dom';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function Journal() {
+    useDocumentTitle('Journal');
     const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = React.useState('');
     const [searchParams] = useSearchParams();

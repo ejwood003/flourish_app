@@ -16,6 +16,7 @@ export default function SignInStep({ onSignIn, onBack }) {
     return (
         <div className="space-y-8 py-12">
         <button
+            type="button"
             onClick={onBack}
             className="flex items-center gap-2 text-[#7D7589] hover:text-[#8B7A9F] transition-colors"
         >

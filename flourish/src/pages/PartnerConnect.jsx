@@ -8,8 +8,10 @@
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
     import { useMutation } from '@tanstack/react-query';
+    import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
     export default function PartnerConnect() {
+    useDocumentTitle('Connect as partner');
     const navigate = useNavigate();
     const [partnerCode, setPartnerCode] = useState('');
     const [partnerName, setPartnerName] = useState('');
@@ -66,6 +68,7 @@
             <div className={APP_NARROW_MAX_WIDTH_CLASS}>
             {/* Back Button */}
             <button
+                type="button"
                 onClick={() => navigate(createPageUrl('Welcome'))}
                 className="mb-6 text-[#8B7A9F] hover:text-[#7A6A8E] transition-colors flex items-center gap-2"
             >

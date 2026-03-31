@@ -7,10 +7,12 @@ import { listBabyMoods } from '@/api/babyMoodApi';
 import { useCurrentUserId } from '@/hooks/useCurrentUserId';
 import MomInsights from '@/components/insights/MomInsights';
 import BabyInsights from '@/components/insights/BabyInsights';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import CalendarInsightsTabStrip from '@/components/CalendarInsightsTabStrip';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function Insights() {
-    const navigate = useNavigate();
+    useDocumentTitle('Insights');
     const location = useLocation();
 
     const activeTab = location.pathname === '/insights' ? 'insights' : 'calendar';
@@ -66,53 +68,39 @@ export default function Insights() {
 
     return (
         <div className="space-y-6 pb-8">
-            <div className="flex gap-2 p-1 bg-[#E8E4F3]/50 rounded-2xl">
-                <button
-                    type="button"
-                    onClick={() => navigate('/calendar')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        activeTab === 'calendar'
-                            ? 'bg-white text-[#4A4458] shadow-sm'
-                            : 'text-[#5A4B70]'
-                    }`}
-                >
-                    Calendar
-                </button>
+            <h1 className="text-2xl font-semibold text-[#4A4458]">Insights</h1>
 
-                <button
-                    type="button"
-                    onClick={() => navigate('/insights')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        activeTab === 'insights'
-                            ? 'bg-white text-[#4A4458] shadow-sm'
-                            : 'text-[#5A4B70]'
-                    }`}
-                >
-                    Insights
-                </button>
+            <CalendarInsightsTabStrip activeTab={activeTab} />
+
+            <div
+                id="calendar-insights-panel"
+                role="tabpanel"
+                aria-labelledby="tab-insights-view"
+            >
+                {isResolvingUser && (
+                    <p className="text-sm text-center text-[#5A4B70] px-4" aria-live="polite">
+                        Loading your profile…
+                    </p>
+                )}
+
+                {!isResolvingUser && !userId && (
+                    <p className="text-sm text-center text-[#5A4B70] px-4">
+                        Sign in again to see insights for your data.
+                    </p>
+                )}
+
+                <MomInsights
+                    moodEntries={moodEntries}
+                    journalEntries={journalEntries}
+                    babyActivities={babyActivities}
+                    moodTimeView={moodTimeView}
+                    setMoodTimeView={setMoodTimeView}
+                    trendTimeframe={trendTimeframe}
+                    setTrendTimeframe={setTrendTimeframe}
+                />
+
+                <BabyInsights babyActivities={babyActivities} babyMoods={babyMoods} />
             </div>
-
-            {isResolvingUser && (
-                <p className="text-sm text-center text-[#5A4B70] px-4">Loading your profile…</p>
-            )}
-
-            {!isResolvingUser && !userId && (
-                <p className="text-sm text-center text-[#5A4B70] px-4">
-                    Sign in again to see insights for your data.
-                </p>
-            )}
-
-            <MomInsights
-                moodEntries={moodEntries}
-                journalEntries={journalEntries}
-                babyActivities={babyActivities}
-                moodTimeView={moodTimeView}
-                setMoodTimeView={setMoodTimeView}
-                trendTimeframe={trendTimeframe}
-                setTrendTimeframe={setTrendTimeframe}
-            />
-
-            <BabyInsights babyActivities={babyActivities} babyMoods={babyMoods} />
         </div>
     );
 }

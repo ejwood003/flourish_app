@@ -209,7 +209,12 @@ export default function AffirmationCarousel() {
     }
 
     return (
-        <div className="bg-gradient-to-br from-[#E8E4F3] to-[#EDD9E8] rounded-3xl p-6 shadow-sm">
+        <div
+            className="bg-gradient-to-br from-[#E8E4F3] to-[#EDD9E8] rounded-3xl p-6 shadow-sm"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Daily affirmation carousel"
+        >
             <p className="text-xs font-medium text-[#5A4B70] uppercase tracking-wide">
                 Daily Affirmation
             </p>
@@ -219,6 +224,7 @@ export default function AffirmationCarousel() {
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
+                aria-live="polite"
             >
                 <AnimatePresence mode="wait" custom={direction}>
                     <motion.p
@@ -238,14 +244,17 @@ export default function AffirmationCarousel() {
 
             <div className="flex items-center justify-between mt-4">
                 <button
+                    type="button"
                     onClick={handlePrev}
                     className="p-3 rounded-full bg-white/50 hover:bg-white/80 transition-all duration-200 active:scale-95"
+                    aria-label="Previous affirmation"
                 >
-                    <ChevronLeft className="w-5 h-5 text-[#5A4B70]" />
+                    <ChevronLeft className="w-5 h-5 text-[#5A4B70]" aria-hidden />
                 </button>
 
                 <div className="flex gap-3">
                     <motion.button
+                        type="button"
                         whileTap={{ scale: 0.9 }}
                         onClick={() => handleReaction('up')}
                         className={`p-3 rounded-full transition-all duration-200 ${
@@ -253,11 +262,14 @@ export default function AffirmationCarousel() {
                                 ? 'bg-[#5A4B70] text-white'
                                 : 'bg-white/50 hover:bg-white/80 text-[#5A4B70]'
                         }`}
+                        aria-label="Like this affirmation"
+                        aria-pressed={currentReaction === 'up'}
                     >
-                        <ThumbsUp className="w-5 h-5" />
+                        <ThumbsUp className="w-5 h-5" aria-hidden />
                     </motion.button>
 
                     <motion.button
+                        type="button"
                         whileTap={{ scale: 0.9 }}
                         onClick={() => handleReaction('down')}
                         className={`p-3 rounded-full transition-all duration-200 ${
@@ -265,20 +277,24 @@ export default function AffirmationCarousel() {
                                 ? 'bg-[#5A4B70] text-white'
                                 : 'bg-white/50 hover:bg-white/80 text-[#5A4B70]'
                         }`}
+                        aria-label="Dislike this affirmation"
+                        aria-pressed={currentReaction === 'down'}
                     >
-                        <ThumbsDown className="w-5 h-5" />
+                        <ThumbsDown className="w-5 h-5" aria-hidden />
                     </motion.button>
                 </div>
 
                 <button
+                    type="button"
                     onClick={handleNext}
                     className="p-3 rounded-full bg-white/50 hover:bg-white/80 transition-all duration-200 active:scale-95"
+                    aria-label="Next affirmation"
                 >
-                    <ChevronRight className="w-5 h-5 text-[#5A4B70]" />
+                    <ChevronRight className="w-5 h-5 text-[#5A4B70]" aria-hidden />
                 </button>
             </div>
 
-            <div className="flex justify-center gap-1.5 mt-4">
+            <div className="flex justify-center gap-1.5 mt-4" aria-hidden="true">
                 {visibleAffirmations.map((_, idx) => (
                     <div
                         key={idx}

@@ -1,6 +1,7 @@
     import React, { useState, useEffect } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { APP_NARROW_MAX_WIDTH_CLASS } from '@/utils';
+    import { useDocumentTitle } from '@/hooks/useDocumentTitle';
     import { ArrowLeft } from 'lucide-react';
 
     const meditationContent = {
@@ -21,6 +22,8 @@
     const id = params.get('id');
     const title = params.get('title');
     const duration = parseInt(params.get('duration')) || 5;
+
+    useDocumentTitle(title || 'Meditation');
 
     const [elapsed, setElapsed] = useState(0);
     const [isPlaying, setIsPlaying] = useState(true);
@@ -54,10 +57,12 @@
         <div className="min-h-screen bg-gradient-to-br from-[#E8E4F3] via-[#D9EEF2] to-[#EDD9E8] flex flex-col">
         <div className="p-6">
             <button
+            type="button"
             onClick={() => navigate(-1)}
             className="p-2 rounded-xl bg-white/30 hover:bg-white/50 transition-colors backdrop-blur-sm"
+            aria-label="Back to previous screen"
             >
-            <ArrowLeft className="w-5 h-5 text-[#4A4458]" />
+            <ArrowLeft className="w-5 h-5 text-[#4A4458]" aria-hidden />
             </button>
         </div>
 
@@ -82,7 +87,14 @@
 
             <div className={`${APP_NARROW_MAX_WIDTH_CLASS} px-8`}>
             <div className="mb-4">
-                <div className="w-full h-2 bg-white/30 rounded-full overflow-hidden">
+                <div
+                className="w-full h-2 bg-white/30 rounded-full overflow-hidden"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progress)}
+                aria-label="Meditation progress"
+                >
                 <div 
                     className="h-full bg-[#8B7A9F] transition-all duration-1000"
                     style={{ width: `${progress}%` }}
@@ -97,8 +109,10 @@
             </div>
 
             <button
+            type="button"
             onClick={() => setIsPlaying(!isPlaying)}
             className="mt-8 px-8 py-3 bg-white/30 hover:bg-white/50 backdrop-blur-md rounded-2xl text-[#4A4458] font-medium transition-colors"
+            aria-pressed={isPlaying}
             >
             {isPlaying ? 'Pause' : 'Resume'}
             </button>

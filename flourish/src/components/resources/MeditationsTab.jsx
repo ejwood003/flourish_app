@@ -96,18 +96,23 @@ return (
         />
         </div>
         <button
+        type="button"
         onClick={() => setShowFilters(!showFilters)}
         className={`p-3 rounded-xl transition-colors ${
             showFilters ? 'bg-[#8B7A9F] text-white' : 'bg-[#E8E4F3] text-[#8B7A9F]'
         }`}
+        aria-expanded={showFilters}
+        aria-controls="meditations-filters-panel"
+        aria-label={showFilters ? 'Hide filters' : 'Show filters'}
         >
-        <Filter className="w-4 h-4" />
+        <Filter className="w-4 h-4" aria-hidden />
         </button>
     </div>
 
     <AnimatePresence>
         {showFilters && (
         <motion.div
+            id="meditations-filters-panel"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
