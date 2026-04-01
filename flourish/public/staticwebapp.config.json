@@ -1,4 +1,16 @@
 {
+  "routes": [
+    {
+      "route": "/admin",
+      "redirect": "http://flourish-web-app-a4aqhpdfftb8awce.eastus-01.azurewebsites.net/admin",
+      "statusCode": 302
+    },
+    {
+      "route": "/api/admin/*",
+      "redirect": "http://flourish-web-app-a4aqhpdfftb8awce.eastus-01.azurewebsites.net/api/admin/*",
+      "statusCode": 302
+    }
+  ],
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
