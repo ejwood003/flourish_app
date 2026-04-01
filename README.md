@@ -22,8 +22,6 @@ Flourish is a wellness and parenting app that helps users track their mood, keep
 13. The system shall provide an onboarding process for new users.
 14. The system shall give users access to the meditation catalog.  
 
-### Not Completed Requirements
-1. When a user completes a meditation session, the system shall prompt the user to reflect or journal about their experience.
 
 ## Tech Stack
 
